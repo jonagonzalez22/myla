@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <title>MYLA-Registrarse</title>
+    <meta name="description" content="Mobilekit HTML Mobile UI Kit">
+    <meta name="keywords" content="bootstrap 4, mobile template, cordova, phonegap, mobile, html" />
+    <link rel="icon" type="image/png" href="assets/img/favicon.png" sizes="32x32">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/img/icon/192x192.png">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!--<link rel="manifest" href="__manifest.json">-->
+</head>
+
+<body class="bg-white">
+
+    <!-- loader -->
+    <div id="loader">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+    <!-- * loader -->
+
+    <!-- App Header -->
+    <div class="appHeader no-border transparent position-absolute">
+        <div class="left">
+            <a href="javascript:;" class="headerButton goBack" >
+                <ion-icon name="chevron-back-outline"></ion-icon>
+            </a>
+        </div>
+        <div class="pageTitle"></div>
+        <div class="right">
+            <a href="login.html" class="headerButton">
+                Login
+            </a>
+        </div>
+    </div>
+    <!-- * App Header -->
+
+    <!-- App Capsule -->
+    <div id="appCapsule">
+
+        <div class="login-form">
+            <div class="section">
+                <h1>Registrarse</h1>
+                <h4 id="leyendaForm" style="display: none;">Completa el siguiente formulario</h4>
+            </div>
+            <div class="section mt-2 mb-5">
+
+                <div id="contSeleccionarTipo">
+                    <h4>Por favor selecciones como quiere registrarse:</h4>
+                    <p>
+                        <button type="button" class="btn btn-facebook btn-cliente">
+                            <ion-icon name="people-circle-outline"></ion-icon>
+                            Cliente&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </button>
+                    </p>
+                    <p>
+                        <button type="button" class="btn btn-whatsapp btn-proveedores">
+                            <ion-icon name="cube-outline"></ion-icon>
+                            Proveedor
+                        </button>
+                    </p>
+                    <p>
+                        <button type="button" class="btn btn-dribbble btn-tecnico">
+                            <ion-icon name="build-outline"></ion-icon>
+                            Técnico&nbsp;&nbsp;&nbsp;&nbsp;
+                        </button>
+                    </p>
+                </div>
+                <input type="number" class="d-none" id="tipoSeleccionado">
+                <form class="needs-validation" novalidate id="formComun">
+                    <div id="containerRegister" style="display: none;">
+                        
+                        <div class="form-group boxed">
+                            <div class="input-wrapper">
+                                <label class="label" for="city5" id="titleSelect"></label>
+                                <select class="form-control custom-select" id="datosTipos" required>
+                                    <option selected disabled value="">Seleccione...</option>
+                                </select>
+                                <div class="valid-feedback">Correcto!</div>
+                                <div class="invalid-feedback">Por favor elija una opción.</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group boxed">
+                            <div class="input-wrapper">
+                                <label class="label" for="email">E-mail</label>
+                                <input type="email" class="form-control" id="email" placeholder="E-mail" required>
+                                <i class="clear-input">
+                                    <ion-icon name="close-circle"></ion-icon>
+                                </i>
+                                <div class="valid-feedback">Correcto!</div>
+                                <div class="invalid-feedback">Por favor ingrese e-mail.</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group boxed">
+                            <div class="input-wrapper">
+                                <label class="label" for="pass">Password</label>
+                                <input type="password" class="form-control" id="pass" placeholder="Password" required>
+                                <i class="clear-input">
+                                    <ion-icon name="close-circle"></ion-icon>
+                                </i>
+                                <div class="valid-feedback">Correcto!</div>
+                                <div class="invalid-feedback">Por favor ingrese contraseña.</div>
+                            </div>
+                        </div>
+
+                        <div class="mt-2">
+                            <button class="btn btn-primary btn-block" type="submit" id="btnEnviar">Enviar</button>
+                        </div>
+                    </div>
+                </form>
+
+                <form class="needs-validation" novalidate id="formTecnico">
+                    <div id="containerRegisterTecnico" style="display: none;">
+                        <!--<input type="number" class="d-none" id="tipoSeleccionado">-->
+
+                        <div class="form-group boxed">
+                            <div class="input-wrapper">
+                                <label class="label" for="email">E-mail</label>
+                                <input type="email" class="form-control" id="emailTecnico" placeholder="E-mail" required>
+                                <i class="clear-input">
+                                    <ion-icon name="close-circle"></ion-icon>
+                                </i>
+                                <div class="valid-feedback">Correcto!</div>
+                                <div class="invalid-feedback">Por favor ingrese e-mail.</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group boxed">
+                            <div class="input-wrapper">
+                                <label class="label" for="pass">Password</label>
+                                <input type="password" class="form-control" id="passTecnico" placeholder="Password" required>
+                                <i class="clear-input">
+                                    <ion-icon name="close-circle"></ion-icon>
+                                </i>
+                                <div class="valid-feedback">Correcto!</div>
+                                <div class="invalid-feedback">Por favor ingrese contraseña.</div>
+                            </div>
+                        </div>
+
+                        <div class="mt-2">
+                            <button class="btn btn-primary btn-block" type="submit" id="btnEnviarTecnico">Enviar</button>
+                        </div>
+                    </div>
+                </form>
+
+
+            </div>
+        </div>
+
+
+
+    </div>
+
+    <!-- toast center iconed -->
+        <div id="userExist" class="toast-box toast-center">
+            <div class="in">
+                <ion-icon name="close-circle-outline" class="text-danger"></ion-icon>
+                <div class="text">
+                    El usuario ya existe
+                </div>
+            </div>
+            <button type="button" class="btn btn-sm btn-text-light close-button">Aceptar</button>
+        </div>
+        <!-- toast center iconed -->
+
+    <!-- toast top iconed -->
+        <div id="registroOK" class="toast-box toast-center">
+            <div class="in">
+                <ion-icon name="checkmark-circle" class="text-success"></ion-icon>
+                <div class="text">
+                    Usuario creado exitosamente!
+                </div>
+            </div>
+            <!--<button type="button" class="btn btn-sm btn-text-light close-button">CLOSE</button>-->
+        </div>
+    <!-- * toast top iconed -->
+
+    <!-- * App Capsule -->
+
+
+
+    <!-- ///////////// Js Files ////////////////////  -->
+    <!-- Jquery -->
+    <script src="assets/js/lib/jquery-3.4.1.min.js"></script>
+    <!-- Bootstrap-->
+    <script src="assets/js/lib/popper.min.js"></script>
+    <script src="assets/js/lib/bootstrap.min.js"></script>
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@5.2.3/dist/ionicons/ionicons.js"></script>
+    <!-- Owl Carousel -->
+    <script src="assets/js/plugins/owl-carousel/owl.carousel.min.js"></script>
+    <!-- jQuery Circle Progress -->
+    <script src="assets/js/plugins/jquery-circle-progress/circle-progress.min.js"></script>
+    <!-- Base Js File -->
+    <script src="assets/js/base.js"></script>
+
+    <script>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        var datosTiposD;
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+            identificarComponentesDom();
+            cargarDatosComponentes();
+        })();
+
+        function cargarDatosComponentes(){
+                let datosIniciales = new FormData();
+                datosIniciales.append('accion', 'traerDatosIniciales');
+                $.ajax({
+                    data: datosIniciales,
+                    url: "./models/registrarse_model.php",
+                    method: "post",
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    beforeSed: function(){
+                        //$('#addProdLocal').modal('hide');
+                    },
+                    success: function(respuesta){
+
+                        /*Identifico el select de condicion iva*/
+                        $datosTipos = document.getElementById("datosTipos");
+                        
+                        /*Convierto en json la respuesta del servidor*/
+                        datosTiposD = JSON.parse(respuesta);
+
+                    }
+                });
+            }
+
+        function identificarComponentesDom(){
+            let tipoSel = document.getElementById("tipoSeleccionado").value;
+            
+            let formTecnico = document.getElementById("formTecnico");
+            formTecnico.addEventListener("submit", (formTecnico)=>{verificarUsuario(formTecnico)});
+
+            let formComun = document.getElementById("formComun");
+            formComun.addEventListener("submit", (form)=>{verificarUsuario(form)});
+
+            
+            $btnClientes = document.querySelector(".btn-cliente");
+            $btnClientes.addEventListener("click", formClientes);
+
+            $btnProveedores = document.querySelector(".btn-proveedores");
+            $btnProveedores.addEventListener("click", formProveedores);
+
+            $btnTecnico = document.querySelector(".btn-tecnico");
+            $btnTecnico.addEventListener("click", formTecnicos);
+        }
+
+        function verificarUsuario(form){
+                if (form.target.checkValidity() !== false) {
+                    event.preventDefault();
+                        let tipoSel = document.getElementById("tipoSeleccionado").value;
+                        let mail = "";
+                        if (tipoSel == 4) {
+                            mail = document.getElementById("emailTecnico").value;
+                        }else{
+                            mail = document.getElementById("email").value;
+                        }
+
+
+                        
+                        let datosEnviar = new FormData();
+                        datosEnviar.append("accion", "verificarCuenta");
+                        datosEnviar.append("cuentaMail", mail)
+                        $.ajax({
+                            data: datosEnviar,
+                            url: "./models/registrarse_model.php",
+                            method: "post",
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            beforeSed: function(){
+                                
+                            },
+                            success: function(respuesta){
+                                if(respuesta == 1){
+                                    toastbox('userExist');
+                                }else{
+                                   registrarUsuario();
+                                }
+                            }
+                            })        
+                    }
+        }
+
+        function formClientes(){
+            document.getElementById("tipoSeleccionado").value=2;
+            document.getElementById("contSeleccionarTipo").style.display="none";
+            document.getElementById("containerRegister").style.display="block";
+            document.getElementById("leyendaForm").style.display="block";
+
+            $("#datosTipos").find('option').not(':first').remove();
+
+            $datosTipos = document.getElementById("datosTipos");
+            document.getElementById("titleSelect").innerText="Clientes";
+
+            /*Genero los options del select lista de tipos*/
+            datosTiposD.clientes.forEach((clientes)=>{
+                $optionTipo = document.createElement("option");
+                let $optionIvaText = document.createTextNode(clientes.cliente);
+                $optionTipo.appendChild($optionIvaText)
+                $optionTipo.setAttribute("value", clientes.id_cliente);
+                $datosTipos.appendChild($optionTipo);
+            })
+
+        }
+
+        function formProveedores(){
+            document.getElementById("tipoSeleccionado").value=3;
+            document.getElementById("contSeleccionarTipo").style.display="none";
+            document.getElementById("containerRegister").style.display="block";
+            document.getElementById("leyendaForm").style.display="block";
+            $("#datosTipos").find('option').not(':first').remove();
+            $datosTipos = document.getElementById("datosTipos");
+            document.getElementById("titleSelect").innerText="Proveedores";
+
+            /*Genero los options del select lista de tipos*/
+            datosTiposD.proveedores.forEach((proveedores)=>{
+                $optionTipo = document.createElement("option");
+                let $optionIvaText = document.createTextNode(proveedores.proveedor);
+                $optionTipo.appendChild($optionIvaText)
+                $optionTipo.setAttribute("value", proveedores.id_prov);
+                $datosTipos.appendChild($optionTipo);
+            })
+        }
+
+        function formTecnicos(){
+            document.getElementById("tipoSeleccionado").value=4;
+            document.getElementById("contSeleccionarTipo").style.display="none";
+            document.getElementById("containerRegisterTecnico").style.display="block";
+            //document.getElementById("leyendaForm").style.display="block";
+            //$("#datosTipos").find('option').not(':first').remove();
+            //$("#datosTipos").addClass("d-none");
+            //$datosTipos = document.getElementById("datosTipos");
+            //document.getElementById("titleSelect").innerText="";
+
+            /*Genero los options del select lista de tipos
+            datosTiposD.proveedores.forEach((proveedores)=>{
+                $optionTipo = document.createElement("option");
+                let $optionIvaText = document.createTextNode(proveedores.proveedor);
+                $optionTipo.appendChild($optionIvaText)
+                $optionTipo.setAttribute("value", proveedores.id_prov);
+                $datosTipos.appendChild($optionTipo);
+            })*/
+        }
+
+        function registrarUsuario(){
+
+            let tipo = document.getElementById("tipoSeleccionado").value;
+            let clave = "";
+            let mail = "";
+            let subTipoSel="";
+            alert(tipo);
+            if(tipo === 4){
+                clave = document.getElementById("passTecnico").value;
+                mail = document.getElementById("emailTecnico").value;
+                tipo = document.getElementById("tipoSeleccionado").value;
+            }else{
+                clave = document.getElementById("pass").value;
+                mail = document.getElementById("email").value;
+                subTipoSel = document.getElementById("datosTipos").value;
+            }
+
+            
+
+
+            let datosEnviar = new FormData();
+            if (parseInt(tipo) ===2) {
+                datosEnviar.append("id_cliente", subTipoSel);
+                datosEnviar.append("id_proveedor", null);
+            }else if(parseInt(tipo) ===3){
+                datosEnviar.append("id_proveedor", subTipoSel);
+                datosEnviar.append("id_cliente", null);
+            }else{
+               datosEnviar.append("id_proveedor", null);
+                datosEnviar.append("id_cliente", null); 
+            }
+
+            datosEnviar.append("id_perfil", tipo);
+            datosEnviar.append("accion", "registrarUsuario");
+            datosEnviar.append("clave", clave);
+            datosEnviar.append("mail", mail);
+
+            $.ajax({
+                data: datosEnviar,
+                url: "./models/registrarse_model.php",
+                method: "post",
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSed: function(){
+                                
+                },
+                success: function(respuesta){
+                    toastbox('registroOK');
+                    setTimeout(function(){
+                        window.location.href="./login.html";
+                    }, 2000);
+                }
+            })
+
+        }
+    </script>
+
+</body>
+
+</html>
