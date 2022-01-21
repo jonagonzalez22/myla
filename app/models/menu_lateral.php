@@ -38,6 +38,16 @@
                                 </div>
                             </a>
                         </li>
+                        <li>
+                            <a href="cuenta_corriente.php" class="item">
+                                <div class="icon-box bg-primary">
+                                    <ion-icon name="cash-outline"></ion-icon>
+                                </div>
+                                <div class="in">
+                                    Cuenta corriente
+                                </div>
+                            </a>
+                        </li>
                         <?php } ?>
                         <!--<li>
                             <a href="app-components.html" class="item">
