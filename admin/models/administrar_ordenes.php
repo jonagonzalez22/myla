@@ -390,6 +390,25 @@
 			$queryInsertLogsOC = "INSERT INTO log_ordenes_compra(id_orden_compra, id_estado, fecha_hora_desde, fecha_hora_hasta, id_usuario) values($this->id_orden, $id_estado, '$fecha_hora_desde', '$fecha_hora_hasta', $id_usuario)";
 			$InsertLogsOC = $this->conexion->consultaSimple($queryInsertLogsOC);
 
+			/*VERIFICO SI CORRESPONDE AGREGAR EL MOVIMIENT CTA CTE*/
+			if($id_estado == 3){
+
+				/*OBTENGO EL MONTO DE LA ORDEN DE COMPRA*/
+				$queryGetDetalleOC = "SELECT total, id_proveedor FROM ordenes_compra WHERE id = $this->id_orden";
+				$getDetalleOC = $this->conexion->consultaRetorno($queryGetDetalleOC);
+
+				$rowDetalleOC = $getDetalleOC->fetch_assoc();
+
+				/*GUARDO DATOS EN EL MOVIMIENTO CTA CTE*/
+
+				$id_proveedor = $rowDetalleOC['id_proveedor'];
+				$monto = $rowDetalleOC['total'];
+				$fecha_hora = date("Y-m-d H:i:s");
+
+				$queryInsertCtaCte = "INSERT INTO movimientos_proveedores(id_proveedor, id_tipo_movimiento, monto, fecha_hora, id_origen)VALUES($id_proveedor, 1, $monto, '$fecha_hora', $this->id_orden)";
+
+				$insertCtaCte = $this->conexion->consultaSimple($queryInsertCtaCte);
+			}
 		}
 
 		public function traerEstadosOrdenes($id_orden){
