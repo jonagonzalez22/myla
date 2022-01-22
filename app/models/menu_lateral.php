@@ -18,6 +18,19 @@
 
                     <ul class="listview flush transparent no-line image-listview mt-2">
                         <li>
+                            <?php 
+                                if($_SESSION['rowUsers']['id_proveedor'] !=""){
+                            ?>
+                            <a href="home_proveedores.php" class="item">
+                                <div class="icon-box bg-primary">
+                                    <ion-icon name="home-outline"></ion-icon>
+                                </div>
+                                <div class="in">
+                                    Home
+                                </div>
+                            </a>
+                            <?php }else if($_SESSION['rowUsers']['id_cliente'] !=""){
+                            ?>
                             <a href="home.php" class="item">
                                 <div class="icon-box bg-primary">
                                     <ion-icon name="home-outline"></ion-icon>
@@ -26,6 +39,7 @@
                                     Home
                                 </div>
                             </a>
+                            <?php } ?>
                         </li>
                         <?php if($_SESSION['rowUsers']['id_perfil']==3) {?>
                         <li>

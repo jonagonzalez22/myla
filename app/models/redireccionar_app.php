@@ -17,8 +17,8 @@
 		public function redirProveedor(){
 
 			//$this->id_usuario = $_SESSION['rowUsers']['id_usuario'];
-			//$this->id_proveedor = $_SESSION['rowUsers']['id_proveedor'];
-			header('Location: ../home.php');
+			$this->id_proveedor = $_SESSION['rowUsers']['id_proveedor'];
+			header('Location: ../home_proveedores.php');
 
 		}
 		public function redirCliente(){
