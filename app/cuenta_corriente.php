@@ -72,7 +72,7 @@
 
     <!-- App Bottom Menu -->
     <div class="appBottomMenu">
-        <a href="home.php" class="item">
+        <a href="home_proveedores.php" class="item">
             <div class="col">
                 <ion-icon name="home-outline"></ion-icon>
             </div>
