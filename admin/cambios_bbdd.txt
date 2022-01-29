@@ -1,0 +1,10 @@
+ALTER TABLE `vehiculos` ADD `id_marca` INT NOT NULL AFTER `patente`, ADD `modelo` VARCHAR(99) NOT NULL AFTER `id_marca`, ADD `anio` VARCHAR(99) NOT NULL AFTER `modelo`, ADD `codigo_motor` VARCHAR(99) NOT NULL AFTER `anio`, ADD `codigo_chasis` VARCHAR(99) NOT NULL AFTER `codigo_motor`, ADD `nro_cedula_verde` VARCHAR(99) NOT NULL AFTER `codigo_chasis`, ADD INDEX (`id_marca`);
+
+CREATE TABLE `marcas_vehiculos` (
+  `id` int(11) NOT NULL,
+  `marca` varchar(99) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `marcas_vehiculos` ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `marcas_vehiculos` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT; (importar archivo marcas_vehiculos.csv)
