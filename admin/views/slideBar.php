@@ -81,7 +81,7 @@
                         <li>
                           <a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Accesos WEB</span><i class="fa fa-angle-right pull-right mt-2"></i></a>
                           <ul class="sidebar-submenu">
-                            <li><a href="#"><i class="fa fa-circle"></i> Dashboard Genelar</a></li>
+                            <li><a href="#"><i class="fa fa-circle"></i> Dashboard General</a></li>
 
                             <li>
                               <a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Gestor tks</span><i class="fa fa-angle-right pull-right mt-2"></i></a>
@@ -90,7 +90,7 @@
                                 <li><a href="#"><i class="fa fa-circle"></i> Gestor de mant. correct.</a></li>
                                 <li><a href="#"><i class="fa fa-circle"></i> Stock</a></li>
                                 <li><a href="#"><i class="fa fa-circle"></i> Gestor administrativo</a></li>
-                                <li><a href="#"><i class="fa fa-circle"></i> Gestor Geóposicion</a></li>
+                                <li><a href="gestor_geoposicion.php"><i class="fa fa-circle"></i> Gestor Geóposicion</a></li>
                                 <li><a href="#"><i class="fa fa-circle"></i>AMB – Administrador</a></li>
                               </ul>
                             </li>
@@ -182,8 +182,8 @@
                       <li><a href="clientes.php"><i class="fa fa-circle"></i> Cliente</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Locación</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Sitios</a></li>
-                      <li><a href="#"><i class="fa fa-circle"></i> Elementos</a></li>
-                      <li><a href="#"><i class="fa fa-circle"></i> Tareas</a></li>
+                      <li><a href="elementos.php"><i class="fa fa-circle"></i> Elementos</a></li>
+                      <li><a href="tareas.php"><i class="fa fa-circle"></i> Tareas</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Frecuencia</a></li>
                     </ul>
                   </li>
@@ -329,7 +329,7 @@
                     </ul>
                   </li>
                   <li><a href="#"><i class="fa fa-circle"></i> Dashboard</a></li>
-                  <li><a href="#"><i class="fa fa-circle"></i> Informes</a></li>
+                  <li><a href="informe_mantenimiento_vehiculos.php"><i class="fa fa-circle"></i> Informes</a></li>
                   <li><a href="#"><i class="fa fa-circle"></i> Archivos</a></li>
                 </ul>
               </li>

@@ -4,7 +4,7 @@
   date_default_timezone_set("America/Buenos_Aires");
   $hora = date('Hi');
   if (!isset($_SESSION['rowUsers']['id_usuario'])) {
-      header("location:./redireccionar.php");
+      header("location:./models/redireccionar.php");
   }
 ?>
 <!DOCTYPE html>

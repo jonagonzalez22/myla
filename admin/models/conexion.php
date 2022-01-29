@@ -4,7 +4,7 @@
 		private $user = "root";
 		private $pass = "";
 		private $db = "myla";
-		private $conectar;
+		public $conectar;
 
 		public function __construct(){
 			$this->conectar = new mysqli($this->host, $this->user, $this->pass, $this->db);

@@ -65,6 +65,19 @@
         btnIngresar = document.getElementById('btnIngresar');
         btnIngresar.addEventListener('click', validarCamposIngreso, false);
 
+        usuario = document.getElementById('usuario');
+        pass = document.getElementById('pass');
+
+        usuario.addEventListener('keyup', ingresarConEnter, false);
+        pass.addEventListener('keyup', ingresarConEnter, false);
+
+        function ingresarConEnter(e){
+          console.log(e);
+          if(e.code=="Enter"){
+            btnIngresar.click();
+          }
+        }
+
         function validarCamposIngreso(){
 
           usuario = document.getElementById('usuario').value;
