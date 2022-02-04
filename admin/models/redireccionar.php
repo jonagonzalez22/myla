@@ -15,7 +15,7 @@
 
 		public function redir(){
 
-			//$this->id_usuario = $_SESSION['rowUsers']['id_usuario'];
+			
 			header('Location: ../home_users.php');
 
 		}

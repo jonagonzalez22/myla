@@ -21,10 +21,7 @@
               <p><?php echo $tipoUser; ?></p>
             </div>
             <ul class="sidebar-menu">
-              <!--<li><a class="sidebar-header" href="home_users.php"><i data-feather="home"></i><span>Dashboard</span>-->
-                <!--<span class="badge badge-pill badge-primary">6</span>--></a>
-              </li>
-
+             
               <?php 
                 if ($_SESSION['rowUsers']['id_perfil'] == 5) {
               ?>
@@ -82,20 +79,7 @@
                           <a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Accesos WEB</span><i class="fa fa-angle-right pull-right mt-2"></i></a>
                           <ul class="sidebar-submenu">
                             <li><a href="#"><i class="fa fa-circle"></i> Dashboard General</a></li>
-
-                            <li>
-                              <a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Gestor tks</span><i class="fa fa-angle-right pull-right mt-2"></i></a>
-                              <ul class="sidebar-submenu">
-                                <li><a href="#"><i class="fa fa-circle"></i> Gestor de mant. prev.</a></li>
-                                <li><a href="#"><i class="fa fa-circle"></i> Gestor de mant. correct.</a></li>
-                                <li><a href="#"><i class="fa fa-circle"></i> Stock</a></li>
-                                <li><a href="#"><i class="fa fa-circle"></i> Gestor administrativo</a></li>
-                                <li><a href="gestor_geoposicion.php"><i class="fa fa-circle"></i> Gestor Geóposicion</a></li>
-                                <li><a href="#"><i class="fa fa-circle"></i>AMB – Administrador</a></li>
-                              </ul>
-                            </li>
-
-
+                            <li><a href="accesos_web.php"><i class="fa fa-circle"></i> Gestor tks</a></li>
                           </ul>
                         </li>
                         <li>
@@ -106,43 +90,26 @@
                 </ul>
               </li>
 
+              <?php } else{ 
 
-              <!--VIEJO MENÚ-->
-              <!--<li><a class="sidebar-header" href="#"><i data-feather="settings"></i><span>Administrar</span><i class="fa fa-angle-right pull-right"></i></a>
-                <ul class="sidebar-submenu">
-                  <li><a href="clientes.php"><i class="fa fa-circle"></i> Clientes</a></li>
-                  <li><a href="usuarios.php"><i class="fa fa-circle"></i> Usuarios</a></li>
-                </ul>
-              </li>
+                 
+                  require_once("./models/conexion.php");
 
-              <li><a class="sidebar-header" href="#"><i data-feather="archive"></i><span>Stock</span><i class="fa fa-angle-right pull-right"></i></a>
-                <ul class="sidebar-submenu">
-                  <li><a href="almacenes.php"><i class="fa fa-circle"></i> Almacenes</a></li>
-                  <li><a href="proveedores.php"><i class="fa fa-circle"></i> Proveedores</a></li>
-                  <li>
-                    <a class="sidebar-header" href="items.php"><i class="fa fa-circle"></i><span>Items</a>
-                  </li>
-                  <li>
-                    <a class="sidebar-header" href="stock.php"><i class="fa fa-circle"></i><span>Ver Stock</a>
-                  </li>
-                  <li>
-                    <a class="sidebar-header" href="movimientos_stock.php"><i class="fa fa-circle"></i><span>Movimientos Stock</a>
-                  </li>
-                </ul>
-              </li>
+                  $conexion = new Conexion();
 
-              <li><a class="sidebar-header" href="#"><i data-feather="zap"></i><span>Mantenimiento</span><i class="fa fa-angle-right pull-right"></i></a>
-                <ul class="sidebar-submenu">
-                  <li>
-                    <a class="sidebar-header" href="lista_de_precios.php"><i class="fa fa-circle"></i></i><span>Lista de precios</a>
-                  </li>
-                  <li>
-                    <a class="sidebar-header" href="ordenes_de_compra.php"><i class="fa fa-circle"></i></i><span>Ordenes de compra</a>
-                  </li>
-                </ul>
-              </li>-->
+                  $id_usuario = $_SESSION['rowUsers']['id_usuario'];
+                  $queryGetAccesos = "SELECT * FROM permisos_menu_web WHERE id_usuario = $id_usuario";
+                  $getAccesos = $conexion->consultaRetorno($queryGetAccesos);
 
-              <?php } else{ ?>
+
+                  if($getAccesos->num_rows > 0){
+                  
+                    while ($accesos = $getAccesos->fetch_assoc()) {
+                      
+                    
+                  
+                    if($accesos['id_menu_web'] == 1 && $accesos['acceso'] ==1){
+                ?>
                   <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Dashboard General</span><i class="fa fa-angle-right pull-right"></i></a>
                 <ul class="sidebar-submenu">
                 <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Panel Gestion OTs</span><i class="fa fa-angle-right pull-right"></i></a>
@@ -155,7 +122,8 @@
                 </li>
               </ul>
               </li>
-
+            <?php } 
+              if($accesos['id_menu_web'] == 2 && $accesos['acceso'] ==1){ ?>
               <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Gestor de Ticket</span><i class="fa fa-angle-right pull-right"></i></a>
                 <ul class="sidebar-submenu">
                   <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Dashboard</span><i class="fa fa-angle-right pull-right"></i></a>
@@ -174,7 +142,8 @@
                   </li>
                 </ul>
               </li>
-
+            <?php } 
+              if($accesos['id_menu_web'] == 3 && $accesos['acceso'] ==1){ ?>
               <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Gestor Mant. Prevent.</span><i class="fa fa-angle-right pull-right"></i></a>
                 <ul class="sidebar-submenu">
                   <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Alta</span><i class="fa fa-angle-right pull-right"></i></a>
@@ -208,8 +177,9 @@
                   </li>
                 </ul>
               </li>
+            <?php }
 
-
+              if($accesos['id_menu_web'] == 4 && $accesos['acceso'] ==1){ ?>
               <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Gestor Mant. Correct.</span><i class="fa fa-angle-right pull-right"></i></a>
                 <ul class="sidebar-submenu">
                   <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Presupuestos</span><i class="fa fa-angle-right pull-right"></i></a>
@@ -224,7 +194,8 @@
                   </li>
                 </ul>
               </li>
-
+            <?php }
+            if($accesos['id_menu_web'] == 5 && $accesos['acceso'] ==1){ ?>
 
               <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Gestor Obras</span><i class="fa fa-angle-right pull-right"></i></a>
                 <ul class="sidebar-submenu">
@@ -241,7 +212,8 @@
                   </li>
                 </ul>
               </li>
-
+            <?php } 
+              if($accesos['id_menu_web'] == 6 && $accesos['acceso'] ==1){ ?>
 
               <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Gestor Stock</span><i class="fa fa-angle-right pull-right"></i></a>
                 <ul class="sidebar-submenu">
@@ -265,6 +237,9 @@
                 </ul>
               </li>
 
+            <?php } 
+
+              if($accesos['id_menu_web'] == 7 && $accesos['acceso'] ==1){ ?>
 
               <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Compras</span><i class="fa fa-angle-right pull-right"></i></a>
                 <ul class="sidebar-submenu">
@@ -282,7 +257,9 @@
 
                 </ul>
               </li>
+            <?php } 
 
+              if($accesos['id_menu_web'] == 8 && $accesos['acceso'] ==1){ ?>
 
               <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Gestor Administrativo</span><i class="fa fa-angle-right pull-right"></i></a>
                 <ul class="sidebar-submenu">
@@ -317,6 +294,9 @@
                 </ul>
               </li>
 
+            <?php } 
+
+            if($accesos['id_menu_web'] == 9 && $accesos['acceso'] ==1){ ?>
 
               <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Gestor Geóposicion</span><i class="fa fa-angle-right pull-right"></i></a>
                 <ul class="sidebar-submenu">
@@ -333,5 +313,11 @@
                   <li><a href="#"><i class="fa fa-circle"></i> Archivos</a></li>
                 </ul>
               </li>
-              <?php } ?>
+              <?php 
+                    }
+                  }
+                } 
+              } 
+
+              ?>
           </div>

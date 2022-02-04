@@ -15,7 +15,7 @@
 			$this->usuario = $usuario;
 			$this->clave = $clave;
 
-			/*Buscar usuario admin*/
+			/*Buscar usuario*/
 			$queryGetUser = "SELECT usr.id as id_usuario, usr.email, usr.clave, 
 						usr.activo, usr.id_perfil, perf.perfil, id_empresa,
 						usr.monto_aprobacion_minimo, usr.monto_aprobacion_maximo 
@@ -39,8 +39,7 @@
 							/*Verificamos si está activo*/
 
 							if ($userRows['activo'] > 0) {
-
-								/*Entrará como admin esta todo ok*/
+								
 								$_SESSION['rowUsers'] = $userRows;
 								echo "1";
 
