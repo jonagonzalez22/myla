@@ -4,7 +4,7 @@
   date_default_timezone_set("America/Buenos_Aires");
   $hora = date('Hi');
   if (!isset($_SESSION['rowUsers']['id_usuario'])) {
-      header("location:./redireccionar.php");
+      header("location:./models/redireccionar.php");
   }
 ?>
 <!DOCTYPE html>
@@ -570,7 +570,6 @@
 
       var accion = "";
       $(document).ready(function(){
-        //armarCalendario();
         cargarDatosComponentes();
         idiomaEsp = {
                         "autoFill": {
@@ -749,64 +748,6 @@
         });
         calendar.render();
       });
-      
-      function armarCalendario(){
-          /*if(eventosJSON==undefined){
-            eventosJSON=getEventosDefectoCalendario();
-          }*/
-          var calendarEl = document.getElementById('cal-agenda-view');
-
-          var calendar = new FullCalendar.Calendar(calendarEl, {
-            headerToolbar: {
-              left: 'prev,next today',
-              center: 'title',
-              //right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
-              right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            },
-            //events: eventosJSON,
-            events: "./models/administrar_vehiculos.php?accion=traerTareasMantenimientoVehiculos",
-            locale: "es",
-            //defaultDate: '2016-06-12',
-            //defaultView: 'agendaWeek',
-            //editable: true,
-            selectable: true,
-            weekNumbers: true,
-            navLinks: true, // can click day/week names to navigate views
-            selectable: true,
-            nowIndicator: true,
-            dayMaxEvents: true, // allow "more" link when too many events
-            //selectHelper: true,
-            //droppable: true,
-            //eventLimit: true,
-            eventClick: function(info) {
-              info.jsEvent.preventDefault(); // don't let the browser navigate
-              //console.log(info.event.id);
-              /*console.log(info);
-              console.log(info.event);*/
-              var event=info.event;
-              //window.location.href="nuevoEnvioLogistica.php?id="+info.event.id+"&r=d";
-              //window.open("nuevoEnvioLogistica.php?id="+info.event.id+"&r=d", '_blank');
-              //console.log(event.url);
-              if (event.url) {
-                window.open(event.url, "_blank");
-                return false;
-              }
-            },
-            eventDidMount: function(info) {
-              el=info.el;
-              event=info.event;
-              $(el).popover({
-                title: "#"+event.id+" - "+event.title,
-                content: event.extendedProps.description,
-                trigger: 'hover',
-                placement: 'top',
-                container: 'body',
-                html: true
-              });
-            },
-          });
-          calendar.render();
-      }
 
       function cargarDatosComponentes(){
         let datosIniciales = new FormData();

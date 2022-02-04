@@ -1,6 +1,10 @@
 <?php
-	session_start();
+	//session_start();
 	require_once('conexion.php');
+  if(session_id() == '' || !isset($_SESSION) || session_status() === PHP_SESSION_NONE) {
+    // session isn't started
+    session_start();
+  }
   extract($_REQUEST);
 	class Vehiculo{
 
@@ -85,6 +89,7 @@
         $marca = strtoupper($rowVehiculo['marca']);
         $modelo = strtoupper($rowVehiculo['modelo']);
         $anio = strtoupper($rowVehiculo['anio']);
+        $vehiculo = $marca." ".$modelo." ".$anio. "(".$patente.")";
         $codigo_motor = strtoupper($rowVehiculo['codigo_motor']);
         $codigo_chasis = strtoupper($rowVehiculo['codigo_chasis']);
         $nro_cedula_verde = strtoupper($rowVehiculo['nro_cedula_verde']);
@@ -118,7 +123,7 @@
         $fecha_ultima_actualizacion = date("d/m/Y H:m:s", strtotime($rowVehiculo['fecha_ultima_actualizacion']))."hs";
 				$usuario_ultima_actualizacion = $rowVehiculo['usuario_ultima_actualizacion'];
 
-				$arrayVehiculos[] = array('id_vehiculo'=>$id_vehiculo, 'patente'=>$patente, 'id_marca' => $id_marca, 'marca' => $marca, 'modelo' => $modelo, 'anio' => $anio, 'codigo_motor' => $codigo_motor, 'codigo_chasis' => $codigo_chasis, 'nro_cedula_verde' => $nro_cedula_verde, 'fecha_alta'=>$fecha_alta_mostrar, 'estado'=>$estado, 'fecha_adquirido_mostrar'=>$fecha_adquirido_mostrar, 'fecha_adquirido'=>$fecha_adquirido, 'fecha_baja_mostrar'=>$fecha_baja_mostrar, 'fecha_baja'=>$fecha_baja, 'id_tecnico_asignado' => $id_tecnico_asignado, 'tecnico'=>$tecnico, 'comentarios'=>$comentarios, 'proximo_service_general_mostrar'=>$proximo_service_general_mostrar, 'proximo_service_general'=>$proximo_service_general, 'proximo_vencimiento_vtv'=>$proximo_vencimiento_vtv, 'proximo_vencimiento_vtv_mostrar'=>$proximo_vencimiento_vtv_mostrar, 'km_adquirido_mostrar'=>$km_adquirido_mostrar, 'km_adquirido'=>$km_adquirido, 'km_actuales_mostrar'=>$km_actuales_mostrar, 'km_actuales'=>$km_actuales, 'fecha_ultima_actualizacion'=>$fecha_ultima_actualizacion, 'usuario_ultima_actualizacion'=>$usuario_ultima_actualizacion);
+				$arrayVehiculos[] = array('id_vehiculo'=>$id_vehiculo, 'vehiculo'=>$vehiculo, 'patente'=>$patente, 'id_marca' => $id_marca, 'marca' => $marca, 'modelo' => $modelo, 'anio' => $anio, 'codigo_motor' => $codigo_motor, 'codigo_chasis' => $codigo_chasis, 'nro_cedula_verde' => $nro_cedula_verde, 'fecha_alta'=>$fecha_alta_mostrar, 'estado'=>$estado, 'fecha_adquirido_mostrar'=>$fecha_adquirido_mostrar, 'fecha_adquirido'=>$fecha_adquirido, 'fecha_baja_mostrar'=>$fecha_baja_mostrar, 'fecha_baja'=>$fecha_baja, 'id_tecnico_asignado' => $id_tecnico_asignado, 'tecnico'=>$tecnico, 'comentarios'=>$comentarios, 'proximo_service_general_mostrar'=>$proximo_service_general_mostrar, 'proximo_service_general'=>$proximo_service_general, 'proximo_vencimiento_vtv'=>$proximo_vencimiento_vtv, 'proximo_vencimiento_vtv_mostrar'=>$proximo_vencimiento_vtv_mostrar, 'km_adquirido_mostrar'=>$km_adquirido_mostrar, 'km_adquirido'=>$km_adquirido, 'km_actuales_mostrar'=>$km_actuales_mostrar, 'km_actuales'=>$km_actuales, 'fecha_ultima_actualizacion'=>$fecha_ultima_actualizacion, 'usuario_ultima_actualizacion'=>$usuario_ultima_actualizacion);
 			}
 			//echo json_encode($arrayVehiculos);
       return json_encode($arrayVehiculos);
@@ -286,10 +291,10 @@
       if($filtros!=0){
           //var_dump($filtros);
           if(isset($filtros["id_tarea_mantenimiento"]) and $filtros["id_tarea_mantenimiento"]!=""){
-              $filtro_tarea_mantenimiento=" AND mv.id = ".$filtros["id_tarea_mantenimiento"];
+              $filtro_tarea_mantenimiento=" AND manv.id = ".$filtros["id_tarea_mantenimiento"];
           }
           if(isset($filtros["id_vehiculo"]) and $filtros["id_vehiculo"]!=""){
-              $filtro_vehiculo=" AND mv.id = ".$filtros["id_vehiculo"];
+              $filtro_vehiculo=" AND manv.id = ".$filtros["id_vehiculo"];
           }
           if(isset($filtros["desde"]) and $filtros["desde"]!=""){
               $filtro_desde=" AND DATE(fecha_hora) >= '".$filtros["desde"]."'";
