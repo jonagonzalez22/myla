@@ -1,6 +1,10 @@
 <?php
-	session_start();
+	//session_start();
 	require_once('conexion.php');
+  if(session_id() == '' || !isset($_SESSION) || session_status() === PHP_SESSION_NONE) {
+    // session isn't started
+    session_start();
+  }
 	class Clientes{
 		private $id_cliente;
 		private $id_contacto;
@@ -121,7 +125,8 @@
             $clientes[] = array('id_cliente'=> $id_cliente, 'alias'=>$alias, 'razon_social'=> $razon_social, 'direccion_cliente'=>$direccion_cliente, 'localidad_cliente'=>$localidad_cliente, 'tel1'=>$tel1, 'cuit'=> $cuit, 'activo'=> $activo);
         }
 
-        echo json_encode($clientes);
+        //echo json_encode($clientes);
+        return json_encode($clientes);
 
 		}
 		public function traerClienteUpdate($id_cliente){
@@ -297,6 +302,7 @@
                     ON(dl.id_provincia = pvcias.id)
 					WHERE id_cliente = $this->id_cliente
 					ORDER BY dl.id";
+          //echo $query;
 			$getDirecciones = $this->conexion->consultaRetorno($query);
 
 			$direcciones = array(); //creamos un array
@@ -458,10 +464,10 @@
 				break;
 		}
 	}else{
-		if (isset($_GET['accion'])) {
+		if (isset($_GET['accion']) and $_GET['accion']=="traerClientes") {
 			$clientes = new Clientes();
 			$id_empresa = $_GET['id_empresa'];
-			$clientes->traerClientes($id_empresa);
+			echo $clientes->traerClientes($id_empresa);
 		}
 	}
 ?>
