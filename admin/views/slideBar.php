@@ -276,11 +276,18 @@
                       <li><a href="#"><i class="fa fa-circle"></i> IVA – Venta / Compra</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Informes</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Dashboard</a></li>
+                      <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Admin Cajas</span><i class="fa fa-angle-right pull-right" style="margin-top: 10px;"></i></a>
+                      <ul class="sidebar-submenu">
+                      <li><a href="tipos_caja.php"><i class="fa fa-circle"></i> Tipos de Caja</a></li>
+                      <li><a href="cajas.php"><i class="fa fa-circle"></i> Cajas</a></li>
+                      <li><a href="movimientos_caja.php"><i class="fa fa-circle"></i> Ver movientos</a></li>
+                    </ul>
+                      </li>
                     </ul>
                   </li>
                 </ul>
                 <ul class="sidebar-submenu">
-                  <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>RRHH</span><i class="fa fa-angle-right pull-right"></i></a>
+                  <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>RRHH</span><i class="fa fa-angle-right pull-right" style="margin-top: 10px;"></i></a>
                     <ul class="sidebar-submenu">
                       <li><a href="#"><i class="fa fa-circle"></i> Empleados Alta – Baja</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Legajos</a></li>
