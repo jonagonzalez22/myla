@@ -5,6 +5,7 @@
     // session isn't started
     session_start();
   }
+  extract($_REQUEST);
 	class Clientes{
 		private $id_cliente;
 		private $id_contacto;
@@ -193,8 +194,20 @@
 			$delCliente = $this->conexion->consultaSimple($sqlDeleteCliente);
 		}
 
-		public function traerContactos($id_cliente){
-			$this->id_cliente = $id_cliente;
+		public function traerContactos($filtros=0){
+
+      $filtro_cliente="";
+      $filtro_ubicacion="";
+      if($filtros!=0){
+          //var_dump($filtros);
+          if(isset($filtros["id_cliente"]) and $filtros["id_cliente"]!=""){
+              $filtro_cliente=" AND dc.id_cliente = ".$filtros["id_cliente"];
+          }
+          if(isset($filtros["id_ubicacion"]) and $filtros["id_ubicacion"]!=""){
+              $filtro_ubicacion=" AND dc.id = ".$filtros["id_ubicacion"];
+          }
+      }
+			//$this->id_cliente = $id_cliente;
 
 			$query = "SELECT ccl.id as id_contacto, nombre_completo, email, telefono, 
 					cg.cargo cargo, cg.id as id_cargo, case
@@ -202,18 +215,16 @@
             											else 'Inactivo'
 														end activo,
 					dc.id as id_direccion, dc.direccion
-					FROM contactos_clientes ccl join cargos cg
-					ON(ccl.id_cargo = cg.id)
-					JOIN direcciones_clientes as dc
-					ON (ccl.id_direccion = dc.id)
-					WHERE ccl.id_cliente = $this->id_cliente
-					ORDER BY ccl.id";
+					FROM contactos_clientes ccl join cargos cg ON(ccl.id_cargo = cg.id)
+					JOIN direcciones_clientes as dc ON (ccl.id_direccion = dc.id)
+					WHERE 1 $filtro_cliente $filtro_ubicacion
+					ORDER BY ccl.id";//ccl.id_cliente = $this->id_cliente
 			$getContactos = $this->conexion->consultaRetorno($query);
 
 
 			$queryGetLocaciones = "SELECT id as id_direccion, direccion 
-								FROM direcciones_clientes
-								WHERE id_cliente = $this->id_cliente";
+								FROM direcciones_clientes dc
+								WHERE 1 $filtro_cliente $filtro_ubicacion";//id_cliente = $this->id_cliente
 			$getLocaciones = $this->conexion->consultaRetorno($queryGetLocaciones);
 
 			$arrayContactos = array(); //creamos un array
@@ -363,6 +374,11 @@
 
 	if (isset($_POST['accion'])) {
 		$clientes = new Clientes();
+
+    $filtros=[];
+    if(isset($id_cliente)) $filtros["id_cliente"]=$id_cliente;
+    if(isset($id_ubicacion)) $filtros["id_ubicacion"]=$id_ubicacion;
+
 		switch ($_POST['accion']) {
 			case 'traerClientes':
 				$clientes->traerTodosClientes();
@@ -372,8 +388,8 @@
 					$clientes->traerClienteUpdate($id_cliente);
 				break;
 			case 'traerContactos':
-					$id_cliente = $_POST['id_cliente'];
-					$clientes->traerContactos($id_cliente);
+					//$id_cliente = $_POST['id_cliente'];
+					$clientes->traerContactos($filtros);
 				break;
 			case 'addContacto':
 					$id_cliente = $_POST['id_cliente'];

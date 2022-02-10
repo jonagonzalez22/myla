@@ -1,6 +1,10 @@
 <?php
-	session_start();
+	//session_start();
 	require_once('conexion.php');
+  if(session_id() == '' || !isset($_SESSION) || session_status() === PHP_SESSION_NONE) {
+    // session isn't started
+    session_start();
+  }
 	class Almacenes{
 		private $id_almacen;
 		
@@ -110,7 +114,7 @@
             $almacenes[] = array('id_almacen'=> $id_almacen, 'almacen'=>$almacen, 'direccion'=> $direccion, 'id_provincia'=> $id_provincia, 'provincia'=> $provincia, 'activa'=>$activa, 'fecha_alta'=> $fecha_alta);
         }
 
-        echo json_encode($almacenes);
+        return json_encode($almacenes);
 
 		}
 		public function traerAlmacenUpdate($id_almacen){
@@ -194,9 +198,9 @@
 				break;
 		}
 	}else{
-		if (isset($_GET['accion'])) {
+		if (isset($_GET['accion']) and $_GET['accion']=="traerAlmacenes") {
 			$almacenes = new Almacenes();
-			$almacenes->traerAlmacenes();
+			echo $almacenes->traerAlmacenes();
 		}
 	}
 ?>

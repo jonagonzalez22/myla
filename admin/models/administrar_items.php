@@ -8,7 +8,8 @@
 
 		public function __construct(){
 			$this->conexion = new Conexion();
-				date_default_timezone_set("America/Buenos_Aires");
+      $this->id_empresa = $_SESSION["rowUsers"]["id_empresa"];
+			date_default_timezone_set("America/Buenos_Aires");
 		}
 
 		public function traerDatosIniciales($id_empresa){
@@ -107,7 +108,10 @@
 
 		public function traerArticulos($id_empresa){
 
-			$this->id_empresa = $id_empresa;
+      //si no recibimos una empresa dejamos la empresa del constructor de la clase que
+      if($id_empresa!=0){
+			  $this->id_empresa = $id_empresa;
+      }
 
 			$queryTraerArticulos = "SELECT it.id id_item, it.item,  tp.tipo, 
 									cat.categoria, punto_reposicion,
@@ -444,7 +448,8 @@ if (isset($_POST['accion'])) {
 	}else{
 		if (isset($_GET['accion'])) {
 			$items = new Items();
-			$id_empresa = $_GET['id_empresa'];
+      $id_empresa=0;
+			if(isset($_GET['id_empresa'])) $id_empresa = $_GET['id_empresa'];
 			$items->traerArticulos($id_empresa);
 		}
 	}

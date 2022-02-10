@@ -7,7 +7,6 @@ if(session_id() == '' || !isset($_SESSION) || session_status() === PHP_SESSION_N
 }
 //var_dump($_SESSION);
 extract($_REQUEST);
-//$cliente = new Cliente();
 class Elemento{
 
 		private $id_elemento;
@@ -53,6 +52,7 @@ class Elemento{
 
       $filtro_elemento="";
       $filtro_cliente="";
+      $filtro_ubicacion="";
       if($filtros!=0){
           //var_dump($filtros);
           if(isset($filtros["id_elemento"]) and $filtros["id_elemento"]!=""){
@@ -60,6 +60,9 @@ class Elemento{
           }
           if(isset($filtros["id_cliente"]) and $filtros["id_cliente"]!=""){
               $filtro_cliente=" AND c.id = ".$filtros["id_cliente"];
+          }
+          if(isset($filtros["id_ubicacion"]) and $filtros["id_ubicacion"]!=""){
+              $filtro_ubicacion=" AND dc.id = ".$filtros["id_ubicacion"];
           }
       }
       
@@ -69,7 +72,7 @@ class Elemento{
       FROM activos_cliente ac 
       INNER JOIN direcciones_clientes dc ON ac.id_direccion_cliente=dc.id 
       INNER JOIN clientes c ON dc.id_cliente=c.id
-      WHERE c.id_empresa = $this->id_empresa $filtro_elemento $filtro_cliente";
+      WHERE c.id_empresa = $this->id_empresa $filtro_elemento $filtro_cliente $filtro_ubicacion";
       //var_dump($queryGet);
 			$getDatos = $this->conexion->consultaRetorno($queryGet);
 
@@ -218,7 +221,13 @@ class Elemento{
 
 	if (isset($_POST['accion'])) {
 		$elemento = new Elemento();
-		switch ($_POST['accion']) {
+    
+    $filtros=[];
+    if(isset($id_elemento)) $filtros["id_elemento"]=$id_elemento;
+    if(isset($id_cliente)) $filtros["id_cliente"]=$id_cliente;
+    if(isset($id_ubicacion)) $filtros["id_ubicacion"]=$id_ubicacion;
+		
+    switch ($_POST['accion']) {
 			case 'traerDatosInicialesElementos':
 			  	$elemento->traerDatosInicialesElementos();
 			break;
@@ -229,9 +238,6 @@ class Elemento{
       case 'trerDetalleElemento':
 					//$id_elemento = $_POST['id_elemento'];
 					//echo $elemento->traerVechiculoUpdate($id_elemento);
-          $filtros=[];
-          if(isset($id_elemento)) $filtros["id_elemento"]=$id_elemento;
-          if(isset($id_cliente)) $filtros["id_cliente"]=$id_cliente;
           echo $elemento->traerElementos($filtros);
 			break;
       case 'updateElemento':
@@ -244,9 +250,6 @@ class Elemento{
       case 'trerElementosCliente':
         //$id_elemento = $_POST['id_elemento'];
         //echo $elemento->traerVechiculoUpdate($id_elemento);
-        $filtros=[];
-        if(isset($id_elemento)) $filtros["id_elemento"]=$id_elemento;
-        if(isset($id_cliente)) $filtros["id_cliente"]=$id_cliente;
         echo $elemento->traerElementos($filtros);
     break;
 		}
