@@ -154,6 +154,7 @@
                       <li><a href="elementos.php"><i class="fa fa-circle"></i> Elementos</a></li>
                       <li><a href="tareas.php"><i class="fa fa-circle"></i> Tareas</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Frecuencia</a></li>
+                      <li><a href="#"><i class="fa fa-circle"></i> Ordenes de trabajo</a></li>
                     </ul>
                   </li>
                 </ul>
@@ -315,7 +316,7 @@
                       <li><a href="#"><i class="fa fa-circle"></i> Mantenimiento</a></li>
                     </ul>
                   </li>
-                  <li><a href="#"><i class="fa fa-circle"></i> Dashboard</a></li>
+                  <li><a href="gestor_geoposicion.php"><i class="fa fa-circle"></i> Dashboard</a></li>
                   <li><a href="informe_mantenimiento_vehiculos.php"><i class="fa fa-circle"></i> Informes</a></li>
                   <li><a href="#"><i class="fa fa-circle"></i> Archivos</a></li>
                 </ul>

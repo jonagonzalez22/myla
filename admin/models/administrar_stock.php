@@ -1,6 +1,7 @@
 <?php
 	session_start();
 	require_once('conexion.php');
+  extract($_REQUEST);
 	class Stock{
 
 		private $id_proveedor;
@@ -66,33 +67,45 @@
 			echo json_encode($datosIniciales);
 		}
 
-		public function traerItems(){
+		public function traerItems($filtros=0){
 			
 			$arrayStock = array();
 
-			$queryGetStock = "SELECT st.id_item, item, razon_social as proveedor, 
-						almacen, st.cantidad_disponible, st.cantidad_reservada, 
-						st.precio_unitario, it.punto_reposicion, it.hash, st.fecha_hora_ultima_actualizacion as fecha
-						FROM stock st JOIN item as it
-						ON(st.id_item = it.id)
-						JOIN proveedores prov
-						ON(st.id_proveedor = prov.id)
-						JOIN almacenes alm
-						ON(st.id_almacen = alm.id)";
+      $filtro_almacen="";
+      if($filtros!=0){
+          //var_dump($filtros);
+          if(isset($filtros["id_almacen"]) and $filtros["id_almacen"]!=""){
+              $filtro_almacen=" AND alm.id = ".$filtros["id_almacen"];
+          }
+      }
+
+			$queryGetStock = "SELECT st.id_item, item, razon_social as proveedor, prov.id AS id_proveedor, almacen, st.cantidad_disponible, st.cantidad_reservada, st.precio_unitario, it.punto_reposicion, it.hash, st.fecha_hora_ultima_actualizacion as fecha, um.unidad_medida, cat.categoria, tp.tipo
+			FROM stock st JOIN item as it ON(st.id_item = it.id)
+				JOIN proveedores prov ON(st.id_proveedor = prov.id)
+				JOIN almacenes alm ON(st.id_almacen = alm.id)
+        JOIN categorias_item as cat ON(it.id_categoria = cat.id)
+				JOIN unidades_medida as um ON(it.id_unidad_medida = um.id)
+        JOIN tipos_items as tp ON(it.id_tipo = tp.id)
+      WHERE 1 $filtro_almacen";
 			$getStock = $this->conexion->consultaRetorno($queryGetStock);
 
 			while ($rowStock = $getStock->fetch_array()) {
-				$id_item= $rowStock['id_item'];
-				$item= $rowStock['item'];
-				$proveedor= $rowStock['proveedor'];
-				$almacen = $rowStock['almacen'];
-				$cantDisp = $rowStock['cantidad_disponible'];
-				$cantReserv = $rowStock['cantidad_reservada'];
-				$precio_unitario= "$".number_format($rowStock['precio_unitario'],2,',','.');
-				$fecha= date("d/m/Y H:m:s", strtotime($rowStock['fecha']));
-				$punto_reposicion = $rowStock['punto_reposicion'];
-				$hash = $rowStock['hash'];
-				$arrayStock[] = array('id_item'=>$id_item, 'item'=>$item, 'proveedor'=>$proveedor, 'almacen'=>$almacen, 'cantDisp'=>$cantDisp, 'cantReserv'=>$cantReserv, "precio_unitario" =>$precio_unitario,'punto_reposicion'=>$punto_reposicion, 'hash'=>$hash, 'fecha'=>$fecha);
+				$arrayStock[] = array(
+          'id_item'=>$rowStock['id_item'],
+          'item'=>$rowStock['item'],
+          'unidad_medida'=>$rowStock['unidad_medida'],
+          'categoria'=>$rowStock['categoria'],
+          'tipo'=>$rowStock['tipo'],
+          'id_proveedor'=>$rowStock['id_proveedor'],
+          'proveedor'=>$rowStock['proveedor'],
+          'almacen'=>$rowStock['almacen'],
+          'cantDisp'=>$rowStock['cantidad_disponible'],
+          'cantReserv'=>$rowStock['cantidad_reservada'],
+          'precio_unitario' =>"$".number_format($rowStock['precio_unitario'],2,',','.'),
+          'punto_reposicion'=>$rowStock['punto_reposicion'],
+          'hash'=>$rowStock['hash'],
+          'fecha'=>date("d/m/Y H:m:s", strtotime($rowStock['fecha']))
+        );
 			}
 
 			echo json_encode($arrayStock);
@@ -269,7 +282,9 @@
 
 			switch ($_GET['accion']) {
 				case 'traerItems':
-					$stock->traerItems();
+          $filtros=[];
+          if(isset($id_almacen)) $filtros["id_almacen"]=$id_almacen;
+					$stock->traerItems($filtros);
 					break;
 				case 'traerStockFiltro':
 					$almacen = $_GET['almacen'];

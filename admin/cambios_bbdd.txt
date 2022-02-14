@@ -12,6 +12,3 @@ ALTER TABLE `marcas_vehiculos` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT; (imp
 ALTER TABLE `activos_cliente` CHANGE `fecha_alta` `fecha_alta` DATE NOT NULL DEFAULT CURRENT_TIMESTAMP, CHANGE `id_tecnico_ultima_revision` `id_tecnico_ultima_revision` INT(11) NULL DEFAULT NULL, CHANGE `fecha_hora_ultima_revision` `fecha_hora_ultima_revision` DATETIME NULL DEFAULT NULL;
 
 ALTER TABLE `activos_cliente` CHANGE `ubicación` `ubicacion` VARCHAR(99) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
-
-ALTER TABLE `movimientos_proveedores` ADD `monto_cancelado` DOUBLE NOT NULL AFTER `id_origen`;
-

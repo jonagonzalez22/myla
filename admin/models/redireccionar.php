@@ -53,14 +53,14 @@
 		$redirUsuarios = new RedirUsuarios();
 
 		switch ($_SESSION['rowUsers']['id_perfil']) {
-		case 5:
-			$redirUsuarios->redir();
-			break;
+      case 5:
+        $redirUsuarios->redir();
+        break;
 
-		default:
-			$redirUsuarios->redir();
-			break;
-	}
+      default:
+        $redirUsuarios->redir();
+        break;
+    }
 	}else{
 		header('Location: ../login.php');
 	}
