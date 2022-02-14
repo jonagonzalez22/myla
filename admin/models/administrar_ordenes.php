@@ -400,14 +400,84 @@
 				$rowDetalleOC = $getDetalleOC->fetch_assoc();
 
 				/*GUARDO DATOS EN EL MOVIMIENTO CTA CTE*/
-
+				
 				$id_proveedor = $rowDetalleOC['id_proveedor'];
 				$monto = $rowDetalleOC['total'];
+				$copiaMonto = $rowDetalleOC['total'];
 				$fecha_hora = date("Y-m-d H:i:s");
+				$acumulaSaldoFavor = 0;
 
-				$queryInsertCtaCte = "INSERT INTO movimientos_proveedores(id_proveedor, id_tipo_movimiento, monto, fecha_hora, id_origen)VALUES($id_proveedor, 1, $monto, '$fecha_hora', $this->id_orden)";
+				/*VERIFICO SI TENGO UN SALDO A FAVOR*/
 
-				$insertCtaCte = $this->conexion->consultaSimple($queryInsertCtaCte);
+				$querySaldoFavor = "SELECT id, (monto_cancelado - monto) as saldoFavor, monto_cancelado
+								FROM movimientos_proveedores
+								WHERE id_proveedor = $id_proveedor
+								AND id_origen = 0
+								AND (monto_cancelado - monto) > 0";
+				$getSaldoFavor = $this->conexion->consultaRetorno($querySaldoFavor);
+
+				if($getSaldoFavor->num_rows > 0){
+
+					while ($rowSaldoFavor = $getSaldoFavor->fetch_assoc()) {
+
+						if($rowSaldoFavor['saldoFavor'] < $copiaMonto && $copiaMonto > 0){
+							$saldoFavor = $rowSaldoFavor['saldoFavor'];
+							$id_movimiento = $rowSaldoFavor['id'];
+							/*Pongo el movimiento a favor en 0 porque importe orden cubretodo el saldo*/
+							$queryUpdateSaldoFavor = "UPDATE movimientos_proveedores SET monto = $saldoFavor 
+								WHERE id = $id_movimiento";
+							$updateSaldoFavor = $this->conexion->consultaSimple($queryUpdateSaldoFavor);
+							$acumulaSaldoFavor = $acumulaSaldoFavor + $rowSaldoFavor['saldoFavor'];
+							$copiaMonto = $copiaMonto - $saldoFavor;
+						}else if($copiaMonto > 0 && !($rowSaldoFavor['saldoFavor'] == $copiaMonto)){
+
+
+							$id_movimiento = $rowSaldoFavor['id'];
+							$montoCancela = $monto;
+
+							$acumulaSaldoFavor = $monto;
+							/*Pongo el movimiento a favor en 0 porque importe orden cubretodo el saldo*/
+							$queryUpdateSaldoFavor = "UPDATE movimientos_proveedores SET monto = $montoCancela 
+								WHERE id = $id_movimiento";
+							$updateSaldoFavor = $this->conexion->consultaSimple($queryUpdateSaldoFavor);
+
+							$copiaMonto = 0;
+
+						}
+
+						if($rowSaldoFavor['saldoFavor'] == $copiaMonto){
+
+							
+							$acumulaSaldoFavor = $acumulaSaldoFavor +$rowSaldoFavor['saldoFavor'];
+
+							$id_movimiento = $rowSaldoFavor['id'];
+							$saldoFavor = $rowSaldoFavor['saldoFavor'];
+							/*Pongo el movimiento a favor en 0 porque importe orden cubretodo el saldo*/
+							$queryUpdateSaldoFavor = "UPDATE movimientos_proveedores SET monto = $saldoFavor 
+								WHERE id = $id_movimiento";
+							$updateSaldoFavor = $this->conexion->consultaSimple($queryUpdateSaldoFavor);
+							$copiaMonto = 0;
+
+						}
+
+					}
+
+
+					$queryInsertCtaCte = "INSERT INTO movimientos_proveedores(id_proveedor, id_tipo_movimiento, monto, fecha_hora, id_origen, monto_cancelado)VALUES($id_proveedor, 1, $monto, '$fecha_hora', $this->id_orden, $acumulaSaldoFavor)";
+
+					$insertCtaCte = $this->conexion->consultaSimple($queryInsertCtaCte);
+					
+
+				}else{
+
+					$queryInsertCtaCte = "INSERT INTO movimientos_proveedores(id_proveedor, id_tipo_movimiento, monto, fecha_hora, id_origen, monto_cancelado)VALUES($id_proveedor, 1, $monto, '$fecha_hora', $this->id_orden, 0)";
+
+					$insertCtaCte = $this->conexion->consultaSimple($queryInsertCtaCte);
+
+				}
+
+
+
 			}
 		}
 
