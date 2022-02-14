@@ -268,12 +268,12 @@
                       <li><a href="#"><i class="fa fa-circle"></i> Fondos Fijos</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Facturación</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Cta. Cte. Clientes</a></li>
-                      <li><a href="#"><i class="fa fa-circle"></i> Cta. Cte. Prov</a></li>
+                      <li><a href="cta_cte_proveedores.php"><i class="fa fa-circle"></i> Cta. Cte. Prov</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Pagos</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Cobranzas</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Echeq</a></li>
-                      <li><a href="#"><i class="fa fa-circle"></i> Chash Flow</a></li>
-                      <li><a href="#"><i class="fa fa-circle"></i> IVA – Venta / Compra</a></li>
+                      <li><a href="#"><i class="fa fa-circle"></i> Cash Flow</a></li>
+                      <li><a href="reportes_iva.php"><i class="fa fa-circle"></i> IVA – Venta / Compra</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Informes</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Dashboard</a></li>
                       <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Admin Cajas</span><i class="fa fa-angle-right pull-right" style="margin-top: 10px;"></i></a>

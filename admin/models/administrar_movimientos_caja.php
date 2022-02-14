@@ -103,23 +103,6 @@
 				}
 			}
 
-			/*if($filtrosRecibidos != ""){
-				if(count($filtros)>0){
-				foreach ($filtros as $key => $value) {
-					if($key == "id_tipo_movimiento"){
-						$condicion=$condicion."and cdd.".$key."=".$value." ";
-					}
-					if($key == "id_tipo_caja"){
-						$condicion=$condicion."and cd.".$key."=".$value." ";
-					}
-					if($key == "fecha_hora"){
-						$condicion=$condicion."and date_format(cdd.".$key.",'%Y-%m-%d')='".$value."' ";
-					}
-					
-				}
-			}	
-			}*/
-
 			
 			$queryGetMovimientos = "SELECT cdd.id as id_cdd, tmp.tipo, 
 								tc.tipo as caja, monto, detalle, fecha_hora
