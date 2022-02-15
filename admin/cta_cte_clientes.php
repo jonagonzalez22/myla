@@ -1,7 +1,5 @@
 <?php 
   session_start();
-  include_once('./models/conexion.php');
-  date_default_timezone_set("America/Buenos_Aires");
   $hora = date('Hi');
   if (!isset($_SESSION['rowUsers']['id_usuario'])) {
       header("location:./redireccionar.php");
@@ -18,7 +16,7 @@
     <meta name="author" content="pixelstrap">
     <!--<link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="assets/images/favicon.png" type="image/x-icon">-->
-    <title>MYLA - Cta Cte Prov</title>
+    <title>MYLA - Cta Cte Clientes</title>
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:100,200,300,400,500,600,700,800,900" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
@@ -73,10 +71,10 @@
               <div class="row">
                 <div class="col">
                   <div class="page-header-left">
-                    <h3>Cta Cte Proveedores</h3>
+                    <h3>Cta Cte Clientes</h3>
                     <ol class="breadcrumb">
                       <li class="breadcrumb-item"><a href="home_users.php"><i data-feather="home"></i></a></li>
-                      <li class="breadcrumb-item active">Cta Cte Proveedores</li>
+                      <li class="breadcrumb-item active">Cta Cte Clientes</li>
                     </ol>
                     <span class="d-none" id="id_empresa"><?php echo $_SESSION['rowUsers']['id_empresa']?></span>
                   </div>
@@ -91,12 +89,12 @@
               <div class="col-sm-12">
                 <div class="card">
                   <div class="card-header">
-                    <h5>Administrar cta cte prov.</h5>
+                    <h5>Administrar cta cte Clientes</h5>
                      <div class="row mt-2">
                           <div class="col-lg-6">
                             <div class="form-group">
-                              <select class="form-control" id="proveedor" required>
-                                <option value="0">Seleccione proveedor...</option>
+                              <select class="form-control" id="clientes" required>
+                                <option value="0">Seleccione Cliente...</option>
                               </select>
                             </div>
                           </div>
@@ -105,7 +103,7 @@
                   </div>
                   <div class="card-body">
                     <div class="table-responsive d-none" id="contTablaCtaCte">
-                      <table class="table table-hover" id="tablaCtaCteProv">
+                      <table class="table table-hover" id="tablaCtaCteCliente">
                         <thead class="text-center">
                           <tr>
                             <th>Proveedor</th>
@@ -158,8 +156,6 @@
                             <th class="text-center">#ID</th>
                             <th>Tipo Movimiento</th>
                             <th>Monto</th>
-                            <th>Origen</th>
-                            <th>Saldo Pendiente</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -340,7 +336,7 @@
                 datosIniciales.append('id_empresa', id_empresa);
                 $.ajax({
                     data: datosIniciales,
-                    url: "./models/administrar_cta_cte_proveedores.php",
+                    url: "./models/administrar_cta_cte_clientes.php",
                     method: "post",
                     cache: false,
                     contentType: false,
@@ -351,19 +347,19 @@
                     success: function(respuesta){
                        
                        /*Identifico el select de proveedores*/
-                        $selectProveedores = document.getElementById('proveedor');
+                        $selectClientes = document.getElementById('clientes');
 
                         
                         /*Convierto en json la respuesta del servidor*/
                         respuestaJson = JSON.parse(respuesta);
 
                         /*Genero los options del select proveedor*/
-                        respuestaJson.proveedores.forEach((proveedores)=>{
+                        respuestaJson.clientes.forEach((clientes)=>{
                           let $option = document.createElement("option");
-                          let $optionText = document.createTextNode(proveedores.razon_social);
+                          let $optionText = document.createTextNode(clientes.cliente);
                           $option.appendChild($optionText);
-                          $option.setAttribute("value", proveedores.id_proveedor);
-                          $selectProveedores.appendChild($option);
+                          $option.setAttribute("value", clientes.id_cliente);
+                          $selectClientes.appendChild($option);
                         })
 
                     }
@@ -371,21 +367,21 @@
             }
    
 
-    $(document).on("change", "#proveedor", function(){
-      let id_proveedor = $(this).val();
+    $(document).on("change", "#clientes", function(){
+      let id_cliente = $(this).val();
       let id_empresa = parseInt(document.getElementById("id_empresa").textContent);
       let $tablaCtaCte = document.getElementById("contTablaCtaCte");
       $tablaCtaCte.classList.remove("d-none");
-      $("#tablaCtaCteProv").dataTable().fnDestroy();
-      tablaCtaCteProv= $('#tablaCtaCteProv').DataTable({
+      $("#tablaCtaCteCliente").dataTable().fnDestroy();
+      tablaCtaCteCliente= $('#tablaCtaCteCliente').DataTable({
             "ajax": {
-                "url" : "./models/administrar_cta_cte_proveedores.php?accion=traerCtacCteProv&id_empresa="+id_empresa+"&id_proveedor="+id_proveedor,
+                "url" : "./models/administrar_cta_cte_clientes.php?accion=traerCtacCteClientes&id_empresa="+id_empresa+"&id_cliente="+id_cliente,
                 "dataSrc": "",
               },
             "columns":[
               {
                     render: function(data, type, full, meta) {
-                        return '<span class="d-none">'+full.id_proveedor+'</span><span class="">'+full.proveedor+'</span>';
+                        return '<span class="d-none">'+full.id_cliente+'</span><span class="">'+full.cliente+'</span>';
                     }
                 },
               {
@@ -399,7 +395,7 @@
                         };
                     }
                 },
-              {"defaultContent" : "<div class='text-center'><div class='btn-group'><button class='btn btn-success btnPago' title='Emitir pago'><i class='fa fa-money'></i></button><button class='btn btn-warning btnVer' title='Ver movimientos'><i class='fa fa-eye'></i></button></div></div>"}
+              {"defaultContent" : "<div class='text-center'><div class='btn-group'><button class='btn btn-warning btnVer' title='Ver movimientos'><i class='fa fa-eye'></i></button></div></div>"}
             ],
             "language":  idiomaEsp
         });
@@ -407,48 +403,12 @@
 
     });
 
-    $(document).on("click", ".btnPago", function(){
-
-      $("#formEmitirPago").trigger("reset");
-      $(".modal-header").css( "background-color", "#17a2b8");
-      $(".modal-header").css( "color", "white" );
-      $(".modal-title").text("Emitir Pagos");
-      $("#emitirPagos").modal("show");
-
-      accion = "emitirPago";
-
-    });
-
-    $("#formEmitirPago").submit(function(e){
-      e.preventDefault();
-
-      let id_proveedor = document.getElementById("proveedor").value;
-      let importe = document.getElementById("importePago").value;
-      //let detalle_movimiento = document.getElementById("detalle").value;
-
-      $.ajax({
-                  "url":"./models/administrar_cta_cte_proveedores.php",
-                  "type": "POST",
-                  "datatype":"json",
-                  "data":{accion: accion, id_proveedor: id_proveedor, importe: importe},
-                  success: function(response){
-                      tablaCtaCteProv.ajax.reload(null, false);
-                      $('#emitirPagos').modal('hide');
-                      swal({
-                            icon: 'success',
-                            title: 'Accion realizada correctamente'
-                          });
-                  }
-                });
-
-
-    });
 
 
 $(document).on("click", ".btnVer", function(){
     
     accion = "traerDetalleCtaCte";
-    let id_proveedor = document.getElementById("proveedor").value;
+    let id_cliente = document.getElementById("clientes").value;
 
     $(".modal-header").css( "background-color", "#17a2b8");
     $(".modal-header").css( "color", "white" );
@@ -459,26 +419,14 @@ $(document).on("click", ".btnVer", function(){
     let $tablaDetalleCtaCte = document.getElementById("contTablaCtaCte");
       $tablaDetalleCtaCte.classList.remove("d-none");
       $("#tablaDetalleCtaCte").dataTable().fnDestroy();
-      tablaCtaCteProv= $('#tablaDetalleCtaCte').DataTable({
+      tablaCtaCteCliente= $('#tablaDetalleCtaCte').DataTable({
             "ajax": {
-                "url" : "./models/administrar_cta_cte_proveedores.php?accion=traerDetalleCtaCte&id_proveedor="+id_proveedor,
+                "url" : "./models/administrar_cta_cte_clientes.php?accion=traerDetalleCtaCte&id_cliente="+id_cliente,
                 "dataSrc": "",
               },
             "columns":[
               {"data": "id_movimiento"},
               {"data": "tipo"},
-              {"data": "monto"},
-              {
-                    render: function(data, type, full, meta) {
-                        return ()=>{
-                          if(full.id_origen > 0 ){
-                            return 'orden nro: '+full.id_origen;
-                          }else{
-                             return '';
-                          }
-                        };
-                    }
-                },
               {
                     render: function(data, type, full, meta) {
                         return ()=>{

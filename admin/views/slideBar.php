@@ -268,7 +268,7 @@
                     <ul class="sidebar-submenu">
                       <li><a href="#"><i class="fa fa-circle"></i> Fondos Fijos</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Facturación</a></li>
-                      <li><a href="#"><i class="fa fa-circle"></i> Cta. Cte. Clientes</a></li>
+                      <li><a href="cta_cte_clientes.php"><i class="fa fa-circle"></i> Cta. Cte. Clientes</a></li>
                       <li><a href="cta_cte_proveedores.php"><i class="fa fa-circle"></i> Cta. Cte. Prov</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Pagos</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Cobranzas</a></li>
