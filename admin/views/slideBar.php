@@ -1,3 +1,9 @@
+<style>
+  .sidebar-menu a:hover{
+    text-decoration: initial !important;
+    color: white !important;
+  }  
+</style>
 <div class="main-header-left d-none d-lg-block">
             <div class="logo-wrapper"><a href="home_users.php"><!--<img src="assets/images/unibrica.png" alt="">--></a></div>
           </div>
@@ -154,7 +160,7 @@
                       <li><a href="elementos.php"><i class="fa fa-circle"></i> Elementos</a></li>
                       <li><a href="tareas.php"><i class="fa fa-circle"></i> Tareas</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Frecuencia</a></li>
-                      <li><a href="#"><i class="fa fa-circle"></i> Ordenes de trabajo</a></li>
+                      <li><a href="ordenes_de_trabajo.php"><i class="fa fa-circle"></i> Ordenes de trabajo</a></li>
                     </ul>
                   </li>
                 </ul>
@@ -329,3 +335,15 @@
 
               ?>
           </div>
+          <script type='text/javascript'>
+            //PARA "OCULTAR" LAS OPCIONES DEL MENÚ QUE AÚN NO SE USAN
+            document.querySelectorAll('.sidebar-menu a').forEach((anchor) => {
+                if(anchor.classList.length==0){
+                  //console.log(anchor);
+                  if(anchor.getAttribute("href")=="#"){
+                    anchor.style.textDecoration="line-through";
+                    anchor.style.color="black";
+                  }
+                }
+            });
+          </script>

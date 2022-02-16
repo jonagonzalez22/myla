@@ -24,7 +24,3 @@ ALTER TABLE `calendario_mantenimiento`
   DROP `id_vehiculo_asignado`,
   DROP `costo_movilidad_estimado`,
   DROP `id_orden_trabajo`;
-
-###### JONATHAN #######
-Tabla tecnicos
-ALTER TABLE `tecnicos` ADD `id_empresa` INT NOT NULL AFTER `saldo`;

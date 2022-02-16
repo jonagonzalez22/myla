@@ -15,11 +15,13 @@
 		}
 
 		public function redirProveedor(){
-
 			//$this->id_usuario = $_SESSION['rowUsers']['id_usuario'];
 			$this->id_proveedor = $_SESSION['rowUsers']['id_proveedor'];
 			header('Location: ../home_proveedores.php');
-
+		}
+    public function redirTecnico(){
+			//$this->id_proveedor = $_SESSION['rowUsers']['id_proveedor'];//ESTABLECER DE ALGUNA MANERA EL ID DEL TECNICO
+			header('Location: ../home_tecnicos.php');
 		}
 		public function redirCliente(){
 			header('Location: ../home.php');
@@ -30,12 +32,17 @@
 
 		$redirUsuariosApp = new RedirUsuariosApp();
 
-
-		if($_SESSION['rowUsers']['id_cliente']!=""){
-			$redirUsuariosApp->redirCliente();
-		}else{
-			$redirUsuariosApp->redirProveedor();
-		}
+    var_dump($_SESSION);
+    if(isset($_SESSION['rowUsers']['id_perfil']) and $_SESSION['rowUsers']['id_perfil']==4){//4 -> Técnico
+      $_SESSION['rowUsers']['id_tecnico']=8;
+      $redirUsuariosApp->redirTecnico();
+    }else{
+      if($_SESSION['rowUsers']['id_cliente']!=""){
+        $redirUsuariosApp->redirCliente();
+      }else{
+        $redirUsuariosApp->redirProveedor();
+      }
+    }
 
 
 	}else{

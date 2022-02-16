@@ -1,6 +1,6 @@
 <?php
 	session_start();
-	require_once('conexion.php');
+	require_once('../../conexion.php');
   require_once('administrar_vehiculos.php');
   require_once('administrar_clientes.php');
   require_once('administrar_almacenes.php');
@@ -48,10 +48,26 @@
         $filtro_mantenimiento_preventivo=" AND cm.id = $id_mantenimiento_preventivo";
       }*/
       $filtro_mantenimiento_preventivo="";
+      $filtro_cliente="";
+      $filtro_ubicacion="";
+      $filtro_estado="";
+      $filtro_fecha="";
       if($filtros!=0){
           //var_dump($filtros);
           if(isset($filtros["id_mantenimiento_preventivo"]) and $filtros["id_mantenimiento_preventivo"]!=""){
               $filtro_mantenimiento_preventivo=" AND cm.id = ".$filtros["id_mantenimiento_preventivo"];
+          }
+          if(isset($filtros["id_cliente"]) and $filtros["id_cliente"]!=""){
+              $filtro_cliente=" AND c.id = ".$filtros["id_cliente"];
+          }
+          if(isset($filtros["id_ubicacion"]) and $filtros["id_ubicacion"]!=""){
+              $filtro_ubicacion=" AND dc.id = ".$filtros["id_ubicacion"];
+          }
+          if(isset($filtros["id_estado"]) and $filtros["id_estado"]!=""){
+              $filtro_estado=" AND cm.id_estado = ".$filtros["id_estado"];
+          }
+          if(isset($filtros["fecha"]) and $filtros["fecha"]!=""){
+              $filtro_fecha=" AND '".$filtros["fecha"]."' BETWEEN DATE(cm.fecha_hora_ejecucion_desde) AND DATE(cm.fecha_hora_ejecucion_hasta)";
           }
       }
 			
@@ -64,7 +80,8 @@
       INNER JOIN estados_tareas_mantenimiento etm ON cm.id_estado=etm.id 
       INNER JOIN contactos_clientes cc ON cm.id_contacto_cliente=cc.id 
       INNER JOIN clientes c ON cc.id_cliente=c.id
-      WHERE c.id_empresa = $this->id_empresa $filtro_mantenimiento_preventivo";
+      WHERE c.id_empresa = $this->id_empresa $filtro_mantenimiento_preventivo $filtro_cliente $filtro_ubicacion $filtro_estado $filtro_fecha";
+      //var_dump($queryGet);
 			$getDatos = $this->conexion->consultaRetorno($queryGet);
 
 			while ($row = $getDatos->fetch_array()) {
@@ -98,7 +115,7 @@
       return json_encode($arrayMantenimientoPreventivo);
 		}
 
-		public function agregarMantenimientoPreventivo($id_elemento_cliente, $asunto, $detalle, $id_contacto_cliente, $fecha_hora_ejecucion_desde, $fecha_hora_ejecucion_hasta, $frecuencia_cantidad, $frecuencia_repeticion, $frecuencia_stop, $aItems, $adjuntos, $cantAdjuntos){
+		public function agregarMantenimientoPreventivo($id_elemento_cliente, $asunto, $detalle, $id_contacto_cliente, $fecha_hora_ejecucion_desde, $fecha_hora_ejecucion_hasta, $frecuencia_cantidad, $frecuencia_repeticion, $frecuencia_stop, $id_almacen, $aItems, $adjuntos, $cantAdjuntos){
       $activo = 1;
       $id_usuario_alta=$_SESSION["rowUsers"]["id_usuario"];
       $id_estado=1;
@@ -146,7 +163,7 @@
           var_dump($datos);*/
 
           //INSERTO DATOS EN LA TABLA ADJUNTOS ORDEN_COMPRA
-          $queryInsertMateriales = "INSERT INTO materiales_mantenimiento (id_item, id_calendario_mantenimiento, cantidad_estimada, id_proveedor) VALUES ($id_item, $id_calendario_mantenimiento, $cantidad_estimada, $id_proveedor)";
+          $queryInsertMateriales = "INSERT INTO materiales_mantenimiento (id_item, id_calendario_mantenimiento, cantidad_estimada, id_proveedor, id_almacen) VALUES ($id_item, $id_calendario_mantenimiento, $cantidad_estimada, $id_proveedor, $id_almacen)";
           $insertAdjuntos = $this->conexion->consultaSimple($queryInsertMateriales);
           $mensajeError=$this->conexion->conectar->error;
       
@@ -285,10 +302,10 @@
         }
         $aItems=json_decode($itemsJSON,true);
 
-				$mantenimiento_preventivo->agregarMantenimientoPreventivo($id_elemento_cliente, $asunto, $detalle, $id_contacto_cliente, $fecha_hora_ejecucion_desde, $fecha_hora_ejecucion_hasta, $frecuencia_cantidad, $frecuencia_repeticion, $frecuencia_stop, $aItems, $adjuntos, $cantAdjuntos);
+				$mantenimiento_preventivo->agregarMantenimientoPreventivo($id_elemento_cliente, $asunto, $detalle, $id_contacto_cliente, $fecha_hora_ejecucion_desde, $fecha_hora_ejecucion_hasta, $frecuencia_cantidad, $frecuencia_repeticion, $frecuencia_stop, $id_almacen, $aItems, $adjuntos, $cantAdjuntos);
 			break;
       case 'updateMantenimientoPreventivo':
-        $mantenimiento_preventivo->updateMantenimientoPreventivo($id_mantenimiento_preventivo, $id_elemento_cliente, $asunto, $detalle, $id_contacto_cliente, $fecha_hora_ejecucion_desde, $fecha_hora_ejecucion_hasta, $adjuntos, $cantAdjuntos);
+        $mantenimiento_preventivo->updateMantenimientoPreventivo($id_mantenimiento_preventivo, $id_elemento_cliente, $asunto, $detalle, $id_contacto_cliente, $fecha_hora_ejecucion_desde, $fecha_hora_ejecucion_hasta, $id_almacen, $adjuntos, $cantAdjuntos);
       break;
       /*case 'trerDetalleVehiculo':
         //$id_mantenimiento_preventivo = $_POST['id_mantenimiento_preventivo'];
@@ -311,6 +328,10 @@
 				case 'traerMantenimientoPreventivo':
           $filtros=[];
           if(isset($id_mantenimiento_preventivo)) $filtros["id_mantenimiento_preventivo"]=$id_mantenimiento_preventivo;
+          if(isset($id_cliente)) $filtros["id_cliente"]=$id_cliente;
+          if(isset($id_ubicacion)) $filtros["id_ubicacion"]=$id_ubicacion;
+          if(isset($id_estado)) $filtros["id_estado"]=$id_estado;
+          if(isset($fecha)) $filtros["fecha"]=$fecha;
 					echo $mantenimiento_preventivo->traerMantenimientoPreventivo($filtros);
 				break;
         case 'traerMantenimientoPreventivoCalendario':
