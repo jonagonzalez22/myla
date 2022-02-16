@@ -291,7 +291,7 @@
                   <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>RRHH</span><i class="fa fa-angle-right pull-right" style="margin-top: 10px;"></i></a>
                     <ul class="sidebar-submenu">
                       <li><a href="#"><i class="fa fa-circle"></i> Empleados Alta – Baja</a></li>
-                      <li><a href="#"><i class="fa fa-circle"></i> Legajos</a></li>
+                      <li><a href="legajos_tecnicos.php"><i class="fa fa-circle"></i> Legajos técnicos</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Planillas de presentismo</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Sueldos</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Informes</a></li>
