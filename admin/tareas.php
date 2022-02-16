@@ -506,6 +506,7 @@
                               <!-- <th>#ID</th> -->
                               <th>Item</th>
                               <th>UM</th>
+                              <th>Proveedor</th>
                               <th>Tipo</th>
                               <th>Categoría</th>
                               <th>Cantidad estimada</th>
@@ -516,6 +517,7 @@
                               <!-- <th>#ID</th> -->
                               <th>Item</th>
                               <th>UM</th>
+                              <th>Proveedor</th>
                               <th>Tipo</th>
                               <th>Categoría</th>
                               <th>Cantidad estimada</th>
@@ -938,6 +940,7 @@
             //{"data": "id_item"},
             {"data": "item"},
             {"data": "unidad_medida"},
+            {"data": "proveedor"},
             {"data": "tipo"},
             {"data": "categoria"},
             {
@@ -956,7 +959,7 @@
             var c=0;
             this.api().columns.adjust().draw();//Columns sin parentesis
             this.api().columns().every(function(){//Columns() con parentesis
-              if(b!=5){
+              if(b!=6){
                 var column=this;
                 var name=$(column.header()).text();
                 var select=$("<select id='filtro"+name.replace(/ /g, "")+"' class='form-control form-control-sm filtrosTrato'><option value=''>Todos</option></select>")
@@ -1161,7 +1164,7 @@
         datosEnviar.append("asunto", $.trim($('#asunto').val()));
         datosEnviar.append("detalle", $.trim($('#detalle').val()));
         datosEnviar.append("id_contacto_cliente", $.trim($('#id_contacto_cliente').val()));
-        //datosEnviar.append("id_vehiculo_asignado", $.trim($('#id_vehiculo_asignado').val()));
+        datosEnviar.append("id_almacen", $.trim($('#id_almacen').val()));
         //datosEnviar.append("costo_movilidad_estimado", $.trim($('#costo_movilidad_estimado').val()));
         datosEnviar.append("fecha_hora_ejecucion_desde", $.trim($('#fecha_hora_ejecucion_desde').val()));
         datosEnviar.append("fecha_hora_ejecucion_hasta", $.trim($('#fecha_hora_ejecucion_hasta').val()));

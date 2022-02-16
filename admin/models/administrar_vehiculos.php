@@ -1,6 +1,6 @@
 <?php
 	//session_start();
-	require_once('conexion.php');
+	require_once('../../conexion.php');
   if(session_id() == '' || !isset($_SESSION) || session_status() === PHP_SESSION_NONE) {
     // session isn't started
     session_start();
@@ -477,7 +477,7 @@
 			switch ($_GET['accion']) {
 				case 'traerVehiculos':
 					$vehiculos=$vehiculo->traerVehiculos();
-          $vehiculos=json_decode($vehiculos,true);
+          /*$vehiculos=json_decode($vehiculos,true);
 
           $listarVehiculos=[];
           foreach ($vehiculos as $vehiculo) {
@@ -495,7 +495,8 @@
             ];
           }
 
-          echo json_encode($listarVehiculos);
+          echo json_encode($listarVehiculos);*/
+          echo $vehiculos;
 				break;
         case 'traerTareasMantenimientoVehiculos':
           $tareasMantenimientoVehiculos=$vehiculo->traerTareasMantenimientoVehiculos();

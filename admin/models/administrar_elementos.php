@@ -1,5 +1,5 @@
 <?php
-require_once('conexion.php');
+require_once('../../conexion.php');
 require_once('administrar_clientes.php');
 if(session_id() == '' || !isset($_SESSION) || session_status() === PHP_SESSION_NONE) {
     // session isn't started
