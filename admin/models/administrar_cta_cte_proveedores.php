@@ -44,7 +44,7 @@
 			$this->id_empresa = $id_empresa;
 			$this->id_proveedor = $id_proveedor;
 
-			$query = "SELECT prv.id as id_proveedor, prv.razon_social as proveedor, sum(mp.monto_cancelado-mp.monto) AS saldo
+			$query = "SELECT prv.id as id_proveedor, prv.razon_social as proveedor, sum(mp.monto) AS saldo
 					FROM movimientos_proveedores as mp join proveedores as prv
 					ON(mp.id_proveedor = prv.id)
 					WHERE prv.id_empresa = $this->id_empresa
@@ -67,64 +67,16 @@
 		}
 
 
-		public function emitirPago($id_proveedor, $importe){
+		public function emitirPago($id_proveedor, $importe, $detalle){
 
 			$this->id_proveedor = $id_proveedor;
 
-			/*BUSCO MOVIMIENTOS CON SALDOS PENDIENTES*/		
-			$query = "SELECT id, id_proveedor, monto, monto_cancelado, 
-					(monto_cancelado - monto) as saldo
-					FROM movimientos_proveedores
-					WHERE id_proveedor = $this->id_proveedor
-					AND (monto_cancelado - monto) < 0";
-			$getNegativos = $this->conexion->consultaRetorno($query);
+			$fecha_hora = date("Y-m-d H:i:s");
 
-			if($getNegativos->num_rows > 0 ){
+			$queryInsertCtaCte = "INSERT INTO movimientos_proveedores(id_proveedor, id_tipo_movimiento, detalle, monto, fecha_hora, id_origen, monto_cancelado)VALUES($this->id_proveedor, 3, '$detalle', $importe, '$fecha_hora', 0, 0)";
 
-				while ($rowNegativos = $getNegativos->fetch_assoc()) {
-					if($rowNegativos['saldo'] < $importe){
-						
-						$id_movimiento = $rowNegativos['id'];
-						$montoCancelado = 0;
+			$insertCtaCte = $this->conexion->consultaSimple($queryInsertCtaCte);
 
-						if($rowNegativos['monto_cancelado']+$importe > $rowNegativos['monto']){
-							
-							$montoCancelado = $rowNegativos['monto'];
-
-						}else{
-							$montoCancelado = $rowNegativos['monto_cancelado']+$importe;
-						}
-
-
-
-						$queryUpdateSaldos = "UPDATE movimientos_proveedores SET monto_cancelado = $montoCancelado
-							WHERE id = $id_movimiento";
-						$updateSaldo = $this->conexion->consultaSimple($queryUpdateSaldos);
-
-						$importe = $importe-($rowNegativos['monto']-$rowNegativos['monto_cancelado']);
-						
-					}else{
-
-						$id_movimiento = $rowNegativos['id'];
-						$queryUpdateSaldos = "UPDATE movimientos_proveedores SET monto_cancelado = monto_cancelado+$importe
-							WHERE id = $id_movimiento";
-						$updateSaldo = $this->conexion->consultaSimple($queryUpdateSaldos);
-
-						$importe-= $importe;
-					}
-				}
-			}
-
-			if($importe > 0 ){
-
-					$fecha_hora = date("Y-m-d H:i:s");
-
-					$queryInsertCtaCte = "INSERT INTO movimientos_proveedores(id_proveedor, id_tipo_movimiento, monto, fecha_hora, id_origen, monto_cancelado)VALUES($this->id_proveedor, 3, 0, '$fecha_hora', 0, $importe)";
-
-					$insertCtaCte = $this->conexion->consultaSimple($queryInsertCtaCte);
-
-					$importe-=$importe;
-				}
 		}
 
 		public function traerDetalleCtaCte($id_proveedor){
@@ -133,8 +85,8 @@
 			
 			$arrayDetalleCtaCte = array();
 
-			$queryDetalleCtaCte = "SELECT mp.id, mcta.tipo, mp.monto, 
-								mp.id_origen, (monto_cancelado - monto) as saldo 
+			$queryDetalleCtaCte = "SELECT mp.id, mcta.tipo, mp.detalle, 
+								mp.id_origen, monto as saldo 
 								FROM movimientos_proveedores as mp JOIN tipos_movimientos_ctacte as mcta
 								ON(mp.id_tipo_movimiento = mcta.id)
 								WHERE  id_proveedor = $this->id_proveedor";
@@ -144,11 +96,11 @@
 				
 				$id_movimiento = $rowDetalle['id'];
 				$tipo = $rowDetalle['tipo'];
-				$monto = "$".number_format($rowDetalle['monto'],2,',','.');
+				$detalle = $rowDetalle['detalle'];
+				$monto = $rowDetalle['saldo'];
 				$id_origen = $rowDetalle['id_origen'];
-				$saldo = $rowDetalle['saldo'];
 
-				$arrayDetalleCtaCte[] = array('id_movimiento'=>$id_movimiento, 'tipo'=>$tipo, 'monto'=>$monto, 'id_origen'=>$id_origen, 'saldo'=>$saldo);
+				$arrayDetalleCtaCte[] = array('id_movimiento'=>$id_movimiento, 'tipo'=>$tipo, 'detalle'=>$detalle, 'monto'=>$monto, 'id_origen'=>$id_origen);
 			}
 
 			echo json_encode($arrayDetalleCtaCte);
@@ -162,7 +114,8 @@
 			case 'emitirPago':
 					$id_proveedor = $_POST['id_proveedor'];
 					$importe = $_POST['importe'];
-					$ctaCteProv->emitirPago($id_proveedor, $importe);
+					$detalle  =$_POST['detalle'];
+					$ctaCteProv->emitirPago($id_proveedor, $importe, $detalle);
 				break;
 			case 'traerDatosIniciales':
 				$id_empresa = $_POST['id_empresa'];

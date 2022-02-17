@@ -292,6 +292,7 @@
                     <ul class="sidebar-submenu">
                       <li><a href="#"><i class="fa fa-circle"></i> Empleados Alta – Baja</a></li>
                       <li><a href="legajos_tecnicos.php"><i class="fa fa-circle"></i> Legajos técnicos</a></li>
+                      <li><a href="cta_cte_tecnicos.php"><i class="fa fa-circle"></i> Cta. Cet técnicos</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Planillas de presentismo</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Sueldos</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Informes</a></li>
