@@ -154,8 +154,8 @@
 			}
 			
 
-			$arrayDatosEmpresas['datos_tecnico'] = $arrayTecnicos;
-			echo json_encode($arrayDatosEmpresas);
+			$arrayDatosTecnicos['datos_tecnico'] = $arrayTecnicos;
+			echo json_encode($arrayDatosTecnicos);
 		}
 
 		public function updateTecnico($nombre, $legajo, $cuit, $telefono, $email, $cargo, $iva, $direccion, $provincia, $valHora, $id_tecnico){
@@ -184,9 +184,6 @@
 if (isset($_POST['accion'])) {
 		$lejagosTecnicos = new LejagosTecnicos();
 		switch ($_POST['accion']) {
-			case 'empresas':
-				$lejagosTecnicos->traerTodosClientes();
-				break;
 			case 'traerTecnicoUpdate':
 					$id_tecnico = $_POST['id_tecnico'];
 					$lejagosTecnicos->traerTecnicoUpdate($id_tecnico);
