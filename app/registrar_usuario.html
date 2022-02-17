@@ -123,6 +123,30 @@
 
                         <div class="form-group boxed">
                             <div class="input-wrapper">
+                                <label class="label" for="city5">Seleccione Empresa</label>
+                                <select class="form-control custom-select" id="empresa_tecnico" required>
+                                    <option selected disabled value="">Seleccione...</option>
+                                </select>
+                                <div class="valid-feedback">Correcto!</div>
+                                <div class="invalid-feedback">Por favor elija una opción.</div>
+                            </div>
+                        </div>
+
+                         <div class="form-group boxed">
+                            <div class="input-wrapper">
+                                <label class="label" for="city5">Seleccione Técnico</label>
+                                <select class="form-control custom-select" id="selTecnico" required disabled>
+                                    <option selected disabled value="">Seleccione...</option>
+                                </select>
+                                <div class="valid-feedback">Correcto!</div>
+                                <div class="invalid-feedback">Por favor elija una opción.</div>
+                            </div>
+                        </div>
+
+                        <div id="contInfoLogTecnico" class="d-none">
+
+                        <div class="form-group boxed">
+                            <div class="input-wrapper">
                                 <label class="label" for="email">E-mail</label>
                                 <input type="email" class="form-control" id="emailTecnico" placeholder="E-mail" required>
                                 <i class="clear-input">
@@ -147,6 +171,7 @@
 
                         <div class="mt-2">
                             <button class="btn btn-primary btn-block" type="submit" id="btnEnviarTecnico">Enviar</button>
+                        </div>
                         </div>
                     </div>
                 </form>
@@ -182,6 +207,19 @@
             <!--<button type="button" class="btn btn-sm btn-text-light close-button">CLOSE</button>-->
         </div>
     <!-- * toast top iconed -->
+
+
+    <!-- toast center iconed no hay tecnicos asociados-->
+        <div id="notTech" class="toast-box toast-center">
+            <div class="in">
+                <ion-icon name="close-circle-outline" class="text-danger"></ion-icon>
+                <div class="text">
+                    No se encontraron técnicos para la empresa seleccionada
+                </div>
+            </div>
+            <button type="button" class="btn btn-sm btn-text-light close-button">Aceptar</button>
+        </div>
+        <!-- toast center iconed -->
 
     <!-- * App Capsule -->
 
@@ -266,6 +304,12 @@
             $btnProveedores = document.querySelector(".btn-proveedores");
             $btnProveedores.addEventListener("click", formProveedores);
 
+            
+            $selectEmpresaTecnico = document.getElementById("empresa_tecnico");
+            $selectEmpresaTecnico.addEventListener("change", (e)=>{
+                traerTecnicos(e);
+            })
+
             $btnTecnico = document.querySelector(".btn-tecnico");
             $btnTecnico.addEventListener("click", formTecnicos);
         }
@@ -348,25 +392,89 @@
             })
         }
 
+
+        function traerTecnicos(e){
+            
+            let id_empresa = e.target.value;
+            let accion ="traerTecnicos";
+            $("#selTecnico").find('option').not(':first').remove();
+
+
+            $.ajax({
+                url: "./models/registrarse_model.php",
+                type: "POST",
+                datatype: "json",
+                data: {accion: accion, id_empresa: id_empresa},
+                success: function(response){
+                    
+                    let $selectTecnico = document.getElementById("selTecnico");
+                    let respuestaJson = JSON.parse(response)
+
+                    if(respuestaJson.length > 0){
+
+
+                        $selectTecnico.removeAttribute("disabled");
+
+                        /*Genero los options del select empresas*/
+                            respuestaJson.forEach((tecnicos)=>{
+                                $optionTipo = document.createElement("option");
+                                let $optionIvaText = document.createTextNode(tecnicos.tecnico);
+                                $optionTipo.appendChild($optionIvaText)
+                                $optionTipo.setAttribute("value", tecnicos.id_tecnico);
+                                $selectTecnico.appendChild($optionTipo);
+                            })
+
+                        $selectTecnico.addEventListener("change", (e)=>{
+                            habilitarFormTecnicos(e);
+                        })
+                    }else{
+                        toastbox('notTech');
+                        document.getElementById("selTecnico").value="";
+                        $selectTecnico.setAttribute("disabled", true);
+                        $("#formTecnico").trigger("reset");
+                        document.getElementById("contInfoLogTecnico").classList.add("d-none");
+                    }
+
+                }
+            })
+
+
+        }
+
         function formTecnicos(){
             document.getElementById("tipoSeleccionado").value=4;
             document.getElementById("contSeleccionarTipo").style.display="none";
             document.getElementById("containerRegisterTecnico").style.display="block";
-            //document.getElementById("leyendaForm").style.display="block";
-            //$("#datosTipos").find('option').not(':first').remove();
-            //$("#datosTipos").addClass("d-none");
-            //$datosTipos = document.getElementById("datosTipos");
-            //document.getElementById("titleSelect").innerText="";
+            let accion ="traerEmpresas";
 
-            /*Genero los options del select lista de tipos
-            datosTiposD.proveedores.forEach((proveedores)=>{
-                $optionTipo = document.createElement("option");
-                let $optionIvaText = document.createTextNode(proveedores.proveedor);
-                $optionTipo.appendChild($optionIvaText)
-                $optionTipo.setAttribute("value", proveedores.id_prov);
-                $datosTipos.appendChild($optionTipo);
-            })*/
+            $.ajax({
+                url: "./models/registrarse_model.php",
+                type: "POST",
+                datatype: "json",
+                data: {accion: accion},
+                success: function(response){
+                    $selectEmpresa = document.getElementById("empresa_tecnico");
+
+                    respuestaJson = JSON.parse(response);
+                /*Genero los options del select empresas*/
+                respuestaJson.forEach((empresas)=>{
+                    $optionTipo = document.createElement("option");
+                    let $optionIvaText = document.createTextNode(empresas.empresa);
+                    $optionTipo.appendChild($optionIvaText)
+                    $optionTipo.setAttribute("value", empresas.id_empresa);
+                    $selectEmpresa.appendChild($optionTipo);
+                })
+                }
+            })
+
+
         }
+
+        function habilitarFormTecnicos(e){
+            let id_tecnico = e.target.value;
+            document.getElementById("contInfoLogTecnico").classList.remove("d-none");
+
+        };
 
         function registrarUsuario(){
 
@@ -374,8 +482,11 @@
             let clave = "";
             let mail = "";
             let subTipoSel="";
-            alert(tipo);
-            if(tipo === 4){
+            let empresa = "";
+            let tecnico = "";
+            if(parseInt(tipo) === 4){
+                empresa = document.getElementById("empresa_tecnico").value;
+                tecnico = document.getElementById("selTecnico").value;
                 clave = document.getElementById("passTecnico").value;
                 mail = document.getElementById("emailTecnico").value;
                 tipo = document.getElementById("tipoSeleccionado").value;
@@ -385,19 +496,23 @@
                 subTipoSel = document.getElementById("datosTipos").value;
             }
 
-            
-
 
             let datosEnviar = new FormData();
             if (parseInt(tipo) ===2) {
                 datosEnviar.append("id_cliente", subTipoSel);
                 datosEnviar.append("id_proveedor", null);
+                datosEnviar.append("empresa", null);
+                datosEnviar.append("tecnico", null);
             }else if(parseInt(tipo) ===3){
                 datosEnviar.append("id_proveedor", subTipoSel);
                 datosEnviar.append("id_cliente", null);
+                datosEnviar.append("empresa", null);
+                datosEnviar.append("tecnico", null);
             }else{
                datosEnviar.append("id_proveedor", null);
-                datosEnviar.append("id_cliente", null); 
+                datosEnviar.append("id_cliente", null);
+                datosEnviar.append("empresa", empresa);
+                datosEnviar.append("tecnico", tecnico)
             }
 
             datosEnviar.append("id_perfil", tipo);
@@ -417,9 +532,9 @@
                 },
                 success: function(respuesta){
                     toastbox('registroOK');
-                    setTimeout(function(){
+                    /*setTimeout(function(){
                         window.location.href="./login.html";
-                    }, 2000);
+                    }, 2000);*/
                 }
             })
 

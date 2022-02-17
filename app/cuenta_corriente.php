@@ -286,7 +286,7 @@
                         $("#detalle_movimientos_oc").modal("show");
 
                     }else{
-                        alert("Aún no está el modulo pagos")
+                        //alert("Aún no está el modulo pagos")
                     }
 
                 }
