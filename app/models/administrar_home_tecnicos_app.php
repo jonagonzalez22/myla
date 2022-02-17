@@ -46,28 +46,6 @@ class DashboardTecnicos{
 			return json_encode($arrayDatosIniciales);
 		}
 
-		public function traerDetalleOrdenTrabajo($id_orden_trabajo){
-
-      $filtros["id_orden_trabajo"]=$id_orden_trabajo;
-
-			$orden_trabajo = new OrdenTrabajo();
-      $detalle_orden_trabajo=$orden_trabajo->traerOrdenTrabajo($filtros);
-      $detalle_orden_trabajo=json_decode($detalle_orden_trabajo,true);
-
-      $materiales_orden_trabajo=$orden_trabajo->traerMaterialesOrdenTrabajo($id_orden_trabajo);
-      $materiales_orden_trabajo=json_decode($materiales_orden_trabajo,true);
-
-      $tecnicos_orden_trabajo=$orden_trabajo->traerTecnicosOrdenTrabajo($id_orden_trabajo);
-      $tecnicos_orden_trabajo=json_decode($tecnicos_orden_trabajo,true);
-
-      //var_dump($aOrdenesTrabajoTecnico);
-			$arrayDatosIniciales['detalle_orden_trabajo'] = $detalle_orden_trabajo[0];
-			$arrayDatosIniciales['materiales_orden_trabajo'] = $materiales_orden_trabajo;
-      $arrayDatosIniciales['tecnicos_orden_trabajo'] = $tecnicos_orden_trabajo;
-
-			return json_encode($arrayDatosIniciales);
-		}
-
 	}
 
 	if (isset($_POST['accion'])) {
@@ -81,11 +59,10 @@ class DashboardTecnicos{
         $filtros=[];
         if(isset($fdesde)) $filtros["fecha_desde"]=$fdesde;
         if(isset($fhasta)) $filtros["fecha_hasta"]=$fhasta;
-				
         echo $dashboardTecnicos->traerDatosIniciales($id_tecnico,$filtros);
 			break;
       case 'traerDetalleOrdenTrabajo':
-        echo $dashboardTecnicos->traerDetalleOrdenTrabajo($id_orden_trabajo);
+        echo $orden_trabajo->traerDetalleOrdenTrabajo($id_orden_trabajo);
       break;
       case 'marcarCargadoMaterial':
         $orden_trabajo->marcarCargadoMaterial($id_orden_trabajo,$id_item,$id_proveedor,$id_almacen);
@@ -97,6 +74,13 @@ class DashboardTecnicos{
         //var_dump($datosFinalizarOrden);
         $orden_trabajo->finalizarOrden($id_orden_trabajo,$id_tecnico,$datosFinalizarOrden);
       break;
+      case 'traerAdjuntos':
+				echo $orden_trabajo->traerAdjuntos($id_orden_trabajo);
+				break;
+			case 'adjuntarArchivo':
+        $file = $_FILES['file'];
+				$orden_trabajo->adjuntarArchivo($id_orden_trabajo, $file, $comentarios);
+				break;
       
 		}
 	}

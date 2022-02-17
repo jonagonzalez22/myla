@@ -1,6 +1,6 @@
 <?php
   session_start();
-  include_once('./models/conexion.php');
+  include_once('./../conexion.php');
   date_default_timezone_set("America/Buenos_Aires");
   $hora = date('Hi');
   if (!isset($_SESSION['rowUsers']['id_usuario'])) {
@@ -56,13 +56,13 @@
       .fa-angle-down {
         transition: all 0.3s ease;
       }
-      .card-header a.collapsed .fa-angle-down {
+      a.collapsed .card-header .fa-angle-down {
         transform: rotate(180deg);
       }
-      #modalCRUD .card-header{
+      .modalAccordionDark .card-header{
         background-color: #2f3c4e;
       }
-      #modalCRUD a .card-header h6{
+      .modalAccordionDark a .card-header h6{
         color: #f6f7fb;
       }
       .select:focus{
@@ -137,7 +137,7 @@
                             <th>Cliente</th>
                             <th>Elemento</th>
                             <!-- <th>Asunto</th> -->
-                            <th>Direccion</th>
+                            <th>Ubicacion</th>
                             <th>Estado</th>
                             <th>Fecha</th>
                             <th>Desde</th>
@@ -176,7 +176,7 @@
     </div>
 
     <!--Modal para CRUD-->
-    <div class="modal fade" id="modalCRUD" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade modalAccordionDark" id="modalCRUD" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -223,7 +223,7 @@
                     </div>
                   </div>
                 </div>
-                <!-- Accordion card -->
+                <!-- Fin Accordion card -->
                 <!-- Accordion card -->
                 <div class="card border-secondary">
                   <!-- Card header -->
@@ -238,7 +238,7 @@
                       <div class="row">
                         <div class="col-lg-6">
                           <div class="form-group">
-                            <label for="" class="col-form-label">*Clientes:</label>
+                            <label for="" class="col-form-label">*Cliente:</label>
                             <select class="form-control" id="id_cliente" required>
                               <option value="">Seleccione</option>
                             </select>
@@ -246,7 +246,7 @@
                         </div>
                         <div class="col-lg-6">
                           <div class="form-group">
-                            <label for="" class="col-form-label">*Ubicaciones:</label>
+                            <label for="" class="col-form-label">*Ubicacion:</label>
                             <select class="form-control" id="id_ubicacion" required>
                               <option value="">Seleccione</option>
                             </select>
@@ -281,7 +281,7 @@
                     </div>
                   </div>
                 </div>
-                <!-- Accordion card -->
+                <!-- Fin Accordion card -->
                 <!-- Accordion card -->
                 <div class="card border-secondary">
                   <!-- Card header -->
@@ -317,7 +317,7 @@
                     </div>
                   </div>
                 </div>
-                <!-- Accordion card -->
+                <!-- Fin Accordion card -->
               </div>
               <!-- Accordion wrapper -->
             </div>
@@ -332,119 +332,149 @@
     <!-- FINAL MODAL CRUD-->
 
     <!-- MODAL ver detalle empresa y linea de tiempo -->
-    <div class="modal fade mt-5" id="verDetalleVehiculo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade mt-5 modalAccordionDark" id="verDetalleOrdenTrabajo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Detalle vehiculo</h5>
+            <h5 class="modal-title">Detalle Orden de Trabajo</h5>
             <button class="close" type="button" data-dismiss="modal" aria-label="Close" data-original-title="" title=""><span aria-hidden="true">×</span></button>
           </div>
-          <div class="modal-body"></div>
+          <div class="modal-body">
+            <!--Accordion wrapper-->
+            <div class="accordion md-accordion" id="accordionExDetalle" role="tablist" aria-multiselectable="true">
+                <!-- Accordion card -->
+                <div class="card border-secondary">
+                  <!-- Card header -->
+                  <a data-toggle="collapse" data-parent="#accordionExDetalle" href="#collapseOne1Detalle" aria-expanded="true" aria-controls="collapseOne1Detalle">
+                    <div class="card-header" role="tab" id="headingOne1">
+                      <h6 class="mb-0">Datos generales <i class="fa fa-angle-down rotate-icon float-right"></i></h6>
+                    </div>
+                  </a>
+                  <!-- Card body -->
+                  <div id="collapseOne1Detalle" class="collapse show" role="tabpanel" aria-labelledby="headingOne1" data-parent="#accordionExDetalle">
+                    <div class="card-body border-secondary">
+                      <div class="row">
+                        <div class="col-lg-4">
+                          <div class="form-group">
+                            <label for="" class="col-form-label">Fecha: <span id="lblFecha"></span></label>
+                          </div>
+                        </div>
+                        <div class="col-lg-4">
+                          <div class="form-group">
+                            <label for="" class="col-form-label">Desde: <span id="lblHoraDesde"></span></label>
+                          </div>
+                        </div>
+                        <div class="col-lg-4">
+                          <div class="form-group">
+                            <label for="" class="col-form-label">Hasta: <span id="lblHoraHasta"></span></label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Fin Accordion card -->
+                <!-- Accordion card -->
+                <div class="card border-secondary">
+                  <!-- Card header -->
+                  <a data-toggle="collapse" data-parent="#accordionExDetalle" href="#collapseOne2Detalle" aria-expanded="true" aria-controls="collapseOne2Detalle">
+                    <div class="card-header" role="tab" id="headingOne2">
+                      <h6 class="mb-0">Datos del cliente <i class="fa fa-angle-down rotate-icon float-right"></i></h6>
+                    </div>
+                  </a>
+                  <!-- Card body -->
+                  <div id="collapseOne2Detalle" class="collapse show" role="tabpanel" aria-labelledby="headingOne2" data-parent="#accordionExDetalle">
+                    <div class="card-body border-secondary">
+                      <div class="row">
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="" class="col-form-label">Cliente: <span id="lblCliente"></span></label>
+                          </div>
+                        </div>
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="" class="col-form-label">Ubicacion: <span id="lblUbicacion"></span></label>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="table-responsive">
+                        <table class="table table-hover" id="tableContactosDetalle">
+                          <thead class="text-center">
+                            <tr>
+                              <th>Contacto</th>
+                              <th>Whatsapp</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Fin Accordion card -->
+                <!-- Accordion card -->
+                <div class="card border-secondary">
+                  <!-- Card header -->
+                  <a data-toggle="collapse" data-parent="#accordionExDetalle" href="#collapseOne3Detalle" aria-expanded="true" aria-controls="collapseOne3Detalle">
+                    <div class="card-header" role="tab" id="headingOne2">
+                      <h6 class="mb-0">Tareas de mantenimiento preventivo pendientes <i class="fa fa-angle-down rotate-icon float-right"></i></h6>
+                    </div>
+                  </a>
+                  <!-- Card body -->
+                  <div id="collapseOne3Detalle" class="collapse show" role="tabpanel" aria-labelledby="headingOne2" data-parent="#accordionExDetalle">
+                    <div class="card-body border-secondary">
+                      <div class="table-responsive">
+                        <table class="table table-hover" id="tableTareasDetalle">
+                          <thead class="text-center">
+                            <tr>
+                              <th>Asunto</th>
+                              <th>Elemento</th>
+                              <th>Detalle</th>
+                              <th>Desde</th>
+                              <th>Hasta</th>
+                            </tr>
+                          </thead>
+                          <tbody></tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Fin Accordion card -->
+                <!-- Accordion card -->
+                <div class="card border-secondary">
+                  <!-- Card header -->
+                  <a class="collapsed" data-toggle="collapse" data-parent="#accordionExDetalle" href="#collapseTwo4Detalle" aria-expanded="false" aria-controls="collapseTwo4Detalle">
+                    <div class="card-header" role="tab" id="headingTwo3">
+                      <h6 class="mb-0">Técnicos <i class="fa fa-angle-down rotate-icon float-right"></i></h6>
+                    </div>
+                  </a>
+                  <!-- Card body -->
+                  <div id="collapseTwo4Detalle" class="collapse" role="tabpanel" aria-labelledby="headingTwo3" data-parent="#accordionExDetalle">
+                    <div class="card-body border-secondary">
+                      <div class="table-responsive">
+                        <table class="table table-hover" id="tableTecnicosDetalle">
+                          <thead class="text-center">
+                            <tr>
+                              <th>Tecnico</th>
+                              <th>Vehiculo</th>
+                            </tr>
+                          </thead>
+                          <tbody></tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Fin Accordion card -->
+              </div>
+              <!-- Accordion wrapper -->
+          </div>
         </div>
       </div>
     </div>
     <!-- FIN MODAL ver detalle empresa y linea de tiempo-->
-
-    <!--Modal para añadir tarea de mantenimiento-->
-    <div class="modal fade" id="modalAddMantenimiento" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabelMantenimiento"></h5>
-            <span id="id_vehiculo_mantenimiento" class="d-none"></span>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <form id="formTareaMantenimiento">
-            <div class="modal-body">
-              <div class="row">
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Detalle:</label>
-                    <input type="text" class="form-control" id="detalle" required>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Costo estimado</label>
-                    <input type="text" class="form-control" id="costo_estimado" required>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Fecha:</label>
-                    <input type="date" class="form-control" id="fecha_mantenimiento" required>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Hora</label>
-                    <input type="time" class="form-control" id="hora_mantenimiento" required>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-12">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">Comentarios:</label>
-                    <textarea id="comentarios_tarea_mantenimiento" class="form-control"></textarea>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-light" data-dismiss="modal">Cancelar</button>
-              <button type="submit" id="btnGuardarTareaMantenimiento" class="btn btn-dark">Guardar</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-    <!-- FINAL MODAL para añadir tarea de mantenimiento-->
-
-    <!--Modal con opciones para tareas de mantenimiento-->
-    <div class="modal fade" id="modalOpcionesTareas" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">¿Qué desea hacer con la tarea?</h5>
-            <span id="id_tarea_mantenimiento" class="d-none"></span>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body text-center">
-            <button type="button" data-dismiss="modal" class="btn btn-success" id="btnEditarTarea"><i class='fa fa-edit'></i> Editar</button>
-            <button type="button" data-dismiss="modal" class="btn btn-dark"  data-toggle="modal" data-target="#modalMarcarTareaCompleta"><i class="fa fa-check"></i> Completar</button>
-            <button type="button" data-dismiss="modal" class="btn btn-danger" id="btnBorrarTarea"><i class="fa fa-trash-o"></i> Borrar</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- FINAL MODAL con opciones para tareas de mantenimiento-->
-
-    <!--Modal para marcar tarea completa-->
-    <div class="modal fade" id="modalMarcarTareaCompleta" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Marcar tarea completa</h5>
-            <!-- <span id="id_tarea_mantenimiento_completar" class="d-none"></span> -->
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <form id="formTareaMantenimiento">
-            <div class="modal-body">¿Esta seguro que desea marcar como completa esta tarea?</div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-light" data-dismiss="modal">Cancelar</button>
-              <button type="button" id="btnMarcarTareaMantenimientoRealizada" class="btn btn-dark">Completar</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-    <!-- FINAL MODAL para marcar tarea completa-->
 
     <!-- latest jquery-->
     <script src="assets/js/jquery-3.2.1.min.js"></script>
@@ -933,32 +963,9 @@
         datosEnviar.append("hora_desde", $.trim($('#hora_desde').val()));
         datosEnviar.append("hora_hasta", $.trim($('#hora_hasta').val()));
 
-        /*let items= {};
-        $(".items").each(function(){
-          let cantidad_item=this.value;
-          if(cantidad_item!="" && cantidad_item!=0){
-            items[this.id]={
-              "cantidad":cantidad_item,
-              "proveedor":$("#proveedor-"+this.id).val()
-            };
-          }
-        });
-        datosEnviar.append("itemsJSON", JSON.stringify(items));*/
-        
         datosEnviar.append("id_orden_trabajo", $.trim($('#id_orden_trabajo').html()));
         datosEnviar.append("accion", accion);
         //console.log(accion);
-
-        /*let cantArchivos = 0;
-        if(typeof arrayFiles !== 'undefined'){
-          for(let i = 0; i < arrayFiles.length; i++) {
-            datosEnviar.append('file'+i, arrayFiles[i]);
-            cantArchivos++;
-          };
-        }else{
-          let arrayFiles = "";
-        }
-        datosEnviar.append('cantAdjuntos', cantArchivos);*/
 
         $.ajax({
           data: datosEnviar,
@@ -998,6 +1005,83 @@
           $('#modalCRUD').modal('show');
 
           //tablaTareas.ajax.reload(null, false);
+      });
+
+      $(document).on("click", ".btnVer", function(){
+        let fila = $(this);           
+        let id_orden_trabajo = parseInt($(this).closest('tr').find('td:eq(0)').text()); 
+        let accion = "traerDetalleOrdenTrabajo";
+        
+        $.ajax({
+          url: "models/administrar_orden_trabajo.php",
+          type: "POST",
+          datatype:"json",
+          data:  {accion:accion, id_orden_trabajo:id_orden_trabajo},
+          success: function(response) {
+            console.log(response);
+            let datos = JSON.parse(response);
+            console.log(datos);
+            let dot=datos.detalle_orden_trabajo;
+            $(".modal-header").css( "background-color", "#ffc107");
+            $(".modal-header").css( "color", "white" );
+
+            verDetalleOrdenTrabajo=$("#verDetalleOrdenTrabajo");
+            verDetalleOrdenTrabajo.modal("show");
+
+            /*let $divAdjuntos = document.getElementById('adjuntos');
+            $divAdjuntos.innerHTML="";*/
+            $("#lblFecha").html(dot.fecha_mostrar);
+            $("#lblHoraDesde").html(dot.hora_desde_mostrar);
+            $("#lblHoraHasta").html(dot.hora_hasta_mostrar);
+
+            $("#lblCliente").html(dot.cliente);
+            $("#lblUbicacion").html(dot.direccion);
+
+            $tabla = document.getElementById("tableContactosDetalle");
+            $bodyTablaTareas = $tabla.querySelector("tbody");
+            $bodyTablaTareas.innerHTML="";
+
+            datos.contactos_orden_trabajo.forEach((contactos)=>{
+                $tr=`<tr>
+                      <td>${contactos.nombre_completo}</td>
+                      <td>
+                        <a href="https://wa.me/${contactos.telefono}?text=" target="_blank" class="item">
+                          <i class="fa fa-whatsapp" aria-hidden="true"></i> ${contactos.telefono}
+                        </a>
+                      </td>
+                  </tr>`;
+                $bodyTablaTareas.innerHTML +=$tr;
+            })
+
+            $tabla = document.getElementById("tableTareasDetalle");
+            $bodyTablaTareas = $tabla.querySelector("tbody");
+            $bodyTablaTareas.innerHTML="";
+
+            datos.tareas_orden_trabajo.forEach((tareas)=>{
+                $tr=`<tr>
+                      <td>${tareas.asunto}</td>
+                      <td>${tareas.descripcion_activo}</td>
+                      <td>${tareas.detalle}</td>
+                      <td>${tareas.fecha_hora_ejecucion_desde_mostrar}</td>
+                      <td>${tareas.fecha_hora_ejecucion_hasta_mostrar}</td>
+                  </tr>`;
+                $bodyTablaTareas.innerHTML +=$tr;
+            })
+
+            $tabla = document.getElementById("tableTecnicosDetalle");
+            $bodyTablaTecnicos = $tabla.querySelector("tbody");
+            $bodyTablaTecnicos.innerHTML="";
+
+            datos.tecnicos_orden_trabajo.forEach((tecnicos)=>{
+                $tr=`<tr>
+                      <td>${tecnicos.tecnico}</td>
+                      <td>${tecnicos.vehiculo}</td>
+                  </tr>`;
+                $bodyTablaTecnicos.innerHTML +=$tr;
+            })
+
+          }
+        });
       });
 
       $(document).on("click", ".btnEditar", function(){
@@ -1055,14 +1139,14 @@
         id_vehiculo = parseInt($(this).closest('tr').find('td:eq(0)').text());       
         swal({
           title: "Estas seguro?",
-          text: "Una vez eliminado este vehiculo, no volveras a verlo",
+          text: "Una vez eliminado esta orden, no volveras a verla",
           icon: "warning",
           buttons: true,
           dangerMode: true,
         })
         .then((willDelete) => {
           if (willDelete) {
-            accion = "eliminarVehiculo";
+            accion = "eliminarOrdenTrabajo";
             $.ajax({
               url: "models/administrar_orden_trabajo.php",
               type: "POST",

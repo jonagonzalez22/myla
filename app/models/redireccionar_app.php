@@ -32,9 +32,9 @@
 
 		$redirUsuariosApp = new RedirUsuariosApp();
 
-    var_dump($_SESSION);
+    //var_dump($_SESSION);
     if(isset($_SESSION['rowUsers']['id_perfil']) and $_SESSION['rowUsers']['id_perfil']==4){//4 -> Técnico
-      $_SESSION['rowUsers']['id_tecnico']=8;
+      $_SESSION['rowUsers']['id_tecnico']=1;
       $redirUsuariosApp->redirTecnico();
     }else{
       if($_SESSION['rowUsers']['id_cliente']!=""){

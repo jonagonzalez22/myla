@@ -219,12 +219,14 @@
 					JOIN direcciones_clientes as dc ON (ccl.id_direccion = dc.id)
 					WHERE 1 $filtro_cliente $filtro_ubicacion
 					ORDER BY ccl.id";//ccl.id_cliente = $this->id_cliente
+      //var_dump($query);
 			$getContactos = $this->conexion->consultaRetorno($query);
 
 
 			$queryGetLocaciones = "SELECT id as id_direccion, direccion 
 								FROM direcciones_clientes dc
 								WHERE 1 $filtro_cliente $filtro_ubicacion";//id_cliente = $this->id_cliente
+      //var_dump($queryGetLocaciones);
 			$getLocaciones = $this->conexion->consultaRetorno($queryGetLocaciones);
 
 			$arrayContactos = array(); //creamos un array
@@ -260,7 +262,7 @@
 
 			$contactos['locaciones']= $arrayLocaciones;
 			$contactos['contactos']= $arrayContactos;
-        	echo json_encode($contactos);
+        	return json_encode($contactos);
 
 		}
 
@@ -389,7 +391,7 @@
 				break;
 			case 'traerContactos':
 					//$id_cliente = $_POST['id_cliente'];
-					$clientes->traerContactos($filtros);
+					echo $clientes->traerContactos($filtros);
 				break;
 			case 'addContacto':
 					$id_cliente = $_POST['id_cliente'];

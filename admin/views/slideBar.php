@@ -99,12 +99,13 @@
               <?php } else{ 
 
                  
-                  require_once("./models/conexion.php");
+                  require_once("./../conexion.php");
 
                   $conexion = new Conexion();
 
                   $id_usuario = $_SESSION['rowUsers']['id_usuario'];
                   $queryGetAccesos = "SELECT * FROM permisos_menu_web WHERE id_usuario = $id_usuario";
+
                   $getAccesos = $conexion->consultaRetorno($queryGetAccesos);
 
 
