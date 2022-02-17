@@ -23,7 +23,7 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
 </head>
 
 <body>
-  <span id="id_tecnico" class=""><?=$_SESSION['rowUsers']['id_tecnico'];?></span>
+  <span id="id_tecnico" class=""><?=$_SESSION['rowUsers']['id_tecnico']=8;?></span>
   <!-- loader -->
   <div id="loader">
       <div class="spinner-border text-primary" role="status"></div>
@@ -560,17 +560,18 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
         $buttonBodyFinalizarOrden.appendChild($iconoFinalizarOrden);
 
         //$contFooter.appendChild($buttonBodyVer);
-        if(ordenTrabajo.id_estado < 4){
+        if(ordenTrabajo.id_estado < 3){
             //$contFooter.appendChild($buttonBodyDistribucion);
             //$contFooter.appendChild($buttonBodyEditar);
+            if(ordenTrabajo.fecha_hora_inicio_trabajo_tecnico==""){
+              $contFooter.appendChild($buttonBodyIniciarOrden);
+              $contFooter.appendChild($buttonBodyCheckMateriales);
+            }else{
+              $contFooter.appendChild($buttonBodyFinalizarOrden);
+            }
+            $contFooter.appendChild($buttonBodySubir);
         }
-        if(ordenTrabajo.fecha_hora_inicio_trabajo_tecnico==""){
-          $contFooter.appendChild($buttonBodyIniciarOrden);
-          $contFooter.appendChild($buttonBodyCheckMateriales);
-        }else{
-          $contFooter.appendChild($buttonBodyFinalizarOrden);
-        }
-        $contFooter.appendChild($buttonBodySubir);
+
         $contFooter.appendChild($buttonBodyDetalleOrden);
         /*FIN FOOTER*/
 
@@ -619,11 +620,12 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
         data: {accion: accion, id_orden_trabajo: id_orden_trabajo},
         success: function(response){
           respuestaJson = JSON.parse(response);
+          //console.log(respuestaJson);
           let dot=respuestaJson.detalle_orden_trabajo;
           //console.log(dot);
           let $detalleOT = document.getElementById("detalleOT");
           //console.log($detalleOT);
-          $detalleOT.innerHTML=`<table class="table">
+          let tablaDetalle=`<table class="table">
             <tbody>
               <tr>
                 <td class='text-left font-weight-bold'>Cliente:</td>
@@ -642,12 +644,8 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
                 <td class='text-left'>${dot.direccion}</td>
               </tr>
               <tr>
-                <td class='text-left font-weight-bold'>Asunto:</td>
-                <td class='text-left'>${dot.asunto}</td>
-              </tr>
-              <tr>
-                <td class='text-left font-weight-bold'>Detalle:</td>
-                <td class='text-left'>${dot.detalle}</td>
+                <td class='text-left font-weight-bold'>Estado:</td>
+                <td class='text-left'>${dot.estado}</td>
               </tr>
               <tr>
                 <td class='text-left font-weight-bold'>Fecha:</td>
@@ -662,7 +660,47 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
                 <td class='text-left'>${dot.hora_hasta_mostrar}</td>
               </tr>
             </tbody>
+          </table>
+          <table class="table">
+            <tbody>
+              <tr>
+                <td class='text-center font-weight-bold' colspan='2'>Tareas</td>
+              </tr>
+              <tr>
+                <td class='text-left font-weight-bold'>Asunto:</td>
+                <td class='text-left font-weight-bold'>Detalle</td>
+              </tr>`;
+          respuestaJson.tareas_orden_trabajo.forEach((tareas)=>{
+            tablaDetalle+=`
+                <tr>
+                  <td class='text-left'>${tareas.asunto}</td>
+                  <td class='text-left'>${tareas.detalle}</td>
+                </tr>`;
+            });
+            tablaDetalle+=`
+            </tbody>
+          </table>
+          <table class="table">
+            <tbody>
+              <tr>
+                <td class='text-center font-weight-bold' colspan='2'>Tecnicos</td>
+              </tr>
+              <tr>
+                <td class='text-left font-weight-bold'>Nombre completo:</td>
+                <td class='text-left font-weight-bold'>Vehiculo</td>
+              </tr>`;
+          respuestaJson.tecnicos_orden_trabajo.forEach((tecnico)=>{
+            tablaDetalle+=`
+                <tr>
+                  <td class='text-left'>${tecnico.tecnico}</td>
+                  <td class='text-left'>${tecnico.vehiculo}</td>
+                </tr>`;
+            });
+          tablaDetalle+=`
+            </tbody>
           </table>`;
+
+          $detalleOT.innerHTML=tablaDetalle;
         }
       });
     }
@@ -849,8 +887,8 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
       btnEnviarAdj = document.getElementById("btnEnviarAdj");
 
       btnAgregarAdjunto.addEventListener("click", function(){
-      $contenedorInputFile = document.getElementById("inputFile");
-      $contenedorInputFile.style.display = "block";
+        $contenedorInputFile = document.getElementById("inputFile");
+        $contenedorInputFile.style.display = "block";
       })
 
       btnEnviarAdj.addEventListener("click", enviarAdjunto);
@@ -862,7 +900,7 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
 
       let accion = "traerAdjuntos";
       $.ajax({
-        url: "models/administrar_ordenes_app.php",
+        url: "models/administrar_home_tecnicos_app.php",
         type: "POST",
         datatype: "json",
         data: {accion: accion, id_orden_trabajo: id_orden_trabajo},
@@ -883,22 +921,22 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
     }
 
     function enviarAdjunto(){
-      let id_orden = document.getElementById("id_orden_archivo").innerText;
+      let id_orden_trabajo = document.getElementById("id_orden_archivo").innerText;
       let file = document.getElementById("adjunto");
+
       let comentarios = document.getElementById("comentarios").value;
-      let id_proveedor = document.getElementById("id_proveedor_archivo").innerText;
+      //let id_proveedor = document.getElementById("id_proveedor_archivo").innerText;
       let datosEnviar = new FormData();
 
       if (file.files.length > 0) {
         datosEnviar.append("file", file.files[0]);
         datosEnviar.append("accion", "adjuntarArchivo");
-        datosEnviar.append("id_orden", id_orden);
+        datosEnviar.append("id_orden_trabajo", id_orden_trabajo);
         datosEnviar.append("comentarios", comentarios);
-        datosEnviar.append("id_proveedor", id_proveedor);
 
         $.ajax({
           data: datosEnviar,
-          url: "models/administrar_ordenes_app.php",
+          url: "models/administrar_home_tecnicos_app.php",
           method: "post",
           cache: false,
           contentType: false,
@@ -907,7 +945,7 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
             $contenedorInputFile = document.getElementById("inputFile");
             $contenedorInputFile.style.display="none";
 
-            subirArchivosOrdenes(id_orden, id_proveedor);
+            subirArchivosOrdenes(id_orden_trabajo);
 
             file.value="";
           }

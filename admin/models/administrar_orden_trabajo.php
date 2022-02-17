@@ -225,8 +225,45 @@
         }
 
       }
-      echo 1;
+      //echo 1;
 
+		}
+
+    public function traerDetalleOrdenTrabajo($id_orden_trabajo){
+
+      $filtrosOT["id_orden_trabajo"]=$id_orden_trabajo;
+
+			$orden_trabajo = new OrdenTrabajo();
+      $detalle_orden_trabajo=$orden_trabajo->traerOrdenTrabajo($filtrosOT);
+      $detalle_orden_trabajo=json_decode($detalle_orden_trabajo,true);
+      $detalle_orden_trabajo=$detalle_orden_trabajo[0];
+
+      $tareas_orden_trabajo=$orden_trabajo->traerTareasOrdenTrabajo($id_orden_trabajo);
+      $tareas_orden_trabajo=json_decode($tareas_orden_trabajo,true);
+      
+      $materiales_orden_trabajo=$orden_trabajo->traerMaterialesOrdenTrabajo($id_orden_trabajo);
+      $materiales_orden_trabajo=json_decode($materiales_orden_trabajo,true);
+
+      $tecnicos_orden_trabajo=$orden_trabajo->traerTecnicosOrdenTrabajo($id_orden_trabajo);
+      $tecnicos_orden_trabajo=json_decode($tecnicos_orden_trabajo,true);
+
+      //var_dump($detalle_orden_trabajo);
+      $filtrosCliente["id_cliente"]=$detalle_orden_trabajo["id_cliente"];
+      $filtrosCliente["id_ubicacion"]=$detalle_orden_trabajo["id_direccion_cliente"];
+
+      $clientes = new Clientes();
+      $contactos=$clientes->traerContactos($filtrosCliente);
+      $contactos_orden_trabajo=json_decode($contactos,true);
+      $contactos_orden_trabajo=$contactos_orden_trabajo["contactos"];
+
+      //var_dump($aOrdenesTrabajoTecnico);
+			$arrayDatosIniciales['detalle_orden_trabajo'] = $detalle_orden_trabajo;
+			$arrayDatosIniciales['tareas_orden_trabajo'] = $tareas_orden_trabajo;
+      $arrayDatosIniciales['materiales_orden_trabajo'] = $materiales_orden_trabajo;
+      $arrayDatosIniciales['tecnicos_orden_trabajo'] = $tecnicos_orden_trabajo;
+      $arrayDatosIniciales['contactos_orden_trabajo'] = $contactos_orden_trabajo;
+
+			return json_encode($arrayDatosIniciales);
 		}
 
     public function updateOrdenTrabajo($id_orden_trabajo, $id_elemento_cliente, $asunto, $detalle, $id_contacto_cliente, $fecha_hora_ejecucion_desde, $fecha_hora_ejecucion_hasta, $adjuntos, $cantAdjuntos){
@@ -272,8 +309,24 @@
 
 			/*Eliminamos registros de la base de datos*/
 
-			/*Tabla vehiculos*/
-			$queryDelelte = "DELETE FROM calendario_mantenimiento WHERE id=$this->id_orden_trabajo";
+			/*Tabla adjuntos_orden_trabajo*/
+			$queryDelelte = "DELETE FROM adjuntos_orden_trabajo WHERE id_orden_trabajo=$this->id_orden_trabajo";
+			$delete = $this->conexion->consultaSimple($queryDelelte);
+
+			/*Tabla tecnicos_tareas_mantenimiento*/
+			$queryDelelte = "DELETE FROM tecnicos_tareas_mantenimiento WHERE id_orden_trabajo=$this->id_orden_trabajo";
+			$delete = $this->conexion->consultaSimple($queryDelelte);
+			
+      /*Tabla materiales_orden_trabajo*/
+			$queryDelelte = "DELETE FROM materiales_orden_trabajo WHERE id_orden_trabajo=$this->id_orden_trabajo";
+			$delete = $this->conexion->consultaSimple($queryDelelte);
+			
+      /*Tabla tareas_ordenes_trabajo*/
+			$queryDelelte = "DELETE FROM tareas_ordenes_trabajo WHERE id_orden_trabajo=$this->id_orden_trabajo";
+			$delete = $this->conexion->consultaSimple($queryDelelte);
+			
+      /*Tabla ordenes_trabajo*/
+			$queryDelelte = "DELETE FROM ordenes_trabajo WHERE id=$this->id_orden_trabajo";
 			$delete = $this->conexion->consultaSimple($queryDelelte);
 
 		}
@@ -297,6 +350,32 @@
       }
 
       echo $realizado;
+		}
+
+    public function traerTareasOrdenTrabajo($id_orden_trabajo){
+
+			$tareasOrdenTrabajo = [];
+
+			$queryGet = "SELECT cm.asunto,cm.detalle,ac.descripcion,ac.ubicacion,cm.fecha_hora_ejecucion_desde,cm.fecha_hora_ejecucion_hasta
+      FROM tareas_ordenes_trabajo tot 
+        INNER JOIN calendario_mantenimiento cm ON tot.id_calendario_mantenimiento=cm.id 
+        INNER JOIN activos_cliente ac ON cm.id_activo_cliente=ac.id
+      WHERE tot.id_orden_trabajo = $id_orden_trabajo";
+      //var_dump($queryGet);
+			$getDatos = $this->conexion->consultaRetorno($queryGet);
+
+			while ($row = $getDatos->fetch_array()) {
+        $tareasOrdenTrabajo[] =[
+          "asunto"                              =>$row["asunto"],
+          "detalle"                             =>$row["detalle"],
+          "descripcion_activo"                  =>$row["descripcion"],
+          "ubicacion_activo"                    =>$row["ubicacion"],
+          "fecha_hora_ejecucion_desde_mostrar"  =>date("d/m/Y H:i",strtotime($row["fecha_hora_ejecucion_desde"]))."hs",
+          "fecha_hora_ejecucion_hasta_mostrar"  =>date("d/m/Y H:i",strtotime($row["fecha_hora_ejecucion_hasta"]))."hs",
+        ];
+			}
+			//echo json_encode($tareasOrdenTrabajo);
+      return json_encode($tareasOrdenTrabajo);
 		}
 
     public function traerMaterialesOrdenTrabajo($id_orden_trabajo){
@@ -454,6 +533,47 @@
       //return json_encode($tecnicosOrdenTrabajo);
     }
 
+    public function traerAdjuntos($id_orden_trabajo){
+			$this->id_orden_trabajo = $id_orden_trabajo;
+
+			$queryGetAdjuntos = "SELECT aot.archivo, u.email, aot.comentarios, aot.fecha_hora as fecha
+			FROM adjuntos_orden_trabajo aot 
+        JOIN usuarios as u ON aot.id_usuario = u.id
+			WHERE id_orden_trabajo = $this->id_orden_trabajo";
+			$getAdjuntos = $this->conexion->consultaRetorno($queryGetAdjuntos);
+
+			$arrayAdjuntos = array();
+
+			while($rowAdj = $getAdjuntos->fetch_array()){
+				$arrayAdjuntos[]=array(
+          "archivo"=>$rowAdj['archivo'],
+          "email"=>$rowAdj['email'],
+          "comentarios"=>$rowAdj['comentarios'],
+          "fecha"=>$fecha= date("d/m/Y H:m:s", strtotime($rowAdj['fecha']))
+        );
+			}
+
+			return json_encode($arrayAdjuntos);
+
+		}
+
+    public function adjuntarArchivo($id_orden_trabajo, $file, $comentarios){
+			$this->id_orden_trabajo = $id_orden_trabajo;
+			$nombreImagen = $file['name'];
+			$directorio = "../../admin/views/adjuntosOT/";
+			$nombreFinalArchivo = $nombreImagen;
+			$id_usuario = $_SESSION['rowUsers']['id_usuario'];
+			$fecha= date("Y-m-d H:i:s");
+
+			$nombreEnv = $id_orden_trabajo."_".$nombreFinalArchivo;
+
+			move_uploaded_file($file['tmp_name'], $directorio.$id_orden_trabajo."_".$nombreFinalArchivo);
+
+			/*ACTUALIZO ADJUNTOS*/
+			$queryUpdateAdjuntos = "INSERT INTO adjuntos_orden_trabajo (id_orden_trabajo, archivo, fecha_hora, id_usuario, comentarios) VALUES($this->id_orden_trabajo, '$nombreEnv', '$fecha', $id_usuario, '$comentarios')";
+			$updateAdjuntos= $this->conexion->consultaSimple($queryUpdateAdjuntos);
+		}
+
 }
 
 	if (isset($_POST['accion'])) {
@@ -485,10 +605,10 @@
       case 'updateOrdenTrabajo':
         $orden_trabajo->updateOrdenTrabajo($id_orden_trabajo, $fecha, $hora_desde, $hora_hasta, $aTareas, $aTecnicos);
       break;
-      /*case 'trerDetalleVehiculo':
+      case 'traerDetalleOrdenTrabajo':
         //$id_orden_trabajo = $_POST['id_orden_trabajo'];
-        $orden_trabajo->trerDetalleVehiculo($id_orden_trabajo);
-      break;*/
+        echo $orden_trabajo->traerDetalleOrdenTrabajo($id_orden_trabajo);
+      break;
       case 'eliminarOrdenTrabajo':
         //$id_orden_trabajo = $_POST['id_orden_trabajo'];
         $orden_trabajo->eliminarOrdenTrabajo($id_orden_trabajo);

@@ -982,6 +982,7 @@
         function enviarAdjunto(){
             let id_orden = document.getElementById("id_orden_archivo").innerText;
             let file = document.getElementById("adjunto");
+
             let comentarios = document.getElementById("comentarios").value;
             let id_proveedor = document.getElementById("id_proveedor_archivo").innerText;
             let datosEnviar = new FormData();
