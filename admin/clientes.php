@@ -1,6 +1,6 @@
 <?php 
   session_start();
-  include_once('./models/conexion.php');
+  include_once('./../conexion.php');
   date_default_timezone_set("America/Buenos_Aires");
   $hora = date('Hi');
   if (!isset($_SESSION['rowUsers']['id_usuario'])) {
@@ -1000,9 +1000,10 @@ $(document).on("click", '.btnContactos', function(){
                 }else{
                     jsonResultado=respuestaJson;
                     arrayBuscador = [];
-                    completarTablaContactos(respuestaJson)
+                    
                     
                 }
+                completarTablaContactos(respuestaJson)
 
            }
         });
@@ -1012,6 +1013,7 @@ $(document).on("click", '.btnContactos', function(){
 
 /*COMPLETO TABLA CONTACTOS*/
 function completarTablaContactos(respuestaJson){
+  console.log(respuestaJson)
   let $tablaContactos = document.querySelector("#tablaContactos tbody");
   $tablaContactos.innerHTML = "";
   respuestaJson.contactos.forEach((contactos)=>{
@@ -1033,7 +1035,7 @@ function completarTablaContactos(respuestaJson){
   if (respuestaJson.locaciones.length >0 ) {
     /*Identifico select tipo de direccion*/
     $selLocaciones = document.getElementById("locaciones");
-                        
+    $selLocaciones.innerHTML = "<option value=''>Seleccione</option>";
     /*Convierto en json la respuesta del servidor*/
     //respuestaJson = JSON.parse(respuesta);
 
