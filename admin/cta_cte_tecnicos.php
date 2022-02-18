@@ -1,6 +1,5 @@
 <?php 
   session_start();
-  include_once('./../conexion.php');
   date_default_timezone_set("America/Buenos_Aires");
   $hora = date('Hi');
   if (!isset($_SESSION['rowUsers']['id_usuario'])) {
@@ -427,15 +426,17 @@
                   "datatype":"json",
                   "data":{accion: accion, id_tecnico: id_tecnico, importe: importe, detalle: detalle_movimiento},
                   success: function(response){
+                    reloadDatatable();
+                    $('#emitirPagos').modal('hide');
+                      swal({
+                        icon: 'success',
+                        title: 'Accion realizada correctamente'
+                      });
+
                   }
                 });
 
-      tablaCtaCteTec.ajax.reload(null, false);
-      $('#emitirPagos').modal('hide');
-        swal({
-          icon: 'success',
-          title: 'Accion realizada correctamente'
-        });
+      
     });
 
 
@@ -478,6 +479,40 @@ $(document).on("click", ".btnVer", function(){
         });
  
  }); 
+
+function reloadDatatable(){
+
+      let id_tecnico = document.getElementById("tecnicos").value;
+      let id_empresa = parseInt(document.getElementById("id_empresa").textContent);
+      $("#tablaCtaCteTec").dataTable().fnDestroy();
+      tablaCtaCteTec= $('#tablaCtaCteTec').DataTable({
+            "ajax": {
+                "url" : "./models/administrar_cta_cte_tecnicos.php?accion=traerCtacCteTec&id_empresa="+id_empresa+"&id_tecnico="+id_tecnico,
+                "dataSrc": "",
+              },
+            "columns":[
+              {
+                    render: function(data, type, full, meta) {
+                        return '<span class="d-none">'+full.id_tecnico+'</span><span class="">'+full.tecnico+'</span>';
+                    }
+                },
+              {
+                    render: function(data, type, full, meta) {
+                        return ()=>{
+                          if(full.saldo < 0 ){
+                            return '<span class="text-danger">'+new Intl.NumberFormat('es-AR', {currency: 'ARS', style: 'currency'}).format(full.saldo)+'</span>'
+                          }else{
+                             return '<span class="text-success">'+new Intl.NumberFormat('es-AR', {currency: 'ARS', style: 'currency'}).format(full.saldo)+'</span>'
+                          }
+                        };
+                    }
+                },
+              {"defaultContent" : "<div class='text-center'><div class='btn-group'><button class='btn btn-success btnPago' title='Emitir pago'><i class='fa fa-money'></i></button><button class='btn btn-warning btnVer' title='Ver movimientos'><i class='fa fa-eye'></i></button></div></div>"}
+            ],
+            "language":  idiomaEsp
+        });
+
+}
     </script>
   </body>
 </html>
