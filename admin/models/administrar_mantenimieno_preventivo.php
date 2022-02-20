@@ -182,7 +182,7 @@
             $nombreADJ = $_FILES[$indice]['name'];
 
             //INSERTO DATOS EN LA TABLA ADJUNTOS ORDEN_COMPRA
-            $queryInsertAdjuntos = "INSERT INTO adjuntos_tareas_mantenimiento(id_calendario_mantenimiento, archivo, fecha_hora, id_usuario_alta, comentarios, etiquetas)VALUES($id_calendario_mantenimiento, '$nombreADJ',NOW(),'$id_usuario_alta','$comentarios', '$etiquetas')";
+            $queryInsertAdjuntos = "INSERT INTO adjuntos_tareas_mantenimiento (id_calendario_mantenimiento, archivo, fecha_hora, id_usuario_alta, comentarios, etiquetas)VALUES($id_calendario_mantenimiento, '$nombreADJ',NOW(),'$id_usuario_alta','$comentarios', '$etiquetas')";
             $insertAdjuntos = $this->conexion->consultaSimple($queryInsertAdjuntos);
 
             $mensajeError=$this->conexion->conectar->error;
@@ -253,13 +253,29 @@
     public function eliminarMantenimientoPreventivo($id_mantenimiento_preventivo){
 			$this->id_mantenimiento_preventivo = $id_mantenimiento_preventivo;
 
-			/*Eliminamos registros de la base de datos*/
+      /*Eliminamos registros de la base de datos*/
+      $this->eliminarAdjuntosOrdenTrabajo($id_mantenimiento_preventivo);
+      $this->eliminarMaterialesOrdenTrabajo($id_mantenimiento_preventivo);
 
-			/*Tabla vehiculos*/
+			/*Tabla calendario_mantenimiento*/
 			$queryDelelte = "DELETE FROM calendario_mantenimiento WHERE id=$this->id_mantenimiento_preventivo";
 			$delete = $this->conexion->consultaSimple($queryDelelte);
 
 		}
+
+    public function eliminarAdjuntosOrdenTrabajo($id_calendario_mantenimiento){
+      /*Tabla adjuntos_tareas_mantenimiento*/
+			$queryDelelte = "DELETE FROM adjuntos_tareas_mantenimiento WHERE id_calendario_mantenimiento=$id_calendario_mantenimiento";
+			$delete = $this->conexion->consultaSimple($queryDelelte);
+    }
+
+    public function eliminarMaterialesOrdenTrabajo($id_calendario_mantenimiento){
+      /*Tabla materiales_mantenimiento*/
+			$queryDelelte = "DELETE FROM materiales_mantenimiento WHERE id_calendario_mantenimiento=$id_calendario_mantenimiento";
+			$delete = $this->conexion->consultaSimple($queryDelelte);
+      /*var_dump($queryDelelte);
+      var_dump($delete);*/
+    }
 
     public function marcarMantenimientoPreventivoRealizada($id_mantenimiento){
       $id_usuario_ultima_actualizacion=$_SESSION["rowUsers"]["id_usuario"];

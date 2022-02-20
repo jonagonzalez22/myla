@@ -1312,7 +1312,7 @@
 
       $(document).on("click", ".btnBorrar", function(){
         fila = $(this);           
-        id_vehiculo = parseInt($(this).closest('tr').find('td:eq(0)').text());       
+        id_mantenimiento_preventivo = parseInt($(this).closest('tr').find('td:eq(0)').text());       
 
         swal({
           title: "Estas seguro?",
@@ -1323,12 +1323,12 @@
         })
         .then((willDelete) => {
           if (willDelete) {
-            accion = "eliminarVehiculo";
+            accion = "eliminarMantenimientoPreventivo";
             $.ajax({
               url: "models/administrar_mantenimieno_preventivo.php",
               type: "POST",
               datatype:"json",    
-              data:  {accion:accion, id_vehiculo:id_vehiculo},    
+              data:  {accion:accion, id_mantenimiento_preventivo:id_mantenimiento_preventivo},    
               success: function() {
                 tablaTareas.row(fila.parents('tr')).remove().draw();                  
               }
