@@ -1093,7 +1093,7 @@
           datatype:"json",
           data:  {accion:accion, id_orden_trabajo:id_orden_trabajo},
           success: function(response) {
-            //console.log(response);
+            console.log(response);
             let datos = JSON.parse(response);
             //console.log(datos);
             let dot=datos.detalle_orden_trabajo;

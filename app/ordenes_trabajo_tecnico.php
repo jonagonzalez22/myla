@@ -641,7 +641,7 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
 
       let montoTotalInicial = 0;
 
-      let accion = "traerDetalleOrdenTrabajo";
+      let accion = "traerDetalleOrdenTrabajoApp";
       let id_orden_update = id_orden_trabajo;
 
       $.ajax({
