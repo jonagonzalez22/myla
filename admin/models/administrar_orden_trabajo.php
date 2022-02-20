@@ -126,10 +126,10 @@
           //"detalle"                     =>$row["detalle"],
           "fecha"                       =>($fecha == 0) ? "" : $fecha,
           "fecha_mostrar"               =>($fecha == 0) ? "" : date("d/m/Y",strtotime($fecha)),
-          "hora_desde"                  =>($hora_desde == 0) ? "" : $hora_desde,
-          "hora_desde_mostrar"          =>($hora_desde == 0) ? "" : date("H:i",strtotime($hora_desde))."hs",
-          "hora_hasta"                  =>($hora_hasta == 0) ? "" : $hora_hasta,
-          "hora_hasta_mostrar"          =>($hora_hasta == 0) ? "" : date("H:i",strtotime($hora_hasta))."hs",
+          "hora_desde"                  =>($hora_desde == NULL) ? "" : $hora_desde,
+          "hora_desde_mostrar"          =>($hora_desde == NULL) ? "" : date("H:i",strtotime($hora_desde))."hs",
+          "hora_hasta"                  =>($hora_hasta == NULL) ? "" : $hora_hasta,
+          "hora_hasta_mostrar"          =>($hora_hasta == NULL) ? "" : date("H:i",strtotime($hora_hasta))."hs",
           "id_estado"                   =>$row["id_estado"],
           "estado"                      =>$row["estado"],
           "id_contacto_cliente"         =>$row["id_contacto_cliente"],
@@ -146,9 +146,8 @@
       return json_encode($arrayOrdenTrabajo);
 		}
 
-		public function agregarOrdenTrabajo($fecha, $hora_desde, $hora_hasta, $aTareas, $aTecnicos){
+		public function agregarOrdenTrabajo($fecha, $nro_orden_trabajo, $hora_desde, $hora_hasta, $aTareas, $aTecnicos){
       $id_calendario_mantenimiento=$aTareas[0]["id_mantenimiento_preventivo"];
-      $nro_orden_trabajo="";
       $id_estado_orden=1;
 
       /*$fecha_hora_desde=date("Y-m-d H:i",strtotime($fecha_hora_desde));
@@ -166,9 +165,19 @@
         echo "<br><br>".$queryInsert;
       }
 
+      //$orden_trabajo = new OrdenTrabajo();
+      $this->agregarTareasOrdenTrabajo($id_orden_trabajo,$aTareas);
+      //$this->agregarMaterialesOrdenTrabajo($id_orden_trabajo);
+      $this->agregarTecnicosOrdenTrabajo($id_orden_trabajo,$aTecnicos);
+
+      //echo 1;
+		}
+
+    public function agregarTareasOrdenTrabajo($id_orden_trabajo,$aTareas){
       $aIdCalendarioMantenimiento=[];
       foreach ($aTareas as $key => $tarea) {
         $aIdCalendarioMantenimiento[]=$id_mantenimiento_preventivo=$tarea["id_mantenimiento_preventivo"];
+        
         $queryInsert = "INSERT INTO tareas_ordenes_trabajo (id_orden_trabajo, id_calendario_mantenimiento) VALUES ('$id_orden_trabajo', '$id_mantenimiento_preventivo')";
         //echo $queryInsert;
         $insertar= $this->conexion->consultaSimple($queryInsert);
@@ -183,6 +192,7 @@
       $idCalendarioMantenimiento=implode(",",$aIdCalendarioMantenimiento);
 
       $queryItems = "SELECT id_item,id_proveedor,id_almacen,SUM(cantidad_estimada) AS cantidad_estimada_total FROM materiales_mantenimiento WHERE id_calendario_mantenimiento IN ($idCalendarioMantenimiento) GROUP BY id_item,id_proveedor,id_almacen";
+      //$queryItems = "SELECT id_item,id_proveedor,id_almacen,SUM(cantidad_estimada) AS cantidad_estimada_total FROM materiales_mantenimiento WHERE id_calendario_mantenimiento IN (SELECT GROUP_CONCAT(id_calendario_mantenimiento SEPARATOR ',') FROM tareas_ordenes_trabajo WHERE id_orden_trabajo = $id_orden_trabajo) GROUP BY id_item,id_proveedor,id_almacen";
       //var_dump($queryItems);
       $getItems = $this->conexion->consultaRetorno($queryItems);
       while ($row = $getItems->fetch_array()) {
@@ -190,10 +200,22 @@
         $cantidad_utilizada=0;
         $aprobado_cliente=0;
 
-        //RESERVAR ITEMS DEL STOCK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        $cantidad_reservada=$row["cantidad_estimada_total"];
+
+        //RESERVAMOS EL STOCK DE LOS ITEMS A UTILIZAR
+        $queryReservarStock = "UPDATE stock SET cantidad_disponible = cantidad_disponible - $cantidad_reservada, cantidad_reservada = cantidad_reservada + $cantidad_reservada WHERE id_item=".$row["id_item"]." AND id_proveedor=".$row["id_proveedor"]." AND id_almacen=".$row["id_almacen"];
+        //var_dump($queryItems);
+        $insertAdjuntos = $this->conexion->consultaSimple($queryReservarStock);
+        $mensajeError=$this->conexion->conectar->error;
+    
+        echo $mensajeError;
+        if($mensajeError!=""){
+          echo "<br><br>".$queryReservarStock;
+        }
 
         //INSERTO DATOS EN LA TABLA ADJUNTOS ORDEN_COMPRA
-        $queryInsertMateriales = "INSERT INTO materiales_orden_trabajo (id_orden_trabajo, id_item, id_proveedor, id_almacen, cantidad_reservada, cargado_vehiculo, cantidad_utilizada, aprobado_cliente) VALUES ($id_orden_trabajo, ".$row["id_item"].", ".$row["id_proveedor"].", ".$row["id_almacen"].", ".$row["cantidad_estimada_total"].", $cargado_vehiculo, $cantidad_utilizada, $aprobado_cliente)";
+        $queryInsertMateriales = "INSERT INTO materiales_orden_trabajo (id_orden_trabajo, id_item, id_proveedor, id_almacen, cantidad_reservada, cargado_vehiculo, cantidad_utilizada, aprobado_cliente) VALUES ($id_orden_trabajo, ".$row["id_item"].", ".$row["id_proveedor"].", ".$row["id_almacen"].", ".$cantidad_reservada.", $cargado_vehiculo, $cantidad_utilizada, $aprobado_cliente)";
+        //var_dump($queryItems);
         $insertAdjuntos = $this->conexion->consultaSimple($queryInsertMateriales);
         $mensajeError=$this->conexion->conectar->error;
     
@@ -202,7 +224,9 @@
           echo "<br><br>".$queryInsertMateriales;
         }
       }
+    }
 
+    public function agregarTecnicosOrdenTrabajo($id_orden_trabajo,$aTecnicos){
       foreach($aTecnicos as $infoTecnicos){
         /*GUARDO EN TABLA EMPRESA*/
         $id_tecnico=$infoTecnicos["id_tecnico"];
@@ -223,28 +247,25 @@
         if($mensajeError!=""){
           echo "<br><br>".$queryInsert;
         }
-
       }
-      //echo 1;
-
-		}
+    }
 
     public function traerDetalleOrdenTrabajo($id_orden_trabajo){
 
       $filtrosOT["id_orden_trabajo"]=$id_orden_trabajo;
 
-			$orden_trabajo = new OrdenTrabajo();
-      $detalle_orden_trabajo=$orden_trabajo->traerOrdenTrabajo($filtrosOT);
+			//$orden_trabajo = new OrdenTrabajo();
+      $detalle_orden_trabajo=$this->traerOrdenTrabajo($filtrosOT);
       $detalle_orden_trabajo=json_decode($detalle_orden_trabajo,true);
       $detalle_orden_trabajo=$detalle_orden_trabajo[0];
 
-      $tareas_orden_trabajo=$orden_trabajo->traerTareasOrdenTrabajo($id_orden_trabajo);
+      $tareas_orden_trabajo=$this->traerTareasOrdenTrabajo($id_orden_trabajo);
       $tareas_orden_trabajo=json_decode($tareas_orden_trabajo,true);
       
-      $materiales_orden_trabajo=$orden_trabajo->traerMaterialesOrdenTrabajo($id_orden_trabajo);
+      $materiales_orden_trabajo=$this->traerMaterialesOrdenTrabajo($id_orden_trabajo);
       $materiales_orden_trabajo=json_decode($materiales_orden_trabajo,true);
 
-      $tecnicos_orden_trabajo=$orden_trabajo->traerTecnicosOrdenTrabajo($id_orden_trabajo);
+      $tecnicos_orden_trabajo=$this->traerTecnicosOrdenTrabajo($id_orden_trabajo);
       $tecnicos_orden_trabajo=json_decode($tecnicos_orden_trabajo,true);
 
       //var_dump($detalle_orden_trabajo);
@@ -262,45 +283,33 @@
       $arrayDatosIniciales['materiales_orden_trabajo'] = $materiales_orden_trabajo;
       $arrayDatosIniciales['tecnicos_orden_trabajo'] = $tecnicos_orden_trabajo;
       $arrayDatosIniciales['contactos_orden_trabajo'] = $contactos_orden_trabajo;
+      //var_dump($arrayDatosIniciales);
 
 			return json_encode($arrayDatosIniciales);
 		}
 
-    public function updateOrdenTrabajo($id_orden_trabajo, $id_elemento_cliente, $asunto, $detalle, $id_contacto_cliente, $fecha_hora_ejecucion_desde, $fecha_hora_ejecucion_hasta, $adjuntos, $cantAdjuntos){
+    public function updateOrdenTrabajo($id_orden_trabajo, $fecha, $nro_orden_trabajo, $hora_desde, $hora_hasta, $id_estado_orden, $aTareas, $aTecnicos){
+			//$this->id_orden_trabajo=$id_orden_trabajo;
 
-			$this->id_orden_trabajo=$id_orden_trabajo;
-      $id_estado=1;
-
-			//Actualizo datos del vehiculo
-      $query = "UPDATE calendario_mantenimiento set id_activo_cliente = '$id_elemento_cliente', asunto = '$asunto', detalle = '$detalle', id_contacto_cliente = '$id_contacto_cliente', fecha_hora_ejecucion_desde = '$fecha_hora_ejecucion_desde', fecha_hora_ejecucion_hasta = '$fecha_hora_ejecucion_hasta', id_estado = '$id_estado'
-      WHERE id = $this->id_orden_trabajo";
-      //echo $query;
-			$update = $this->conexion->consultaSimple($query);
-      
+      $queryInsert = "UPDATE ordenes_trabajo SET nro_orden_trabajo='$nro_orden_trabajo', fecha='$fecha', hora_desde='$hora_desde', hora_hasta='$hora_hasta', id_estado_orden='$id_estado_orden' WHERE id = $id_orden_trabajo";
+      //echo $queryInsert;
+      $insertar= $this->conexion->consultaSimple($queryInsert);
       $filasAfectadas=$this->conexion->conectar->affected_rows;
       $mensajeError=$this->conexion->conectar->error;
+
       //var_dump($mensajeError);
       echo $mensajeError;
       if($mensajeError!=""){
         echo "<br><br>".$query;
       }
 
-      /*BUSCO EL ID DEL VEHICULO CREADO PARA GUARDAR EL HISTORIAL DE TECNICOS*/
-      /*$queryGetIdTecnico = "SELECT id_tecnico FROM asignacion_tecnico_vehiculo 
-        WHERE id_orden_trabajo = '$id_orden_trabajo'
-        ORDER BY fecha DESC LIMIT 1";
-      $getIdTecnico = $this->conexion->consultaRetorno($queryGetIdTecnico);
-      $id_tecnico=0;
-      if ($getIdTecnico->num_rows > 0 ) {
-        $idRow = $getIdTecnico->fetch_assoc();
-        $id_tecnico = $idRow['id_tecnico'];
-      }*/
+      /*Eliminamos registros de la base de datos*/
+      $this->eliminarTecnicosOrdenTrabajo($id_orden_trabajo);
+      $this->eliminarMaterialesOrdenTrabajo($id_orden_trabajo);
+      $this->eliminarTareasOrdenTrabajo($id_orden_trabajo);
 
-      /*SI LOS TECNICOS SON DIFERENTES, GUARDO EL HISTORIAL DE TECNICOS*/
-      /*if($id_tecnico!=$tecnico){
-        $queryInsertVehiculo = "INSERT INTO asignacion_tecnico_vehiculo (id_orden_trabajo, id_tecnico, fecha, validado) VALUES('$id_orden_trabajo', '$tecnico', NOW(), 1)";
-        $insertarVehiculo= $this->conexion->consultaSimple($queryInsertVehiculo);
-      }*/
+      $this->agregarTareasOrdenTrabajo($id_orden_trabajo,$aTareas);
+      $this->agregarTecnicosOrdenTrabajo($id_orden_trabajo,$aTecnicos);
 
 		}
 
@@ -308,22 +317,10 @@
 			$this->id_orden_trabajo = $id_orden_trabajo;
 
 			/*Eliminamos registros de la base de datos*/
-
-			/*Tabla adjuntos_orden_trabajo*/
-			$queryDelelte = "DELETE FROM adjuntos_orden_trabajo WHERE id_orden_trabajo=$this->id_orden_trabajo";
-			$delete = $this->conexion->consultaSimple($queryDelelte);
-
-			/*Tabla tecnicos_tareas_mantenimiento*/
-			$queryDelelte = "DELETE FROM tecnicos_tareas_mantenimiento WHERE id_orden_trabajo=$this->id_orden_trabajo";
-			$delete = $this->conexion->consultaSimple($queryDelelte);
-			
-      /*Tabla materiales_orden_trabajo*/
-			$queryDelelte = "DELETE FROM materiales_orden_trabajo WHERE id_orden_trabajo=$this->id_orden_trabajo";
-			$delete = $this->conexion->consultaSimple($queryDelelte);
-			
-      /*Tabla tareas_ordenes_trabajo*/
-			$queryDelelte = "DELETE FROM tareas_ordenes_trabajo WHERE id_orden_trabajo=$this->id_orden_trabajo";
-			$delete = $this->conexion->consultaSimple($queryDelelte);
+      $this->eliminarAdjuntosOrdenTrabajo($id_orden_trabajo);
+      $this->eliminarTecnicosOrdenTrabajo($id_orden_trabajo);
+      $this->eliminarMaterialesOrdenTrabajo($id_orden_trabajo);
+      $this->eliminarTareasOrdenTrabajo($id_orden_trabajo);
 			
       /*Tabla ordenes_trabajo*/
 			$queryDelelte = "DELETE FROM ordenes_trabajo WHERE id=$this->id_orden_trabajo";
@@ -331,32 +328,37 @@
 
 		}
 
-    public function marcarOrdenTrabajoRealizada($id_mantenimiento){
-      $id_usuario_ultima_actualizacion=$_SESSION["rowUsers"]["id_usuario"];
+    public function eliminarAdjuntosOrdenTrabajo($id_orden_trabajo){
+      /*Tabla adjuntos_orden_trabajo*/
+			$queryDelelte = "DELETE FROM adjuntos_orden_trabajo WHERE id_orden_trabajo=$id_orden_trabajo";
+			$delete = $this->conexion->consultaSimple($queryDelelte);
+    }
 
-      $queryMarcarCompleta = "UPDATE mantenimientos_vehiculares set realizado = 1
-      WHERE id = $id_mantenimiento";
-      //echo $queryMarcarCompleta;
-			$marcarCompleta = $this->conexion->consultaSimple($queryMarcarCompleta);
+    public function eliminarTecnicosOrdenTrabajo($id_orden_trabajo){
+      /*Tabla tecnicos_tareas_mantenimiento*/
+			$queryDelelte = "DELETE FROM tecnicos_tareas_mantenimiento WHERE id_orden_trabajo=$id_orden_trabajo";
+			$delete = $this->conexion->consultaSimple($queryDelelte);
+      /*var_dump($queryDelelte);
+      var_dump($delete);*/
+    }
 
-      /*BUSCO EL ID DEL VEHICULO CREADO PARA GUARDAR EL HISTORIAL DE TECNICOS*/
-      $queryGetRealizadoMantenimiento = "SELECT realizado FROM mantenimientos_vehiculares 
-        WHERE id_mantenimiento = '$id_mantenimiento'";
-      $getRealizadoMantenimiento = $this->conexion->consultaRetorno($queryGetRealizadoMantenimiento);
-      $realizado=0;
-      if ($getRealizadoMantenimiento->num_rows > 0 ) {
-        $idRow = $getRealizadoMantenimiento->fetch_assoc();
-        $realizado = $idRow['realizado'];
-      }
-
-      echo $realizado;
-		}
+    public function eliminarMaterialesOrdenTrabajo($id_orden_trabajo){
+      /*Tabla materiales_orden_trabajo*/
+			$queryDelelte = "DELETE FROM materiales_orden_trabajo WHERE id_orden_trabajo=$id_orden_trabajo";
+			$delete = $this->conexion->consultaSimple($queryDelelte);
+    }
+    
+    public function eliminarTareasOrdenTrabajo($id_orden_trabajo){
+      /*Tabla tareas_ordenes_trabajo*/
+			$queryDelelte = "DELETE FROM tareas_ordenes_trabajo WHERE id_orden_trabajo=$id_orden_trabajo";
+			$delete = $this->conexion->consultaSimple($queryDelelte);
+    }
 
     public function traerTareasOrdenTrabajo($id_orden_trabajo){
 
 			$tareasOrdenTrabajo = [];
 
-			$queryGet = "SELECT cm.asunto,cm.detalle,ac.descripcion,ac.ubicacion,cm.fecha_hora_ejecucion_desde,cm.fecha_hora_ejecucion_hasta
+			$queryGet = "SELECT cm.id AS id_mantenimiento_preventivo,cm.asunto,cm.detalle,ac.descripcion,ac.ubicacion,cm.fecha_hora_ejecucion_desde,cm.fecha_hora_ejecucion_hasta
       FROM tareas_ordenes_trabajo tot 
         INNER JOIN calendario_mantenimiento cm ON tot.id_calendario_mantenimiento=cm.id 
         INNER JOIN activos_cliente ac ON cm.id_activo_cliente=ac.id
@@ -366,6 +368,7 @@
 
 			while ($row = $getDatos->fetch_array()) {
         $tareasOrdenTrabajo[] =[
+          "id_mantenimiento_preventivo"         =>$row["id_mantenimiento_preventivo"],
           "asunto"                              =>$row["asunto"],
           "detalle"                             =>$row["detalle"],
           "descripcion_activo"                  =>$row["descripcion"],
@@ -382,7 +385,7 @@
 
 			$materialesOrdenTrabajo = [];
 
-			$queryGet = "SELECT mot.id_item,i.item,mot.id_proveedor,p.razon_social AS proveedor,mot.id_almacen,a.almacen,cantidad_reservada,cargado_vehiculo 
+			$queryGet = "SELECT mot.id_item,i.item,mot.id_proveedor,p.razon_social AS proveedor,mot.id_almacen,a.almacen,cargado_vehiculo,mot.cantidad_reservada,IF(mot.cargado_vehiculo=1,'Si','No') AS cargado_vehiculo_mostrar,mot.cantidad_utilizada,IF(mot.aprobado_cliente=1,'Si','No') AS aprobado_cliente
       FROM materiales_orden_trabajo mot 
         INNER JOIN item i ON mot.id_item=i.id 
         INNER JOIN proveedores p ON mot.id_proveedor=p.id
@@ -393,14 +396,17 @@
 
 			while ($row = $getDatos->fetch_array()) {
         $materialesOrdenTrabajo[] =[
-          "id_item"           =>$row["id_item"],
-          "item"              =>$row["item"],
-          "id_proveedor"      =>$row["id_proveedor"],
-          "proveedor"         =>$row["proveedor"],
-          "id_almacen"        =>$row["id_almacen"],
-          "almacen"           =>$row["almacen"],
-          "cantidad_reservada"=>$row["cantidad_reservada"],
-          "cargado_vehiculo"  =>$row["cargado_vehiculo"],
+          "id_item"                 =>$row["id_item"],
+          "item"                    =>$row["item"],
+          "id_proveedor"            =>$row["id_proveedor"],
+          "proveedor"               =>$row["proveedor"],
+          "id_almacen"              =>$row["id_almacen"],
+          "almacen"                 =>$row["almacen"],
+          "cantidad_reservada"      =>$row["cantidad_reservada"],
+          "cargado_vehiculo"        =>$row["cargado_vehiculo"],
+          "cargado_vehiculo_mostrar"=>$row["cargado_vehiculo_mostrar"],
+          "cantidad_utilizada"      =>$row["cantidad_utilizada"],
+          "aprobado_cliente"        =>$row["aprobado_cliente"],
         ];
 			}
 			//echo json_encode($materialesOrdenTrabajo);
@@ -411,7 +417,7 @@
 
 			$tecnicosOrdenTrabajo = [];
 
-			$queryGet = "SELECT ttm.id_tecnico,t.nombre_completo AS tecnico,ttm.id_vehiculo 
+			$queryGet = "SELECT ttm.id_tecnico,t.nombre_completo AS tecnico,ttm.id_vehiculo,ttm.fecha_hora_inicio_trabajo,ttm.fecha_hora_fin_trabajo,ttm.geoposicion_inicio_trabajo 
       FROM tecnicos_tareas_mantenimiento ttm 
         INNER JOIN tecnicos t ON ttm.id_tecnico=t.id
       WHERE id_orden_trabajo = $id_orden_trabajo";
@@ -428,10 +434,18 @@
           $listaVehiculos=json_decode($listaVehiculos,true);
           $vehiculo_tecnico=$listaVehiculos[0]["vehiculo"];
         }
+        $fecha_hora_inicio=$row["fecha_hora_inicio_trabajo"];
+        $fecha_hora_fin=$row["fecha_hora_fin_trabajo"];
+        $geoposicion_inicio_trabajo=$row["geoposicion_inicio_trabajo"];
+
         $tecnicosOrdenTrabajo[] =[
-          "id_tecnico"=>$row["id_tecnico"],
-          "tecnico"   =>$row["tecnico"],
-          "vehiculo"  =>$vehiculo_tecnico,
+          "id_tecnico"                =>$row["id_tecnico"],
+          "tecnico"                   =>$row["tecnico"],
+          "id_vehiculo"               =>$id_vehiculo,
+          "vehiculo"                  =>$vehiculo_tecnico,
+          "fecha_hora_inicio_trabajo" =>($fecha_hora_inicio == 0) ? "" : date("d/m/Y H:i",strtotime($fecha_hora_inicio))." hs.",
+          "fecha_hora_fin_trabajo"    =>($fecha_hora_fin == 0) ? "" : date("d/m/Y H:i",strtotime($fecha_hora_fin))." hs.",
+          "geoposicion_inicio_trabajo"=>($geoposicion_inicio_trabajo == NULL) ? "" : $geoposicion_inicio_trabajo,
         ];
 			}
 			//echo json_encode($tecnicosOrdenTrabajo);
@@ -528,7 +542,29 @@
         if($mensajeError!=""){
           echo "<br><br>".$query;
         }
+
       }
+
+      $queryGetItemsUtilizados = "SELECT cantidad_reservada,cantidad_utilizada,id_item,id_proveedor,id_almacen FROM materiales_orden_trabajo WHERE id_orden_trabajo = $id_orden_trabajo";
+			$getItems = $this->conexion->consultaRetorno($queryGetItemsUtilizados);
+
+			while($row = $getItems->fetch_array()){
+        $cantidad_utilizada=$row["cantidad_utilizada"];
+        $cantidad_reponer=$row["cantidad_reservada"]-$cantidad_utilizada;
+
+        //SI CANTIDAD A REPONER ES NEGATIVO, QUIERE DECIR QUE SE UTILIZÓ MAS DE LO RESERVADO/ESTIMADO, POR LO QUE SE DESCUENTA DEL STOCK DISPONIBLE
+
+				//REPONEMOS EL STOCK SOBRANTE Y DESCONTAMOS LO UTILIZADO
+        $queryReservarStock = "UPDATE stock SET cantidad_disponible = cantidad_disponible + $cantidad_reponer, cantidad_reservada = cantidad_reservada - $cantidad_utilizada WHERE id_item=".$row["id_item"]." AND id_proveedor=".$row["id_proveedor"]." AND id_almacen=".$row["id_almacen"];
+        //var_dump($queryItems);
+        $insertAdjuntos = $this->conexion->consultaSimple($queryReservarStock);
+        $mensajeError=$this->conexion->conectar->error;
+    
+        echo $mensajeError;
+        if($mensajeError!=""){
+          echo "<br><br>".$queryReservarStock;
+        }
+			}
 			//echo json_encode($tecnicosOrdenTrabajo);
       //return json_encode($tecnicosOrdenTrabajo);
     }
@@ -587,27 +623,31 @@
 			break;*/
 			case 'addOrdenTrabajo':
         //var_dump($_POST);
-        $tareas=json_decode($tareas,true);
+        $nro_orden_trabajo="";
         $aTareas=[];
-        foreach ($tareas as $key => $value) {
-          $aTareas[]=$value["data"];
-        }
+        foreach (json_decode($tareas,true) as $key => $value) { $aTareas[]=$value["data"]; }
         //var_dump($aTareas);
-        $tecnicos=json_decode($tecnicos,true);
         $aTecnicos=[];
-        foreach ($tecnicos as $key => $value) {
-          $aTecnicos[]=$value["data"];
-        }
+        foreach (json_decode($tecnicos,true) as $key => $value) { $aTecnicos[]=$value["data"]; }
         //var_dump($aTecnicos);
 
-        $orden_trabajo->agregarOrdenTrabajo($fecha, $hora_desde, $hora_hasta, $aTareas, $aTecnicos);
+        $orden_trabajo->agregarOrdenTrabajo($fecha, $nro_orden_trabajo, $hora_desde, $hora_hasta, $aTareas, $aTecnicos);
 			break;
       case 'updateOrdenTrabajo':
-        $orden_trabajo->updateOrdenTrabajo($id_orden_trabajo, $fecha, $hora_desde, $hora_hasta, $aTareas, $aTecnicos);
+        $nro_orden_trabajo="";
+        $id_estado_orden=1;//mantenemos en 1 hasta que veamos si se puede cambiar el estado desde aca
+        $aTareas=[];
+        foreach (json_decode($tareas,true) as $key => $value) { $aTareas[]=$value["data"]; }
+        //var_dump($aTareas);
+        $aTecnicos=[];
+        foreach (json_decode($tecnicos,true) as $key => $value) { $aTecnicos[]=$value["data"]; }
+        //var_dump($aTecnicos);
+
+        $orden_trabajo->updateOrdenTrabajo($id_orden_trabajo, $fecha, $nro_orden_trabajo, $hora_desde, $hora_hasta, $id_estado_orden, $aTareas, $aTecnicos);
       break;
       case 'traerDetalleOrdenTrabajo':
         //$id_orden_trabajo = $_POST['id_orden_trabajo'];
-        echo $orden_trabajo->traerDetalleOrdenTrabajo($id_orden_trabajo);
+        $orden_trabajo->traerDetalleOrdenTrabajo($id_orden_trabajo);//no es necesario hacer un echo porque ya se hace en la clase OrdenTrabajo
       break;
       case 'eliminarOrdenTrabajo':
         //$id_orden_trabajo = $_POST['id_orden_trabajo'];

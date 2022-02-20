@@ -23,7 +23,7 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
 </head>
 
 <body>
-  <span id="id_tecnico" class=""><?=$_SESSION['rowUsers']['id_tecnico']=8;?></span>
+  <span id="id_tecnico" class=""><?=$_SESSION['rowUsers']['id_tecnico'];?></span>
   <!-- loader -->
   <div id="loader">
       <div class="spinner-border text-primary" role="status"></div>
@@ -486,6 +486,37 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
         $divContTextoTres.appendChild($divTextoTres);
         $divContTextoTres.appendChild($spanValorTres);
 
+        //***************************ITEM CUATRO***************************************************
+        $divContItemCuatro = document.createElement("div");
+        $divContItemCuatro.className="item";
+
+        $divIconListCuatro = document.createElement("div");
+        $divIconListCuatro.className="icon-box bg-secondary";
+
+        $iconoCuatro=document.createElement("ion-icon");
+        $iconoCuatro.setAttribute("name", "checkmark-circle-outline");//ICONO
+
+        $divContTextoCuatro = document.createElement("div");
+        $divContTextoCuatro.className="in";
+
+        $divTextoCuatro = document.createElement("div");
+        $textoDivContTextoTres = document.createTextNode(`Estado:`);//LABEL
+        $divTextoCuatro.appendChild($textoDivContTextoTres);
+
+        $spanValorCuatro = document.createElement("span");
+        $spanValorCuatro.className="badge badge-primary";
+        $valorSpanTres = document.createTextNode(`${ordenTrabajo.estado}`);//VALOR
+        $spanValorCuatro.appendChild($valorSpanTres);
+
+        //Dibujamos los text views
+        $contItemsListView.appendChild($divContItemCuatro);
+        $divContItemCuatro.appendChild($divIconListCuatro);
+        $divIconListCuatro.appendChild($iconoCuatro);
+        $divContItemCuatro.appendChild($divContTextoCuatro);
+        $divContTextoCuatro.appendChild($divTextoCuatro);
+        $divContTextoCuatro.appendChild($spanValorCuatro);
+
+
         /*$divCardBody.appendChild($cardTitle);
         $divCardBody.appendChild($cardText);*/
         $divCardBody.appendChild($contListView);
@@ -619,6 +650,7 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
         datatype: "json",
         data: {accion: accion, id_orden_trabajo: id_orden_trabajo},
         success: function(response){
+          //console.log(response)
           respuestaJson = JSON.parse(response);
           //console.log(respuestaJson);
           let dot=respuestaJson.detalle_orden_trabajo;
@@ -1037,7 +1069,6 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
     }
 
     window.addEventListener("DOMContentLoaded", iniciarDashboard);
-
   </script>
 </body>
 </html>

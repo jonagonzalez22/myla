@@ -265,7 +265,7 @@
                               <th>Hasta</th>
                             </tr>
                           </thead>
-                          <tfoot>
+                          <tfoot class="text-center">
                             <tr>
                               <th>Seleccione</th>
                               <th>Asunto</th>
@@ -336,7 +336,7 @@
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Detalle Orden de Trabajo</h5>
+            <h5 class="modal-title">Detalle Orden de Trabajo <span id="idOrdenTrabajoverDetalle"></span></h5>
             <button class="close" type="button" data-dismiss="modal" aria-label="Close" data-original-title="" title=""><span aria-hidden="true">×</span></button>
           </div>
           <div class="modal-body">
@@ -354,19 +354,24 @@
                   <div id="collapseOne1Detalle" class="collapse show" role="tabpanel" aria-labelledby="headingOne1" data-parent="#accordionExDetalle">
                     <div class="card-body border-secondary">
                       <div class="row">
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                           <div class="form-group">
                             <label for="" class="col-form-label">Fecha: <span id="lblFecha"></span></label>
                           </div>
                         </div>
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                           <div class="form-group">
                             <label for="" class="col-form-label">Desde: <span id="lblHoraDesde"></span></label>
                           </div>
                         </div>
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                           <div class="form-group">
                             <label for="" class="col-form-label">Hasta: <span id="lblHoraHasta"></span></label>
+                          </div>
+                        </div>
+                        <div class="col-lg-3">
+                          <div class="form-group">
+                            <label for="" class="col-form-label">Estado: <span id="lblEstado"></span></label>
                           </div>
                         </div>
                       </div>
@@ -417,12 +422,12 @@
                 <div class="card border-secondary">
                   <!-- Card header -->
                   <a data-toggle="collapse" data-parent="#accordionExDetalle" href="#collapseOne3Detalle" aria-expanded="true" aria-controls="collapseOne3Detalle">
-                    <div class="card-header" role="tab" id="headingOne2">
-                      <h6 class="mb-0">Tareas de mantenimiento preventivo pendientes <i class="fa fa-angle-down rotate-icon float-right"></i></h6>
+                    <div class="card-header" role="tab" id="headingOne3">
+                      <h6 class="mb-0">Tareas de mantenimiento preventivo <i class="fa fa-angle-down rotate-icon float-right"></i></h6>
                     </div>
                   </a>
                   <!-- Card body -->
-                  <div id="collapseOne3Detalle" class="collapse show" role="tabpanel" aria-labelledby="headingOne2" data-parent="#accordionExDetalle">
+                  <div id="collapseOne3Detalle" class="collapse show" role="tabpanel" aria-labelledby="headingOne3" data-parent="#accordionExDetalle">
                     <div class="card-body border-secondary">
                       <div class="table-responsive">
                         <table class="table table-hover" id="tableTareasDetalle">
@@ -446,12 +451,12 @@
                 <div class="card border-secondary">
                   <!-- Card header -->
                   <a class="collapsed" data-toggle="collapse" data-parent="#accordionExDetalle" href="#collapseTwo4Detalle" aria-expanded="false" aria-controls="collapseTwo4Detalle">
-                    <div class="card-header" role="tab" id="headingTwo3">
+                    <div class="card-header" role="tab" id="headingTwo4">
                       <h6 class="mb-0">Técnicos <i class="fa fa-angle-down rotate-icon float-right"></i></h6>
                     </div>
                   </a>
                   <!-- Card body -->
-                  <div id="collapseTwo4Detalle" class="collapse" role="tabpanel" aria-labelledby="headingTwo3" data-parent="#accordionExDetalle">
+                  <div id="collapseTwo4Detalle" class="collapse show" role="tabpanel" aria-labelledby="headingTwo4" data-parent="#accordionExDetalle">
                     <div class="card-body border-secondary">
                       <div class="table-responsive">
                         <table class="table table-hover" id="tableTecnicosDetalle">
@@ -459,9 +464,41 @@
                             <tr>
                               <th>Tecnico</th>
                               <th>Vehiculo</th>
+                              <th>Inicio</th>
+                              <th>Fin</th>
+                              <th>Geoposicion</th>
                             </tr>
                           </thead>
                           <tbody></tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Fin Accordion card -->
+                <!-- Accordion card -->
+                <div class="card border-secondary">
+                  <!-- Card header -->
+                  <a class="collapsed" data-toggle="collapse" data-parent="#accordionExDetalle" href="#collapseTwo5Detalle" aria-expanded="false" aria-controls="collapseTwo5Detalle">
+                    <div class="card-header" role="tab" id="headingTwo5">
+                      <h6 class="mb-0">Materiales <i class="fa fa-angle-down rotate-icon float-right"></i></h6>
+                    </div>
+                  </a>
+                  <!-- Card body -->
+                  <div id="collapseTwo5Detalle" class="collapse show" role="tabpanel" aria-labelledby="headingTwo5" data-parent="#accordionExDetalle">
+                    <div class="card-body border-secondary">
+                      <div class="table-responsive">
+                        <table class="table table-hover" id="tableMaterialesDetalle">
+                          <thead class="text-center">
+                            <tr>
+                              <th>Material</th>
+                              <th>Cantidad Estimada</th>
+                              <th>Cargado vehiculo</th>
+                              <th>Cantidad utilizada</th>
+                              <th>Aprobado cliente</th>
+                            </tr>
+                          </thead>
+                          <tbody class="text-center"></tbody>
                         </table>
                       </div>
                     </div>
@@ -527,6 +564,7 @@
       var accion = "";
       tablaTareas=$("#tablaTareas");
       tablaTecnicos= $('#tablaTecnicos');
+
       $(document).ready(function(){
         cargarDatosComponentes();
         idiomaEsp = {
@@ -640,7 +678,26 @@
             {"data": "hora_hasta_mostrar"},
             //{"data": "vehiculo"},
             // {"data": "costo_movilidad_estimado_mostrar"},
-            {"defaultContent" : "<div class='text-center'><div class='btn-group'><button class='btn btn-success btnEditar'><i class='fa fa-edit'></i></button><button class='btn btn-warning btnVer'><i class='fa fa-eye'></i></button><button class='btn btn-danger btnBorrar'><i class='fa fa-trash-o'></i></button></div></div>"},//<button class='btn btn-primary btnAddMantenimiento' title='Añadir tarea de mantenimiento'><i class='fa fa-wrench'></i></button>
+            {
+                render: function(data, type, full, meta) {
+                  return ()=>{
+                    //si la orden esta finalizada no se puede editar
+                    
+                    let btnEditar="<button class='btn btn-success btnEditar'><i class='fa fa-edit'></i></button>";
+                    let btnVer="<button class='btn btn-warning btnVer'><i class='fa fa-eye'></i></button>";
+                    let btnBorrar="<button class='btn btn-danger btnBorrar'><i class='fa fa-trash-o'></i></button>";
+
+                    if(full.id_estado==3){
+                      btnBorrar=btnEditar="";
+                    }
+                    let buttons=btnEditar+btnVer+btnBorrar;
+                    return `
+                    <div class='text-center'>
+                      <div class='btn-group'>${buttons}</div>
+                    </div>`;
+                  };
+                }
+              },
           ],
           "language":  idiomaEsp
         });
@@ -764,8 +821,8 @@
       }
 
       $(document).on("click", ".sinVehiculo", function(){
-        console.log(this.dataset.idSelectVehiculo);
-        console.log($(this.dataset.idSelectVehiculo))
+        //console.log(this.dataset.idSelectVehiculo);
+        //console.log($(this.dataset.idSelectVehiculo))
         $(this.dataset.idSelectVehiculo).val(0);
       });
 
@@ -789,10 +846,10 @@
           contentType: false,
           processData: false,
           success: function(respuesta){
-            console.log(respuesta);
+            //console.log(respuesta);
             /*Convierto en json la respuesta del servidor*/
             respuestaJson = JSON.parse(respuesta);
-            console.log(respuestaJson);
+            //console.log(respuestaJson);
             let listaUbicaciones=respuestaJson;
 
             /*Identifico el select de direcciones*/
@@ -827,73 +884,91 @@
         getTareasMantenimientoPreventivoPendientes();
       });
 
-      function getTareasMantenimientoPreventivoPendientes(){
+      function getTareasMantenimientoPreventivoPendientes(id_ubicacion,aTareas){
         let fecha=document.getElementById("fecha").value;
-        let id_ubicacion=document.getElementById("id_ubicacion").value;
+        if(id_ubicacion==undefined){
+          id_ubicacion=document.getElementById("id_ubicacion").value;
+        }
+        //console.log(aTareas);
         let id_estado=1;// pendiente
         tablaTareas.dataTable().fnDestroy();
-        tablaTareas.DataTable({
-          "ajax": {
-            "url" : "./models/administrar_mantenimieno_preventivo.php?accion=traerMantenimientoPreventivo&id_ubicacion="+id_ubicacion+"&fecha="+fecha+"&id_estado="+id_estado,
-            "dataSrc": "",
-          },
-          "columns":[
-            //{"data": "id_item"},
-            {"defaultContent" : "<input class='form-control select' type='checkbox'>"},
-            {"data": "asunto"},
-            {"data": "descripcion_activo"},
-            {"data": "detalle"},
-            {"data": "fecha_hora_ejecucion_desde_mostrar"},
-            {"data": "fecha_hora_ejecucion_hasta_mostrar"},
-            /*{
-              render: function(data, type, full, meta) {
-                return ()=>{
-                  return `
-                  <input type='hidden' id='proveedor-item-`+full.id_item+`' value=`+full.id_proveedor+`>
-                  <input type='number' class='items' id='item-`+full.id_item+`' placeholder='Cantidad estimada'>`;//
-                };
-              }
-            },*/
-          ],
-          "language": idiomaEsp,
-          initComplete: function(){
-            var b=1;
-            var c=0;
-            this.api().columns.adjust().draw();//Columns sin parentesis
-            this.api().columns().every(function(){//Columns() con parentesis
-              if(b<4){
-                var column=this;
-                var name=$(column.header()).text();
-                var select=$("<select id='filtro"+name.replace(/ /g, "")+"' class='form-control form-control-sm filtrosTrato'><option value=''>Todos</option></select>")
-                  .appendTo($(column.footer()).empty())
-                  .on("change",function(){
-                    var val=$.fn.dataTable.util.escapeRegex(
-                      $(this).val()
-                    );
-                    column.search(val ? '^'+val+'$':'',true,false).draw();
-                  });
-                column.data().unique().sort().each(function(d,j){
-                  var val=$("<div/>").html(d).text();
-                  if(column.search()==='^'+val+'$'){
-                    select.append("<option value='"+val+"' selected='selected'>"+val+"</option>");
-                  }else{
-                    select.append("<option value='"+val+"'>"+val+"</option>");
-                  }
-                })
-              }
-              b++;
-            })
-            
-            tablaTareas.find("tbody tr td").on( 'click', function () {
-              var t=$(this).parent();
-              if(t.hasClass('selected')){
-                deselectRow(t);
-              }else{
+        if(id_ubicacion>0){
+          tablaTareas.DataTable({
+            "ajax": {
+              "url" : "./models/administrar_mantenimieno_preventivo.php?accion=traerMantenimientoPreventivo&id_ubicacion="+id_ubicacion+"&fecha="+fecha+"&id_estado="+id_estado,
+              "dataSrc": "",
+            },
+            "columns":[
+              //{"data": "id_item"},
+              //{"defaultContent" : "<input class='form-control select' type='checkbox'>"},
+              {
+                render: function(data, type, full, meta) {
+                  return ()=>{
+                    //checkeamos las filas si queremos editar
+                    let checked="";
+                    if(aTareas!=undefined){
+                      if(aTareas.includes(full.id_mantenimiento_preventivo)){
+                        checked="checked";
+                      }
+                    }
+                    return `<input class='form-control select' type='checkbox' ${checked}>`;//
+                  };
+                }
+              },
+              {"data": "asunto"},
+              {"data": "descripcion_activo"},
+              {"data": "detalle"},
+              {"data": "fecha_hora_ejecucion_desde_mostrar"},
+              {"data": "fecha_hora_ejecucion_hasta_mostrar"},
+            ],
+            "language": idiomaEsp,
+            initComplete: function(){
+              var b=1;
+              var c=0;
+              this.api().columns.adjust().draw();//Columns sin parentesis
+              this.api().columns().every(function(){//Columns() con parentesis
+                if(b>1 && b<4){
+                  var column=this;
+                  var name=$(column.header()).text();
+                  var select=$("<select id='filtro"+name.replace(/ /g, "")+"' class='form-control form-control-sm filtrosTrato'><option value=''>Todos</option></select>")
+                    .appendTo($(column.footer()).empty())
+                    .on("change",function(){
+                      var val=$.fn.dataTable.util.escapeRegex(
+                        $(this).val()
+                      );
+                      column.search(val ? '^'+val+'$':'',true,false).draw();
+                    });
+                  column.data().unique().sort().each(function(d,j){
+                    var val=$("<div/>").html(d).text();
+                    if(column.search()==='^'+val+'$'){
+                      select.append("<option value='"+val+"' selected='selected'>"+val+"</option>");
+                    }else{
+                      select.append("<option value='"+val+"'>"+val+"</option>");
+                    }
+                  })
+                }
+                b++;
+              })
+              
+              tablaTareas.find("tbody tr td").on( 'click', function () {
+                var t=$(this).parent();
+                if(t.hasClass('selected')){
+                  deselectRow(t);
+                }else{
+                  selectRow(t);
+                }
+              });
+
+              //si hay filas checkeadas las mostramos como seleccionadas
+              tablaTareas.find("input[type='checkbox']:checked").each(function(){
+                var t=$(this).closest("tr");
                 selectRow(t);
-              }
-            });
-          }
-        });
+              })
+            }
+          });
+        }else{
+          tablaTareas.DataTable({"language": idiomaEsp,});
+        }
       }
 
       function selectRow(t){
@@ -946,7 +1021,7 @@
         tablaTecnicos.DataTable().rows(function ( idx, data, node ) {
           let fila=$(node);
           if(fila.hasClass("selected")){
-            console.log(fila.find(".select_vehiculos").val());
+            //console.log(fila.find(".select_vehiculos").val());
             data.id_vehiculo=fila.find(".select_vehiculos").val();
             tecnicos[idx]={data};
           }
@@ -976,7 +1051,7 @@
           processData: false,     
           success: function(data) {
             if(data==""){
-              tablaTareas.ajax.reload(null, false);
+              tablaOrdenesTrabajo.ajax.reload(null, false);
 
               $('#modalCRUD').modal('hide'); 
           
@@ -1018,21 +1093,23 @@
           datatype:"json",
           data:  {accion:accion, id_orden_trabajo:id_orden_trabajo},
           success: function(response) {
-            console.log(response);
+            //console.log(response);
             let datos = JSON.parse(response);
-            console.log(datos);
+            //console.log(datos);
             let dot=datos.detalle_orden_trabajo;
             $(".modal-header").css( "background-color", "#ffc107");
             $(".modal-header").css( "color", "white" );
 
             verDetalleOrdenTrabajo=$("#verDetalleOrdenTrabajo");
             verDetalleOrdenTrabajo.modal("show");
+            $("#idOrdenTrabajoverDetalle").html(" N°"+id_orden_trabajo)
 
             /*let $divAdjuntos = document.getElementById('adjuntos');
             $divAdjuntos.innerHTML="";*/
             $("#lblFecha").html(dot.fecha_mostrar);
             $("#lblHoraDesde").html(dot.hora_desde_mostrar);
             $("#lblHoraHasta").html(dot.hora_hasta_mostrar);
+            $("#lblEstado").html(dot.estado);
 
             $("#lblCliente").html(dot.cliente);
             $("#lblUbicacion").html(dot.direccion);
@@ -1072,12 +1149,32 @@
             $bodyTablaTecnicos = $tabla.querySelector("tbody");
             $bodyTablaTecnicos.innerHTML="";
 
+            console.log(datos.tecnicos_orden_trabajo);
             datos.tecnicos_orden_trabajo.forEach((tecnicos)=>{
                 $tr=`<tr>
                       <td>${tecnicos.tecnico}</td>
                       <td>${tecnicos.vehiculo}</td>
+                      <td>${tecnicos.fecha_hora_inicio_trabajo}</td>
+                      <td>${tecnicos.fecha_hora_fin_trabajo}</td>
+                      <td>${tecnicos.geoposicion_inicio_trabajo}</td>
                   </tr>`;
                 $bodyTablaTecnicos.innerHTML +=$tr;
+            })
+
+            $tabla = document.getElementById("tableMaterialesDetalle");
+            $bodyTablaMateriales = $tabla.querySelector("tbody");
+            $bodyTablaMateriales.innerHTML="";
+
+            console.log(datos.materiales_orden_trabajo);
+            datos.materiales_orden_trabajo.forEach((materiales)=>{
+                $tr=`<tr>
+                      <td>${materiales.item}</td>
+                      <td>${materiales.cantidad_reservada}</td>
+                      <td>${materiales.cargado_vehiculo_mostrar}</td>
+                      <td>${materiales.cantidad_utilizada}</td>
+                      <td>${materiales.aprobado_cliente}</td>
+                  </tr>`;
+                $bodyTablaMateriales.innerHTML +=$tr;
             })
 
           }
@@ -1085,21 +1182,21 @@
       });
 
       $(document).on("click", ".btnEditar", function(){
+        fila = $(this).closest("tr");
+        let id_orden_trabajo = fila.find('td:eq(0)').text();
         $(".modal-header").css( "background-color", "#22af47");
         $(".modal-header").css( "color", "white" );
-        $(".modal-title").text("Editar orden de trabajo");
-        $("#formMantenimientoPreventivo").trigger("reset");
+        $(".modal-title").text("Editar orden de trabajo N°"+id_orden_trabajo);
+        $("#formOrdenTrabajo").trigger("reset");
         $('#modalCRUD').modal('show');
-        fila = $(this).closest("tr");
-        let id_mantenimiento_preventivo = fila.find('td:eq(0)').text();
 
-        /*let datosUpdate = new FormData();
-        datosUpdate.append('accion', 'traerMantenimientoPreventivoUpdate');
-        datosUpdate.append('id_mantenimiento_preventivo', id_mantenimiento_preventivo);*/
+        let datosUpdate = new FormData();
+        datosUpdate.append('accion', 'traerDetalleOrdenTrabajo');
+        datosUpdate.append('id_orden_trabajo', id_orden_trabajo);
         $.ajax({
-          //data: datosUpdate,
-          //url: './models/administrar_orden_trabajo.php',
-          url: './models/administrar_orden_trabajo.php?accion=traerMantenimientoPreventivo&id_mantenimiento_preventivo='+id_mantenimiento_preventivo,
+          data: datosUpdate,
+          url: './models/administrar_orden_trabajo.php',
+          //url: './models/administrar_orden_trabajo.php?accion=traerOrdenTrabajo&id_orden_trabajo='+id_orden_trabajo,
           method: "post",
           cache: false,
           contentType: false,
@@ -1108,26 +1205,46 @@
             //$('#procesando').modal('show');
           },
           success: function(datosProcesados){
-            console.log(datosProcesados);
+            //console.log(datosProcesados);
             let datosInput = JSON.parse(datosProcesados);
-            let datos=datosInput[0];
-            console.log(datos);
+            let dot=datosInput.detalle_orden_trabajo;
+            //console.log(dot);
 
-            //$("#fecha_alta").val(datosInput.datos.fecha_alta);
-            $("#cliente").val(datos.id_cliente);
-            $("#ubicacion").val(datos.id_direccion_cliente);
-            $("#id_elemento_cliente").val(datos.id_activo_cliente);
-            $("#asunto").val(datos.asunto);
-            $("#detalle").val(datos.detalle);
-            $("#id_contacto_cliente").val(datos.id_contacto_cliente);
-            //$("#id_vehiculo_asignado").val(datos.id_vehiculo_asignado);
-            //$("#costo_movilidad_estimado").val(datos.costo_movilidad_estimado);
-            $("#fecha_hora_ejecucion_desde").val(datos.fecha_hora_ejecucion_desde);
-            $("#fecha_hora_ejecucion_hasta").val(datos.fecha_hora_ejecucion_hasta);
+            $("#fecha").val(dot.fecha);
+            $("#hora_desde").val(dot.hora_desde);
+            $("#hora_hasta").val(dot.hora_hasta);
+            $("#id_cliente").val(dot.id_cliente);
+            getUbicacionesCliente(dot.id_cliente,dot.id_direccion_cliente)
+
+            let aTareas=[];
+            datosInput.tareas_orden_trabajo.forEach((tareas)=>{
+              aTareas.push(tareas.id_mantenimiento_preventivo);
+            })
+            //console.log(aTareas);
+
+            getTareasMantenimientoPreventivoPendientes(dot.id_direccion_cliente,aTareas);
+
+            let aTecnicos=[];
+            datosInput.tecnicos_orden_trabajo.forEach((tecnicos)=>{
+              aTecnicos.push(tecnicos.id_tecnico);
+            })
             
-            $('#id_mantenimiento_preventivo').html(id_mantenimiento_preventivo);
+            tablaTecnicos.find("tbody tr").each(function(){
+              let fila=$(this);
+              let tecnicoFila=fila.find('td:eq(1)').text();
+
+              datosInput.tecnicos_orden_trabajo.forEach((tecnicos)=>{
+                if(tecnicos.id_tecnico==tecnicoFila){
+                  fila.addClass("selected");
+                  fila.find("input[type='checkbox']").attr("checked","checked");
+                  fila.find(".select_vehiculos").val(tecnicos.id_vehiculo)
+                }
+              })
+            })
             
-            accion = "updateMantenimientoPreventivo";
+            $('#id_orden_trabajo').html(id_orden_trabajo);
+            
+            accion = "updateOrdenTrabajo";
           }
         });
 
@@ -1136,7 +1253,7 @@
 
       $(document).on("click", ".btnBorrar", function(){
         fila = $(this);           
-        id_vehiculo = parseInt($(this).closest('tr').find('td:eq(0)').text());       
+        id_orden_trabajo = parseInt($(this).closest('tr').find('td:eq(0)').text());       
         swal({
           title: "Estas seguro?",
           text: "Una vez eliminado esta orden, no volveras a verla",
@@ -1151,9 +1268,9 @@
               url: "models/administrar_orden_trabajo.php",
               type: "POST",
               datatype:"json",    
-              data:  {accion:accion, id_vehiculo:id_vehiculo},    
+              data:  {accion:accion, id_orden_trabajo:id_orden_trabajo},    
               success: function() {
-                tablaTareas.row(fila.parents('tr')).remove().draw();                  
+                tablaOrdenesTrabajo.row(fila.parents('tr')).remove().draw();                  
               }
             }); 
           } else {
