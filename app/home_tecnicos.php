@@ -1,7 +1,7 @@
 <?php 
     session_start();
     if (!isset($_SESSION['rowUsers']['id_usuario'])) {
-      header("location:./redireccionar.php");
+      header("location:models/redireccionar_app.php");
   }
 ?>
 <!doctype html>
