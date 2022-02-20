@@ -61,7 +61,7 @@ class DashboardTecnicos{
         if(isset($fhasta)) $filtros["fecha_hasta"]=$fhasta;
         echo $dashboardTecnicos->traerDatosIniciales($id_tecnico,$filtros);
 			break;
-      case 'traerDetalleOrdenTrabajo':
+      case 'traerDetalleOrdenTrabajoApp':
         echo $orden_trabajo->traerDetalleOrdenTrabajo($id_orden_trabajo);
       break;
       case 'marcarCargadoMaterial':

@@ -647,7 +647,7 @@
       break;
       case 'traerDetalleOrdenTrabajo':
         //$id_orden_trabajo = $_POST['id_orden_trabajo'];
-        $orden_trabajo->traerDetalleOrdenTrabajo($id_orden_trabajo);//no es necesario hacer un echo porque ya se hace en la clase OrdenTrabajo
+        echo $orden_trabajo->traerDetalleOrdenTrabajo($id_orden_trabajo);
       break;
       case 'eliminarOrdenTrabajo':
         //$id_orden_trabajo = $_POST['id_orden_trabajo'];

@@ -18,7 +18,7 @@
 			$this->clave = $clave;
 
 			/*Buscar usuario*/
-			$queryGetUser = "SELECT id as id_usuario, email, clave, activo, id_perfil, id_cliente, id_proveedor
+			$queryGetUser = "SELECT id as id_usuario, email, clave, activo, id_perfil, id_cliente, id_proveedor, id_tecnico
 						FROM usuarios 
 						WHERE email = '$this->mail'
 						AND clave = '$this->clave'";
