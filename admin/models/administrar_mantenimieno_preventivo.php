@@ -115,6 +115,34 @@
       return json_encode($arrayMantenimientoPreventivo);
 		}
 
+    public function traerMaterialesMantenimientoPreventivo($id_mantenimiento_preventivo){
+
+			$arrayMaterialesMantenimientoPreventivo = [];
+
+			$queryGet = "SELECT mm.id_item,i.item,mm.id_proveedor,p.razon_social AS proveedor,mm.id_almacen,a.almacen,mm.cantidad_estimada
+      FROM materiales_mantenimiento mm 
+        INNER JOIN item i ON mm.id_item=i.id 
+        INNER JOIN proveedores p ON mm.id_proveedor=p.id
+        INNER JOIN almacenes a ON mm.id_almacen=a.id
+      WHERE mm.id_calendario_mantenimiento = $id_mantenimiento_preventivo";
+      //var_dump($queryGet);
+			$getDatos = $this->conexion->consultaRetorno($queryGet);
+
+			while ($row = $getDatos->fetch_array()) {
+        $arrayMaterialesMantenimientoPreventivo[] =[
+          "id_item"           =>$row["id_item"],
+          "item"              =>$row["item"],
+          "id_proveedor"      =>$row["id_proveedor"],
+          "proveedor"         =>$row["proveedor"],
+          "id_almacen"        =>$row["id_almacen"],
+          "almacen"           =>$row["almacen"],
+          "cantidad_estimada" =>$row["cantidad_estimada"],
+        ];
+			}
+			//echo json_encode($arrayMaterialesMantenimientoPreventivo);
+      return json_encode($arrayMaterialesMantenimientoPreventivo);
+		}
+
 		public function agregarMantenimientoPreventivo($id_elemento_cliente, $asunto, $detalle, $id_contacto_cliente, $fecha_hora_ejecucion_desde, $fecha_hora_ejecucion_hasta, $frecuencia_cantidad, $frecuencia_repeticion, $frecuencia_stop, $id_almacen, $aItems, $adjuntos, $cantAdjuntos){
       $activo = 1;
       $id_usuario_alta=$_SESSION["rowUsers"]["id_usuario"];
@@ -154,51 +182,11 @@
           echo "<br><br>".$queryInsert;
         }
 
-        foreach($aItems as $id_item => $datos){
-          $id_item=explode("-",$id_item);
-          $id_item=$id_item[1];
-          $cantidad_estimada=$datos["cantidad"];
-          $id_proveedor=$datos["proveedor"];
-          /*var_dump($id_item);
-          var_dump($datos);*/
+        $this->agregarMaterialesMantenimientoPreventivo($id_calendario_mantenimiento, $id_almacen, $aItems);
+        $this->agregarAdjuntosMantenimientoPreventivo($id_calendario_mantenimiento, $adjuntos, $cantAdjuntos);
 
-          //INSERTO DATOS EN LA TABLA ADJUNTOS ORDEN_COMPRA
-          $queryInsertMateriales = "INSERT INTO materiales_mantenimiento (id_item, id_calendario_mantenimiento, cantidad_estimada, id_proveedor, id_almacen) VALUES ($id_item, $id_calendario_mantenimiento, $cantidad_estimada, $id_proveedor, $id_almacen)";
-          $insertAdjuntos = $this->conexion->consultaSimple($queryInsertMateriales);
-          $mensajeError=$this->conexion->conectar->error;
-      
-          echo $mensajeError;
-          if($mensajeError!=""){
-            echo "<br><br>".$queryInsertMateriales;
-          }
-        }
-
-        //SI VIENEN ADJUNTOS LOS GUARDO.
-        if ($adjuntos > 0) {
-          $comentarios="";
-          $etiquetas="";
-          for ($i=0; $i < $cantAdjuntos; $i++) { 
-            $indice = "file".$i;
-            $nombreADJ = $_FILES[$indice]['name'];
-
-            //INSERTO DATOS EN LA TABLA ADJUNTOS ORDEN_COMPRA
-            $queryInsertAdjuntos = "INSERT INTO adjuntos_tareas_mantenimiento (id_calendario_mantenimiento, archivo, fecha_hora, id_usuario_alta, comentarios, etiquetas)VALUES($id_calendario_mantenimiento, '$nombreADJ',NOW(),'$id_usuario_alta','$comentarios', '$etiquetas')";
-            $insertAdjuntos = $this->conexion->consultaSimple($queryInsertAdjuntos);
-
-            $mensajeError=$this->conexion->conectar->error;
-        
-            echo $mensajeError;
-            if($mensajeError!=""){
-              echo "<br><br>".$queryInsert;
-            }
-            
-            //INGRESO ARCHIVOS EN EL DIRECTORIO
-            $directorio = "../views/mantenimiento_preventivo/";
-            move_uploaded_file($_FILES[$indice]['tmp_name'], $directorio."adj_".$id_calendario_mantenimiento."_".$nombreADJ);
-            //$ruta_completa_imagen = $directorio.$nombreFinalArchivo;
-          }
-        }
       }
+
       $queryUpdate = "UPDATE calendario_mantenimiento SET id_referencia_original = $id_referencia_original WHERE id = $id_referencia_original";
       //echo $queryUpdate;
       $update= $this->conexion->consultaSimple($queryUpdate);
@@ -212,14 +200,78 @@
 
 		}
 
-    public function updateMantenimientoPreventivo($id_mantenimiento_preventivo, $id_elemento_cliente, $asunto, $detalle, $id_contacto_cliente, $fecha_hora_ejecucion_desde, $fecha_hora_ejecucion_hasta, $adjuntos, $cantAdjuntos){
+    public function agregarMaterialesMantenimientoPreventivo($id_calendario_mantenimiento, $id_almacen, $aItems){
+      foreach($aItems as $id_item => $datos){
+        $id_item=explode("-",$id_item);
+        $id_item=$id_item[1];
+        $cantidad_estimada=$datos["cantidad"];
+        $id_proveedor=$datos["proveedor"];
+        /*var_dump($id_item);
+        var_dump($datos);*/
 
-			$this->id_mantenimiento_preventivo=$id_mantenimiento_preventivo;
-      $id_estado=1;
+        //INSERTO DATOS EN LA TABLA MATERIALES ORDEN_COMPRA
+        $queryInsertMateriales = "INSERT INTO materiales_mantenimiento (id_item, id_calendario_mantenimiento, cantidad_estimada, id_proveedor, id_almacen) VALUES ($id_item, $id_calendario_mantenimiento, $cantidad_estimada, $id_proveedor, $id_almacen)";
+        $insertAdjuntos = $this->conexion->consultaSimple($queryInsertMateriales);
+        $mensajeError=$this->conexion->conectar->error;
+    
+        echo $mensajeError;
+        if($mensajeError!=""){
+          echo "<br><br>".$queryInsertMateriales;
+        }
+      }
+    }
 
-			//Actualizo datos del vehiculo
-      $query = "UPDATE calendario_mantenimiento set id_activo_cliente = '$id_elemento_cliente', asunto = '$asunto', detalle = '$detalle', id_contacto_cliente = '$id_contacto_cliente', fecha_hora_ejecucion_desde = '$fecha_hora_ejecucion_desde', fecha_hora_ejecucion_hasta = '$fecha_hora_ejecucion_hasta', id_estado = '$id_estado'
-      WHERE id = $this->id_mantenimiento_preventivo";
+    public function agregarAdjuntosMantenimientoPreventivo($id_calendario_mantenimiento, $adjuntos, $cantAdjuntos){
+      $id_usuario_alta=$_SESSION["rowUsers"]["id_usuario"];
+      //SI VIENEN ADJUNTOS LOS GUARDO.
+      if ($adjuntos > 0) {
+        $comentarios="";
+        $etiquetas="";
+        for ($i=0; $i < $cantAdjuntos; $i++) { 
+          $indice = "file".$i;
+          $nombreADJ = $_FILES[$indice]['name'];
+
+          //INSERTO DATOS EN LA TABLA ADJUNTOS ORDEN_COMPRA
+          $queryInsertAdjuntos = "INSERT INTO adjuntos_tareas_mantenimiento (id_calendario_mantenimiento, archivo, fecha_hora, id_usuario_alta, comentarios, etiquetas)VALUES($id_calendario_mantenimiento, '$nombreADJ',NOW(),'$id_usuario_alta','$comentarios', '$etiquetas')";
+          $insertAdjuntos = $this->conexion->consultaSimple($queryInsertAdjuntos);
+
+          $mensajeError=$this->conexion->conectar->error;
+      
+          echo $mensajeError;
+          if($mensajeError!=""){
+            echo "<br><br>".$queryInsert;
+          }
+          
+          //INGRESO ARCHIVOS EN EL DIRECTORIO
+          $directorio = "../views/mantenimiento_preventivo/";
+          move_uploaded_file($_FILES[$indice]['tmp_name'], $directorio."adj_".$id_calendario_mantenimiento."_".$nombreADJ);
+          //$ruta_completa_imagen = $directorio.$nombreFinalArchivo;
+        }
+      }
+    }
+
+    public function traerDetalleMantenimientoPreventivo($id_mantenimiento_preventivo){
+
+      $filtros["id_mantenimiento_preventivo"]=$id_mantenimiento_preventivo;
+      $datos_mantenimiento_preventivo=$this->traerMantenimientoPreventivo($filtros);
+      $datos_mantenimiento_preventivo=json_decode($datos_mantenimiento_preventivo,true);
+      $datos_mantenimiento_preventivo=$datos_mantenimiento_preventivo[0];
+
+      $materiales_mantenimiento_preventivo=$this->traerMaterialesMantenimientoPreventivo($id_mantenimiento_preventivo);
+      $materiales_mantenimiento_preventivo=json_decode($materiales_mantenimiento_preventivo,true);
+
+      $aDetalleMantenimientoPreventivo=[
+        "datos_mantenimiento_preventivo"      =>$datos_mantenimiento_preventivo,
+        "materiales_mantenimiento_preventivo" =>$materiales_mantenimiento_preventivo,
+      ];
+      return json_encode($aDetalleMantenimientoPreventivo);
+
+    }
+
+    public function updateMantenimientoPreventivo($id_mantenimiento_preventivo, $id_elemento_cliente, $asunto, $detalle, $id_contacto_cliente, $id_almacen, $aItems, $adjuntos, $cantAdjuntos){
+
+			//Actualizo datos de la tarea de mantenimiento preventivo
+      $query = "UPDATE calendario_mantenimiento set id_activo_cliente = '$id_elemento_cliente', asunto = '$asunto', detalle = '$detalle', id_contacto_cliente = '$id_contacto_cliente' WHERE id_estado = 1 AND id_referencia_original = (SELECT id_referencia_original FROM calendario_mantenimiento b WHERE id = $id_mantenimiento_preventivo)";
       //echo $query;
 			$update = $this->conexion->consultaSimple($query);
       
@@ -231,22 +283,18 @@
         echo "<br><br>".$query;
       }
 
-      /*BUSCO EL ID DEL VEHICULO CREADO PARA GUARDAR EL HISTORIAL DE TECNICOS*/
-      /*$queryGetIdTecnico = "SELECT id_tecnico FROM asignacion_tecnico_vehiculo 
-        WHERE id_mantenimiento_preventivo = '$id_mantenimiento_preventivo'
-        ORDER BY fecha DESC LIMIT 1";
-      $getIdTecnico = $this->conexion->consultaRetorno($queryGetIdTecnico);
-      $id_tecnico=0;
-      if ($getIdTecnico->num_rows > 0 ) {
-        $idRow = $getIdTecnico->fetch_assoc();
-        $id_tecnico = $idRow['id_tecnico'];
-      }*/
+      $queryGet = "SELECT id AS id_mantenimiento_preventivo FROM calendario_mantenimiento WHERE id_estado = 1 AND id_referencia_original = (SELECT id_referencia_original FROM calendario_mantenimiento b WHERE id = $id_mantenimiento_preventivo)";
+      //var_dump($queryGet);
+			$getDatos = $this->conexion->consultaRetorno($queryGet);
 
-      /*SI LOS TECNICOS SON DIFERENTES, GUARDO EL HISTORIAL DE TECNICOS*/
-      /*if($id_tecnico!=$tecnico){
-        $queryInsertVehiculo = "INSERT INTO asignacion_tecnico_vehiculo (id_mantenimiento_preventivo, id_tecnico, fecha, validado) VALUES('$id_mantenimiento_preventivo', '$tecnico', NOW(), 1)";
-        $insertarVehiculo= $this->conexion->consultaSimple($queryInsertVehiculo);
-      }*/
+			while ($row = $getDatos->fetch_array()) {
+        $id=$row["id_mantenimiento_preventivo"];
+        $this->eliminarAdjuntosOrdenTrabajo($id);
+        $this->eliminarMaterialesOrdenTrabajo($id);
+
+        $this->agregarMaterialesMantenimientoPreventivo($id, $id_almacen, $aItems);
+        $this->agregarAdjuntosMantenimientoPreventivo($id, $adjuntos, $cantAdjuntos);
+      }
 
 		}
 
@@ -259,7 +307,22 @@
 
 			/*Tabla calendario_mantenimiento*/
 			$queryDelelte = "DELETE FROM calendario_mantenimiento WHERE id=$this->id_mantenimiento_preventivo";
+      //echo $queryDelelte."<br><br>";
 			$delete = $this->conexion->consultaSimple($queryDelelte);
+
+		}
+
+    public function eliminarMantenimientoPreventivoPendientes($id_mantenimiento_preventivo){
+
+      //$this->eliminarMantenimientoPreventivo($id_mantenimiento_preventivo);
+
+      $queryGet = "SELECT cm.id AS id_mantenimiento_preventivo FROM calendario_mantenimiento cm WHERE id_estado = 1 AND cm.id_referencia_original = (SELECT id_referencia_original FROM calendario_mantenimiento b WHERE id = $id_mantenimiento_preventivo)";
+      //var_dump($queryGet);
+			$getDatos = $this->conexion->consultaRetorno($queryGet);
+
+      while ($row = $getDatos->fetch_array()) {
+        $this->eliminarMantenimientoPreventivo($row["id_mantenimiento_preventivo"]);
+      }
 
 		}
 
@@ -306,9 +369,6 @@
 			case 'traerDatosInicialesMantenimientoPreventivo':
 			  	$mantenimiento_preventivo->traerDatosIniciales();
 			break;
-      /*case 'traerMantenimientoPreventivoUpdate':
-          echo $mantenimiento_preventivo->traerMantenimientoPreventivo($id_mantenimiento_preventivo);
-			break;*/
 			case 'addMantenimientoPreventivo':
         //var_dump($_FILES);
         if(isset($_FILES['file0'])) {
@@ -321,15 +381,27 @@
 				$mantenimiento_preventivo->agregarMantenimientoPreventivo($id_elemento_cliente, $asunto, $detalle, $id_contacto_cliente, $fecha_hora_ejecucion_desde, $fecha_hora_ejecucion_hasta, $frecuencia_cantidad, $frecuencia_repeticion, $frecuencia_stop, $id_almacen, $aItems, $adjuntos, $cantAdjuntos);
 			break;
       case 'updateMantenimientoPreventivo':
-        $mantenimiento_preventivo->updateMantenimientoPreventivo($id_mantenimiento_preventivo, $id_elemento_cliente, $asunto, $detalle, $id_contacto_cliente, $fecha_hora_ejecucion_desde, $fecha_hora_ejecucion_hasta, $id_almacen, $adjuntos, $cantAdjuntos);
+
+        if(isset($_FILES['file0'])) {
+          $adjuntos = 1;
+        }else{
+          $adjuntos = 0;
+        }
+        $aItems=json_decode($itemsJSON,true);
+
+        $mantenimiento_preventivo->updateMantenimientoPreventivo($id_mantenimiento_preventivo, $id_elemento_cliente, $asunto, $detalle, $id_contacto_cliente, $id_almacen, $aItems, $adjuntos, $cantAdjuntos);
       break;
-      /*case 'trerDetalleVehiculo':
+      case 'traerDetalleMantenimientoPreventivo':
         //$id_mantenimiento_preventivo = $_POST['id_mantenimiento_preventivo'];
-        $mantenimiento_preventivo->trerDetalleVehiculo($id_mantenimiento_preventivo);
-      break;*/
-      case 'eliminarMantenimientoPreventivo':
+        echo $mantenimiento_preventivo->traerDetalleMantenimientoPreventivo($id_mantenimiento_preventivo);
+      break;
+      case 'eliminarMantenimientoPreventivoIndividual':
         //$id_mantenimiento_preventivo = $_POST['id_mantenimiento_preventivo'];
         $mantenimiento_preventivo->eliminarMantenimientoPreventivo($id_mantenimiento_preventivo);
+      break;
+      case 'eliminarMantenimientoPreventivoPendientes':
+        //$id_mantenimiento_preventivo = $_POST['id_mantenimiento_preventivo'];
+        $mantenimiento_preventivo->eliminarMantenimientoPreventivoPendientes($id_mantenimiento_preventivo);
       break;
       case 'marcarMantenimientoPreventivoRealizada':
         //$id_mantenimiento_preventivo = $_POST['id_mantenimiento_preventivo'];

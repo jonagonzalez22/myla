@@ -679,25 +679,25 @@
             //{"data": "vehiculo"},
             // {"data": "costo_movilidad_estimado_mostrar"},
             {
-                render: function(data, type, full, meta) {
-                  return ()=>{
-                    //si la orden esta finalizada no se puede editar
-                    
-                    let btnEditar="<button class='btn btn-success btnEditar'><i class='fa fa-edit'></i></button>";
-                    let btnVer="<button class='btn btn-warning btnVer'><i class='fa fa-eye'></i></button>";
-                    let btnBorrar="<button class='btn btn-danger btnBorrar'><i class='fa fa-trash-o'></i></button>";
+              render: function(data, type, full, meta) {
+                return ()=>{
+                  //si la orden esta finalizada no se puede editar
+                  
+                  let btnEditar="<button class='btn btn-success btnEditar'><i class='fa fa-edit'></i></button>";
+                  let btnVer="<button class='btn btn-warning btnVer'><i class='fa fa-eye'></i></button>";
+                  let btnBorrar="<button class='btn btn-danger btnBorrar'><i class='fa fa-trash-o'></i></button>";
 
-                    if(full.id_estado==3){
-                      btnBorrar=btnEditar="";
-                    }
-                    let buttons=btnEditar+btnVer+btnBorrar;
-                    return `
-                    <div class='text-center'>
-                      <div class='btn-group'>${buttons}</div>
-                    </div>`;
-                  };
-                }
-              },
+                  if(full.id_estado==3){
+                    btnBorrar=btnEditar="";
+                  }
+                  let buttons=btnEditar+btnVer+btnBorrar;
+                  return `
+                  <div class='text-center'>
+                    <div class='btn-group'>${buttons}</div>
+                  </div>`;
+                };
+              }
+            },
           ],
           "language":  idiomaEsp
         });

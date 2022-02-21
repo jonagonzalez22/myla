@@ -400,7 +400,7 @@
                 </div> -->
                 <!-- Accordion card -->
                 <!-- Accordion card -->
-                <div class="card border-secondary">
+                <div class="card border-secondary" id="cardFechaHoraEjecucion">
                   <!-- Card header -->
                   <a class="collapsed" data-toggle="collapse" data-parent="#accordionEx" href="#collapseThree4" aria-expanded="false" aria-controls="collapseThree4">
                     <div class="card-header" role="tab" id="headingThree4">
@@ -410,22 +410,6 @@
                   <!-- Card body -->
                   <div id="collapseThree4" class="collapse" role="tabpanel" aria-labelledby="headingThree4" data-parent="#accordionEx">
                     <div class="card-body border-secondary">
-                      <!-- <div class="row">
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="" class="col-form-label">*Vehiculo:</label>
-                            <select class="form-control" id="id_vehiculo_asignado" required>
-                              <option value="">Seleccione</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="" class="col-form-label">*Costo de movilidad estimado:</label>
-                            <input type="number" class="form-control" id="costo_movilidad_estimado" required>
-                          </div>
-                        </div>
-                      </div> -->
                       <div class="row">
                         <div class="col-lg-6">
                           <div class="form-group">
@@ -636,6 +620,25 @@
     </div>
     <!-- FINAL MODAL con opciones para tareas de mantenimiento-->
 
+    <!--Modal con opciones para tareas de mantenimiento-->
+    <div class="modal fade" id="modalOpcionesEliminarTareas" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">¿Qué tareas desea eliminar?</h5>
+            <span id="id_tarea_mantenimiento_borrar" class="d-none"></span>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body text-center">
+            <button type="button" data-dismiss="modal" class="btn btn-dark" id="btnBorrarSeleccionado"><i class="fa fa-check"></i> Eliminar solo esta</button>
+            <button type="button" data-dismiss="modal" class="btn btn-danger" id="btnBorrarPendientes"><i class="fa fa-trash-o"></i> Esta y sus repeticiones pendientes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- FINAL MODAL con opciones para tareas de mantenimiento-->
+
     <!--Modal para marcar tarea completa-->
     <div class="modal fade" id="modalMarcarTareaCompleta" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
@@ -686,6 +689,7 @@
     <script type="text/javascript">
 
       var accion = "";
+      tablaItems=$('#tablaItems');
       $(document).ready(function(){
         //armarCalendario();
         cargarDatosComponentes();
@@ -799,7 +803,27 @@
             {"data": "contacto_cliente"},
             //{"data": "vehiculo"},
             // {"data": "costo_movilidad_estimado_mostrar"},
-            {"defaultContent" : "<div class='text-center'><div class='btn-group'><button class='btn btn-success btnEditar'><i class='fa fa-edit'></i></button><button class='btn btn-warning btnVer'><i class='fa fa-eye'></i></button><button class='btn btn-danger btnBorrar'><i class='fa fa-trash-o'></i></button></div></div>"},//<button class='btn btn-primary btnAddMantenimiento' title='Añadir tarea de mantenimiento'><i class='fa fa-wrench'></i></button>
+            //{"defaultContent" : "<div class='text-center'><div class='btn-group'><button class='btn btn-success btnEditar'><i class='fa fa-edit'></i></button><button class='btn btn-warning btnVer'><i class='fa fa-eye'></i></button><button class='btn btn-danger btnBorrar'><i class='fa fa-trash-o'></i></button></div></div>"},//<button class='btn btn-primary btnAddMantenimiento' title='Añadir tarea de mantenimiento'><i class='fa fa-wrench'></i></button>
+            {
+              render: function(data, type, full, meta) {
+                return ()=>{
+                  //si la orden esta finalizada no se puede editar
+                  
+                  let btnEditar="<button class='btn btn-success btnEditar'><i class='fa fa-edit'></i></button>";
+                  let btnVer="<button class='btn btn-warning btnVer'><i class='fa fa-eye'></i></button>";
+                  let btnBorrar="<button class='btn btn-danger btnBorrar'><i class='fa fa-trash-o'></i></button>";
+
+                  if(full.id_estado==3){
+                    btnBorrar=btnEditar="";
+                  }
+                  let buttons=btnEditar+btnVer+btnBorrar;
+                  return `
+                  <div class='text-center'>
+                    <div class='btn-group'>${buttons}</div>
+                  </div>`;
+                };
+              }
+            },
           ],
           "language":  idiomaEsp
         });
@@ -930,8 +954,12 @@
 
       $(document).on("change", "#id_almacen", function(){
         let id_almacen=this.value;
-        $("#tablaItems").dataTable().fnDestroy();
-        tablaItems=$('#tablaItems').DataTable({
+        getItems(id_almacen);
+      });
+
+      function getItems(id_almacen,aItems){
+        tablaItems.dataTable().fnDestroy();
+        tablaItems.DataTable({
           "ajax": {
               "url" : "./models/administrar_stock.php?accion=traerItems&id_almacen="+id_almacen,
               "dataSrc": "",
@@ -946,9 +974,17 @@
             {
               render: function(data, type, full, meta) {
                 return ()=>{
+                  let cantidad_estimada="";
+                  if(aItems!=undefined){
+                    aItems.forEach((items)=>{
+                      if(full.id_item==items.id_item && full.id_proveedor==items.id_proveedor){
+                        cantidad_estimada=items.cantidad_estimada;
+                      }
+                    })
+                  }
                   return `
                   <input type='hidden' id='proveedor-item-`+full.id_item+`' value=`+full.id_proveedor+`>
-                  <input type='number' class='items' id='item-`+full.id_item+`' placeholder='Cantidad estimada'>`;//
+                  <input type='number' class='items' id='item-`+full.id_item+`' value='${cantidad_estimada}' placeholder='Cantidad estimada'>`;//
                 };
               }
             },
@@ -983,7 +1019,7 @@
             })
           }
         });
-      });
+      }
 
       $(document).on('click', '#btnAddAdjuntos', function(e){
         e.preventDefault();
@@ -1019,10 +1055,10 @@
           contentType: false,
           processData: false,
           success: function(respuesta){
-            console.log(respuesta);
+            //console.log(respuesta);
             /*Convierto en json la respuesta del servidor*/
             respuestaJson = JSON.parse(respuesta);
-            console.log(respuestaJson);
+            //console.log(respuestaJson);
             let listaUbicaciones=respuestaJson;
 
             /*Identifico el select de direcciones*/
@@ -1073,10 +1109,10 @@
           contentType: false,
           processData: false,
           success: function(respuesta){
-            console.log(respuesta);
+            //console.log(respuesta);
             /*Convierto en json la respuesta del servidor*/
             respuestaJson = JSON.parse(respuesta);
-            console.log(respuestaJson);
+            //console.log(respuestaJson);
             let listaContactos=respuestaJson.contactos;
 
             /*Identifico el select de direcciones*/
@@ -1122,10 +1158,10 @@
           contentType: false,
           processData: false,
           success: function(respuesta){
-            console.log(respuesta);
+            //console.log(respuesta);
             /*Convierto en json la respuesta del servidor*/
             respuestaJson = JSON.parse(respuesta);
-            console.log(respuestaJson);
+            //console.log(respuestaJson);
 
             /*Identifico el select de direcciones*/
             $selectElementosCliente= document.getElementById("id_elemento_cliente");
@@ -1239,6 +1275,7 @@
           $("#tablaItems").dataTable().fnDestroy();
           $("#tablaItems").dataTable({"language":  idiomaEsp});
           $('#modalCRUD').modal('show');
+          $("#cardFechaHoraEjecucion").removeClass("d-none");
           $selectElementosCliente= document.getElementById("id_elemento_cliente");
           $selectElementosCliente.innerHTML = "";
           $option = document.createElement("option");
@@ -1262,16 +1299,17 @@
         $(".modal-title").text("Editar tarea de mantenimiento preventivo");
         $("#formMantenimientoPreventivo").trigger("reset");
         $('#modalCRUD').modal('show');
+        $("#cardFechaHoraEjecucion").addClass("d-none");
         fila = $(this).closest("tr");
         let id_mantenimiento_preventivo = fila.find('td:eq(0)').text();
 
-        /*let datosUpdate = new FormData();
-        datosUpdate.append('accion', 'traerMantenimientoPreventivoUpdate');
-        datosUpdate.append('id_mantenimiento_preventivo', id_mantenimiento_preventivo);*/
+        let datosUpdate = new FormData();
+        datosUpdate.append('accion', 'traerDetalleMantenimientoPreventivo');
+        datosUpdate.append('id_mantenimiento_preventivo', id_mantenimiento_preventivo);
         $.ajax({
-          //data: datosUpdate,
-          //url: './models/administrar_mantenimieno_preventivo.php',
-          url: './models/administrar_mantenimieno_preventivo.php?accion=traerMantenimientoPreventivo&id_mantenimiento_preventivo='+id_mantenimiento_preventivo,
+          data: datosUpdate,
+          url: './models/administrar_mantenimieno_preventivo.php',
+          //url: './models/administrar_mantenimieno_preventivo.php?accion=traerMantenimientoPreventivo&id_mantenimiento_preventivo='+id_mantenimiento_preventivo,
           method: "post",
           cache: false,
           contentType: false,
@@ -1282,24 +1320,43 @@
           success: function(datosProcesados){
             console.log(datosProcesados);
             let datosInput = JSON.parse(datosProcesados);
-            let datos=datosInput[0];
-            console.log(datos);
+            console.log(datosInput);
+            let dmp=datosInput.datos_mantenimiento_preventivo;
+            console.log(dmp);
 
-            //$("#fecha_alta").val(datosInput.datos.fecha_alta);
-            $("#cliente").val(datos.id_cliente);
-            $("#ubicacion").val(datos.id_direccion_cliente);
-            $("#id_elemento_cliente").val(datos.id_activo_cliente);
-            $("#asunto").val(datos.asunto);
-            $("#detalle").val(datos.detalle);
-            $("#id_contacto_cliente").val(datos.id_contacto_cliente);
-            //$("#id_vehiculo_asignado").val(datos.id_vehiculo_asignado);
-            //$("#costo_movilidad_estimado").val(datos.costo_movilidad_estimado);
-            $("#fecha_hora_ejecucion_desde").val(datos.fecha_hora_ejecucion_desde);
-            $("#fecha_hora_ejecucion_hasta").val(datos.fecha_hora_ejecucion_hasta);
+            $("#cliente").val(dmp.id_cliente);
+            $("#ubicacion").val(dmp.id_direccion_cliente);
+            $("#id_elemento_cliente").val(dmp.id_activo_cliente);
+            $("#asunto").val(dmp.asunto);
+            $("#detalle").val(dmp.detalle);
+            $("#id_contacto_cliente").val(dmp.id_contacto_cliente);
+            //$("#id_vehiculo_asignado").val(dmp.id_vehiculo_asignado);
+            //$("#costo_movilidad_estimado").val(dmp.costo_movilidad_estimado);
+            $("#fecha_hora_ejecucion_desde").val(dmp.fecha_hora_ejecucion_desde);
+            $("#fecha_hora_ejecucion_hasta").val(dmp.fecha_hora_ejecucion_hasta);
 
-            getUbicacionesCliente(datos.id_cliente,datos.id_direccion_cliente);
-            getContactosUbicacion(datos.id_cliente,datos.id_contacto_cliente)
-            getElementosUbicacion(datos.id_cliente,datos.id_activo_cliente)
+            getUbicacionesCliente(dmp.id_cliente,dmp.id_direccion_cliente);
+            getContactosUbicacion(dmp.id_cliente,dmp.id_contacto_cliente);
+            getElementosUbicacion(dmp.id_cliente,dmp.id_activo_cliente);
+
+            let mmp=datosInput.materiales_mantenimiento_preventivo;
+            //console.log(mmp);
+
+            if(mmp.length>0){
+              let aItems=[];
+              mmp.forEach((materiales)=>{
+                let objMateriales = {
+                  "id_item":materiales.id_item,
+                  "id_proveedor":materiales.id_proveedor,
+                  "cantidad_estimada":materiales.cantidad_estimada,
+                }
+                aItems.push(objMateriales);
+              })
+              //console.log(aItems);
+              let id_almacen=mmp[0].id_almacen
+              $("#id_almacen").val(id_almacen);
+              getItems(id_almacen,aItems);
+            }
             
             $('#id_mantenimiento_preventivo').html(id_mantenimiento_preventivo);
             
@@ -1312,18 +1369,25 @@
 
       $(document).on("click", ".btnBorrar", function(){
         fila = $(this);           
-        id_mantenimiento_preventivo = parseInt($(this).closest('tr').find('td:eq(0)').text());       
+        let id_mantenimiento_preventivo = parseInt($(this).closest('tr').find('td:eq(0)').text());
+        $("#id_tarea_mantenimiento_borrar").html(id_mantenimiento_preventivo);
 
+        $("#modalOpcionesEliminarTareas").modal("show");
+
+      });
+
+      $(document).on("click", "#btnBorrarSeleccionado", function(){
+        let id_mantenimiento_preventivo=$("#id_tarea_mantenimiento_borrar").html();
         swal({
           title: "Estas seguro?",
-          text: "Una vez eliminado este vehiculo, no volveras a verlo",
+          text: "Una vez eliminada esta tarea no volveras a verlo",
           icon: "warning",
           buttons: true,
           dangerMode: true,
         })
         .then((willDelete) => {
           if (willDelete) {
-            accion = "eliminarMantenimientoPreventivo";
+            accion = "eliminarMantenimientoPreventivoIndividual";
             $.ajax({
               url: "models/administrar_mantenimieno_preventivo.php",
               type: "POST",
@@ -1331,6 +1395,33 @@
               data:  {accion:accion, id_mantenimiento_preventivo:id_mantenimiento_preventivo},    
               success: function() {
                 tablaTareas.row(fila.parents('tr')).remove().draw();                  
+              }
+            }); 
+          } else {
+            swal("El registro no se eliminó!");
+          }
+        })
+      });
+
+      $(document).on("click", "#btnBorrarPendientes", function(){
+        let id_mantenimiento_preventivo=$("#id_tarea_mantenimiento_borrar").html();
+        swal({
+          title: "Estas seguro?",
+          text: "Una vez eliminadas estas tareas no volveras a verlas",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        })
+        .then((willDelete) => {
+          if (willDelete) {
+            accion = "eliminarMantenimientoPreventivoPendientes";
+            $.ajax({
+              url: "models/administrar_mantenimieno_preventivo.php",
+              type: "POST",
+              datatype:"json",    
+              data:  {accion:accion, id_mantenimiento_preventivo:id_mantenimiento_preventivo},    
+              success: function() {
+                tablaTareas.ajax.reload(null, false);
               }
             }); 
           } else {
