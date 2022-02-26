@@ -7,6 +7,7 @@
   }
   require_once('administrar_clientes.php');
   require_once('administrar_vehiculos.php');
+  require_once('administrar_mantenimieno_preventivo.php');
   
   extract($_REQUEST);
 	class OrdenTrabajo{
@@ -254,7 +255,6 @@
 
       $filtrosOT["id_orden_trabajo"]=$id_orden_trabajo;
 
-			//$orden_trabajo = new OrdenTrabajo();
       $detalle_orden_trabajo=$this->traerOrdenTrabajo($filtrosOT);
       $detalle_orden_trabajo=json_decode($detalle_orden_trabajo,true);
       $detalle_orden_trabajo=$detalle_orden_trabajo[0];
@@ -277,12 +277,17 @@
       $contactos_orden_trabajo=json_decode($contactos,true);
       $contactos_orden_trabajo=$contactos_orden_trabajo["contactos"];
 
+      $adjuntos_orden_trabajo=$this->traerAdjuntos($id_orden_trabajo);
+      $adjuntos_orden_trabajo=json_decode($adjuntos_orden_trabajo,true);
+
       //var_dump($aOrdenesTrabajoTecnico);
 			$arrayDatosIniciales['detalle_orden_trabajo'] = $detalle_orden_trabajo;
 			$arrayDatosIniciales['tareas_orden_trabajo'] = $tareas_orden_trabajo;
       $arrayDatosIniciales['materiales_orden_trabajo'] = $materiales_orden_trabajo;
       $arrayDatosIniciales['tecnicos_orden_trabajo'] = $tecnicos_orden_trabajo;
       $arrayDatosIniciales['contactos_orden_trabajo'] = $contactos_orden_trabajo;
+      $arrayDatosIniciales['adjuntos_orden_trabajo'] = $adjuntos_orden_trabajo;
+      
       //var_dump($arrayDatosIniciales);
 
 			return json_encode($arrayDatosIniciales);
@@ -358,15 +363,12 @@
 
 			$tareasOrdenTrabajo = [];
 
-			$queryGet = "SELECT cm.id AS id_mantenimiento_preventivo,cm.asunto,cm.detalle,ac.descripcion,ac.ubicacion,cm.fecha_hora_ejecucion_desde,cm.fecha_hora_ejecucion_hasta
-      FROM tareas_ordenes_trabajo tot 
-        INNER JOIN calendario_mantenimiento cm ON tot.id_calendario_mantenimiento=cm.id 
-        INNER JOIN activos_cliente ac ON cm.id_activo_cliente=ac.id
-      WHERE tot.id_orden_trabajo = $id_orden_trabajo";
-      //var_dump($queryGet);
+			$queryGet = "SELECT GROUP_CONCAT(id_calendario_mantenimiento) AS id_calendario_mantenimiento FROM tareas_ordenes_trabajo WHERE id_orden_trabajo = $id_orden_trabajo";
 			$getDatos = $this->conexion->consultaRetorno($queryGet);
+      $row = $getDatos->fetch_array();
+      $tareasOrdenTrabajo=$row["id_calendario_mantenimiento"];
 
-			while ($row = $getDatos->fetch_array()) {
+			/*while ($row = $getDatos->fetch_array()) {
         $tareasOrdenTrabajo[] =[
           "id_mantenimiento_preventivo"         =>$row["id_mantenimiento_preventivo"],
           "asunto"                              =>$row["asunto"],
@@ -376,7 +378,14 @@
           "fecha_hora_ejecucion_desde_mostrar"  =>date("d/m/Y H:i",strtotime($row["fecha_hora_ejecucion_desde"]))."hs",
           "fecha_hora_ejecucion_hasta_mostrar"  =>date("d/m/Y H:i",strtotime($row["fecha_hora_ejecucion_hasta"]))."hs",
         ];
-			}
+			}*/
+
+      $filtros["id_mantenimiento_preventivo"]=$tareasOrdenTrabajo;
+
+      $MantenimientoPreventivo = new MantenimientoPreventivo();
+      $tareasOrdenTrabajo=$MantenimientoPreventivo->traerMantenimientoPreventivo($filtros);
+      $tareasOrdenTrabajo=json_decode($tareasOrdenTrabajo,true);
+
 			//echo json_encode($tareasOrdenTrabajo);
       return json_encode($tareasOrdenTrabajo);
 		}
@@ -514,6 +523,21 @@
         echo "<br><br>".$query;
       }
 
+      $query = "UPDATE calendario_mantenimiento cm 
+        INNER JOIN tareas_ordenes_trabajo tot ON tot.id_calendario_mantenimiento=cm.id 
+      SET id_estado = 3 
+      WHERE id_orden_trabajo = $id_orden_trabajo";
+      //var_dump($query);
+			$update = $this->conexion->consultaSimple($query);
+      
+      $filasAfectadas=$this->conexion->conectar->affected_rows;
+      $mensajeError=$this->conexion->conectar->error;
+      //var_dump($mensajeError);
+      echo $mensajeError;
+      if($mensajeError!=""){
+        echo "<br><br>".$query;
+      }
+
       $query = "UPDATE tecnicos_tareas_mantenimiento SET fecha_hora_fin_trabajo = NOW() WHERE id_orden_trabajo = $id_orden_trabajo AND id_tecnico = $id_tecnico";
       //var_dump($query);
 			$update = $this->conexion->consultaSimple($query);
@@ -572,7 +596,7 @@
     public function traerAdjuntos($id_orden_trabajo){
 			$this->id_orden_trabajo = $id_orden_trabajo;
 
-			$queryGetAdjuntos = "SELECT aot.archivo, u.email, aot.comentarios, aot.fecha_hora as fecha
+			$queryGetAdjuntos = "SELECT aot.id AS id_adjunto, aot.archivo, u.email, aot.comentarios, aot.fecha_hora as fecha
 			FROM adjuntos_orden_trabajo aot 
         JOIN usuarios as u ON aot.id_usuario = u.id
 			WHERE id_orden_trabajo = $this->id_orden_trabajo";
@@ -582,6 +606,7 @@
 
 			while($rowAdj = $getAdjuntos->fetch_array()){
 				$arrayAdjuntos[]=array(
+          "id_adjunto"=>$rowAdj['id_adjunto'],
           "archivo"=>$rowAdj['archivo'],
           "email"=>$rowAdj['email'],
           "comentarios"=>$rowAdj['comentarios'],

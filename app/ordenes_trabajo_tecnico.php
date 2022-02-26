@@ -24,6 +24,7 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
 
 <body>
   <span id="id_tecnico" class=""><?=$_SESSION['rowUsers']['id_tecnico'];?></span>
+  <span id="hoy" class=""><?=date("Y-m-d")?></span>
   <!-- loader -->
   <div id="loader">
       <div class="spinner-border text-primary" role="status"></div>
@@ -699,7 +700,7 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
                 <td class='text-center font-weight-bold' colspan='2'>Tareas</td>
               </tr>
               <tr>
-                <td class='text-left font-weight-bold'>Asunto:</td>
+                <td class='text-left font-weight-bold'>Asunto</td>
                 <td class='text-left font-weight-bold'>Detalle</td>
               </tr>`;
           respuestaJson.tareas_orden_trabajo.forEach((tareas)=>{
@@ -718,7 +719,7 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
                 <td class='text-center font-weight-bold' colspan='2'>Tecnicos</td>
               </tr>
               <tr>
-                <td class='text-left font-weight-bold'>Nombre completo:</td>
+                <td class='text-left font-weight-bold'>Nombre completo</td>
                 <td class='text-left font-weight-bold'>Vehiculo</td>
               </tr>`;
           respuestaJson.tecnicos_orden_trabajo.forEach((tecnico)=>{

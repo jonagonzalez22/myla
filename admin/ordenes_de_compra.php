@@ -442,14 +442,14 @@
                           <div class="card-body">
                             <button id="btnNuevoAdjunto" type="button" class="btn btn-outline-primary mb-2" data-toggle="modal"><i class="fa fa-cloud-upload"></i></button>
                             <div id="inputFile" style="display: none;" class="border p-1 rounded mb-2">
-                            <input type="file" class="form-control" id="adjunto">
-                             <textarea class="form-control mt-2" id="comentarios" maxlength="100" placeholder="comentarios"></textarea>
-                             <div class="pt-2" id="msgErrAdjunto" style="display: none">
+                              <input type="file" class="form-control" id="adjunto">
+                              <textarea class="form-control mt-2" id="comentarios" maxlength="100" placeholder="comentarios"></textarea>
+                              <div class="pt-2" id="msgErrAdjunto" style="display: none">
                                 <div class="alert alert-outline-danger" role="alert" id="textoErrorAdjunto">
                                 </div>
+                              </div>
+                              <button class="btn btn-success mt-2" id="btnEnviarAdj">Enviar</button>
                             </div>
-                            <button class="btn btn-success mt-2" id="btnEnviarAdj">Enviar</button>
-                        </div>
                             <div class="table-responsive">
                               <table class="table table-hover" id="tablaAdjuntos">
                                 <thead>
