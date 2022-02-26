@@ -56,13 +56,13 @@
       .fa-angle-down {
         transition: all 0.3s ease;
       }
-      .card-header a.collapsed .fa-angle-down {
+      a.collapsed .card-header .fa-angle-down {
         transform: rotate(180deg);
       }
-      #modalCRUD .card-header{
+      .modal .card-header{
         background-color: #2f3c4e;
       }
-      #modalCRUD a .card-header h6{
+      .modal a .card-header h6{
         color: #f6f7fb;
       }
     </style>
@@ -133,8 +133,9 @@
                               <th>Activo</th>
                               <th>Asunto</th>
                               <th>Detalle</th>
-                              <th>Ejecucion desde</th>
-                              <th>Ejecucion hasta</th>
+                              <th>Fecha</th>
+                              <th>Hs desde</th>
+                              <th>Hs hasta</th>
                               <th>Estado</th>
                               <th>Contacto</th>
                               <!-- <th>Vehiculo</th> -->
@@ -170,109 +171,6 @@
         </footer>
       </div>
     </div>
-
-    <!--Modal para CRUD-->
-    <!-- <div class="modal fade" id="modalCRUD" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel"></h5>
-            <span id="id_mantenimiento_preventivo" class="d-none"></span>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <form id="formMantenimientoPreventivo">
-            <div class="modal-body">
-              <div class="row">
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Cliente:</label>
-                    <select class="form-control" id="cliente">
-                      <option value="">Seleccione</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Elemento</label>
-                    <select class="form-control" id="id_elemento_cliente" required>
-                      <option value="">Seleccione</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Asunto:</label>
-                    <input type="text" class="form-control" id="asunto" required>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Detalle:</label>
-                    <input type="text" class="form-control" id="detalle" required>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Contacto:</label>
-                    <select class="form-control" id="id_contacto_cliente" required>
-                      <option value="">Seleccione</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Vehiculo:</label>
-                    <select class="form-control" id="id_vehiculo_asignado" required>
-                      <option value="">Seleccione</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Costo de movilidad estimado:</label>
-                    <input type="number" class="form-control" id="costo_movilidad_estimado" required>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-12 text-center font-weight-bold">Fechas y hora de ejecucion</div>
-              </div>
-              <div class="row">
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Desde:</label>
-                    <input type="datetime-local" class="form-control" id="fecha_hora_ejecucion_desde" required>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Hasta:</label>
-                    <input type="datetime-local" class="form-control" id="fecha_hora_ejecucion_hasta" required>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-light" data-dismiss="modal">Cancelar</button>
-              <button type="submit" id="btnGuardar" class="btn btn-dark">Guardar</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div> -->
-    <!-- FINAL MODAL CRUD-->
 
     <!--Modal para CRUD-->
     <div class="modal fade" id="modalCRUD" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -383,23 +281,6 @@
                 </div>
                 <!-- Accordion card -->
                 <!-- Accordion card -->
-                <!-- <div class="card border-secondary">
-                  <div class="card-header" role="tab" id="headingThree3">
-                    <a class="collapsed" data-toggle="collapse" data-parent="#accordionEx" href="#collapseThree3"
-                      aria-expanded="false" aria-controls="collapseThree3">
-                      <h6 class="mb-0">Datos del contacto (que realiza el pedido) <i class="fa fa-angle-down rotate-icon float-right"></i></h6>
-                    </a>
-                  </div>
-                  <div id="collapseThree3" class="collapse" role="tabpanel" aria-labelledby="headingThree3" data-parent="#accordionEx">
-                    <div class="card-body border-secondary">
-                      <div class="row">
-                        
-                      </div>
-                    </div>
-                  </div>
-                </div> -->
-                <!-- Accordion card -->
-                <!-- Accordion card -->
                 <div class="card border-secondary" id="cardFechaHoraEjecucion">
                   <!-- Card header -->
                   <a class="collapsed" data-toggle="collapse" data-parent="#accordionEx" href="#collapseThree4" aria-expanded="false" aria-controls="collapseThree4">
@@ -411,16 +292,22 @@
                   <div id="collapseThree4" class="collapse" role="tabpanel" aria-labelledby="headingThree4" data-parent="#accordionEx">
                     <div class="card-body border-secondary">
                       <div class="row">
-                        <div class="col-lg-6">
+                        <div class="col-lg-4">
                           <div class="form-group">
-                            <label for="" class="col-form-label">*Desde:</label>
-                            <input type="datetime-local" class="form-control" id="fecha_hora_ejecucion_desde" value="<?=$desde=date("Y-m-d\TH:i")?>" required>
+                            <label for="" class="col-form-label">*Fecha:</label>
+                            <input type="date" class="form-control" id="fecha" value="<?=date("Y-m-d")?>" required>
                           </div>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-lg-4">
                           <div class="form-group">
-                            <label for="" class="col-form-label">*Hasta:</label>
-                            <input type="datetime-local" class="form-control" id="fecha_hora_ejecucion_hasta" value="<?=date("Y-m-d\TH:i",strtotime($desde."+8 hours"))?>" required>
+                            <label for="" class="col-form-label">*Hora desde:</label>
+                            <input type="time" class="form-control" id="hora_desde" value="<?=$horaDesde=date("H:i")?>" required>
+                          </div>
+                        </div>
+                        <div class="col-lg-4">
+                          <div class="form-group">
+                            <label for="" class="col-form-label">*Hora Hasta:</label>
+                            <input type="time" class="form-control" id="hora_hasta" value="<?=date("H:i",strtotime($horaDesde."+1 hours"))?>" required>
                           </div>
                         </div>
                       </div>
@@ -452,7 +339,7 @@
                         </div>
                         <div class="col-lg-4">
                           <div class="form-group">
-                            <input type="datetime-local" class="form-control" id="frecuencia_stop" placeholder="cantidad">
+                            <input type="date" class="form-control" id="frecuencia_stop" placeholder="cantidad">
                           </div>
                         </div>
                       </div>
@@ -527,98 +414,181 @@
     </div>
     <!-- FINAL MODAL CRUD-->
 
-    <!-- MODAL ver detalle empresa y linea de tiempo -->
-    <div class="modal fade mt-5" id="verDetalleVehiculo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
+    <!--Modal para Ver Detalle-->
+    <div class="modal fade" id="modalVerDetalle" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelDetalle" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Detalle vehiculo</h5>
-            <button class="close" type="button" data-dismiss="modal" aria-label="Close" data-original-title="" title=""><span aria-hidden="true">×</span></button>
-          </div>
-          <div class="modal-body"></div>
-        </div>
-      </div>
-    </div>
-    <!-- FIN MODAL ver detalle empresa y linea de tiempo-->
-
-    <!--Modal para añadir tarea de mantenimiento-->
-    <div class="modal fade" id="modalAddMantenimiento" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabelMantenimiento"></h5>
-            <span id="id_vehiculo_mantenimiento" class="d-none"></span>
+            <h5 class="modal-title" id="exampleModalLabelDetalle"></h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <form id="formTareaMantenimiento">
-            <div class="modal-body">
-              <div class="row">
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Detalle:</label>
-                    <input type="text" class="form-control" id="detalle" required>
+          <div class="modal-body">
+            <!--Accordion wrapper-->
+            <div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true">
+              <!-- Accordion card -->
+              <div class="card border-secondary">
+                <!-- Card header -->
+                <a data-toggle="collapse" data-parent="#accordionEx" href="#collapseOne1Detalle" aria-expanded="true" aria-controls="collapseOne1Detalle">
+                  <div class="card-header" role="tab" id="headingOne1Detalle">
+                    <h6 class="mb-0">Datos principales <i class="fa fa-angle-down rotate-icon float-right"></i></h6>
                   </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Costo estimado</label>
-                    <input type="text" class="form-control" id="costo_estimado" required>
+                </a>
+                <!-- Card body -->
+                <div id="collapseOne1Detalle" class="collapse show" role="tabpanel" aria-labelledby="headingOne1Detalle" data-parent="#accordionEx">
+                  <div class="card-body border-secondary">
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <label for="" class="col-form-label">Cliente: <span id="lblCliente"></span></label>
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <label for="" class="col-form-label">Ubicacion: <span id="lblUbicacion"></span></label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <label for="" class="col-form-label">Contacto: <span id="lblContacto"></span></label>
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <label for="" class="col-form-label">Elemento: <span id="lblElemento"></span></label>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="row">
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Fecha:</label>
-                    <input type="date" class="form-control" id="fecha_mantenimiento" required>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Hora</label>
-                    <input type="time" class="form-control" id="hora_mantenimiento" required>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-12">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">Comentarios:</label>
-                    <textarea id="comentarios_tarea_mantenimiento" class="form-control"></textarea>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-light" data-dismiss="modal">Cancelar</button>
-              <button type="submit" id="btnGuardarTareaMantenimiento" class="btn btn-dark">Guardar</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-    <!-- FINAL MODAL para añadir tarea de mantenimiento-->
+              <!-- Accordion card -->
 
-    <!--Modal con opciones para tareas de mantenimiento-->
-    <div class="modal fade" id="modalOpcionesTareas" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">¿Qué desea hacer con la tarea?</h5>
-            <span id="id_tarea_mantenimiento" class="d-none"></span>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-            </button>
+              <!-- Accordion card -->
+              <div class="card border-secondary">
+                <!-- Card header -->
+                <a class="collapsed" data-toggle="collapse" data-parent="#accordionEx" href="#collapseTwo2Detalle" aria-expanded="false" aria-controls="collapseTwo2Detalle">
+                  <div class="card-header" role="tab" id="headingTwo2Detalle">
+                    <h6 class="mb-0">Datos de la tarea <i class="fa fa-angle-down rotate-icon float-right"></i></h6>
+                  </div>
+                </a>
+                <!-- Card body -->
+                <div id="collapseTwo2Detalle" class="collapse" role="tabpanel" aria-labelledby="headingTwo2Detalle" data-parent="#accordionEx">
+                  <div class="card-body border-secondary">
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <label for="" class="col-form-label">Asunto: <span id="lblAsunto"></span></label>
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <label for="" class="col-form-label">Detalle: <span id="lblDetalle"></span></label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="table-responsive tablaItems">
+                      <table class="table table-hover" id="tablaAdjuntosDetalle">
+                        <thead class="text-center">
+                          <tr>
+                            <th>#ID</th>
+                            <th>Archivo</th>
+                            <th>Usuario</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Accordion card -->
+              
+              <!-- Accordion card -->
+              <div class="card border-secondary">
+                <!-- Card header -->
+                <a class="collapsed" data-toggle="collapse" data-parent="#accordionEx" href="#collapseThree4Detalle" aria-expanded="false" aria-controls="collapseThree4Detalle">
+                  <div class="card-header" role="tab" id="headingThree4Detalle">
+                    <h6 class="mb-0">Fechas y hora de ejecucion <i class="fa fa-angle-down rotate-icon float-right"></i></h6>
+                  </div>
+                </a>
+                <!-- Card body -->
+                <div id="collapseThree4Detalle" class="collapse" role="tabpanel" aria-labelledby="headingThree4Detalle" data-parent="#accordionEx">
+                  <div class="card-body border-secondary">
+                    <div class="row">
+                      <div class="col-lg-4">
+                        <div class="form-group">
+                          <label for="" class="col-form-label">Fecha: <span id="lblFecha"></span></label>
+                        </div>
+                      </div>
+                      <div class="col-lg-4">
+                        <div class="form-group">
+                          <label for="" class="col-form-label">Hora desde: <span id="lblHoraDesde"></span></label>
+                        </div>
+                      </div>
+                      <div class="col-lg-4">
+                        <div class="form-group">
+                          <label for="" class="col-form-label">Hora Hasta: <span id="lblHoraHasta"></span></label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Accordion card -->
+
+              <!-- Accordion card -->
+              <div class="card border-secondary">
+                <!-- Card header -->
+                <a class="collapsed" data-toggle="collapse" data-parent="#accordionEx" href="#collapseThree5Detalle" aria-expanded="false" aria-controls="collapseThree5Detalle">
+                  <div class="card-header" role="tab" id="headingThree5Detalle">
+                    <h6 class="mb-0">Materiales previstos <i class="fa fa-angle-down rotate-icon float-right"></i></h6>
+                  </div>
+                </a>
+                <!-- Card body -->
+                <div id="collapseThree5Detalle" class="collapse" role="tabpanel" aria-labelledby="headingThree5Detalle" data-parent="#accordionEx">
+                  <div class="card-body border-secondary">
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <label for="" class="col-form-label">Almacen: <span id="lblAlmacen"></span></label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="table-responsive tablaItems">
+                      <table class="table table-hover" id="tablaItemsDetalle">
+                        <thead class="text-center">
+                          <tr>
+                            <!-- <th>#ID</th> -->
+                            <th>Item</th>
+                            <th>UM</th>
+                            <th>Proveedor</th>
+                            <th>Tipo</th>
+                            <th>Categoría</th>
+                            <th>Cantidad estimada</th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Accordion card -->
+            </div>
+            <!-- Accordion wrapper -->
           </div>
-          <div class="modal-body text-center">
-            <button type="button" data-dismiss="modal" class="btn btn-success" id="btnEditarTarea"><i class='fa fa-edit'></i> Editar</button>
-            <button type="button" data-dismiss="modal" class="btn btn-dark"  data-toggle="modal" data-target="#modalMarcarTareaCompleta"><i class="fa fa-check"></i> Completar</button>
-            <button type="button" data-dismiss="modal" class="btn btn-danger" id="btnBorrarTarea"><i class="fa fa-trash-o"></i> Borrar</button>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-light" data-dismiss="modal">Cancelar</button>
           </div>
         </div>
       </div>
     </div>
-    <!-- FINAL MODAL con opciones para tareas de mantenimiento-->
+    <!-- FINAL MODAL Ver Detalle-->
 
     <!--Modal con opciones para tareas de mantenimiento-->
     <div class="modal fade" id="modalOpcionesEliminarTareas" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -638,28 +608,6 @@
       </div>
     </div>
     <!-- FINAL MODAL con opciones para tareas de mantenimiento-->
-
-    <!--Modal para marcar tarea completa-->
-    <div class="modal fade" id="modalMarcarTareaCompleta" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Marcar tarea completa</h5>
-            <!-- <span id="id_tarea_mantenimiento_completar" class="d-none"></span> -->
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <form id="formTareaMantenimiento">
-            <div class="modal-body">¿Esta seguro que desea marcar como completa esta tarea?</div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-light" data-dismiss="modal">Cancelar</button>
-              <button type="button" id="btnMarcarTareaMantenimientoRealizada" class="btn btn-dark">Completar</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-    <!-- FINAL MODAL para marcar tarea completa-->
 
     <!-- latest jquery-->
     <script src="assets/js/jquery-3.2.1.min.js"></script>
@@ -792,13 +740,15 @@
               "url" : "./models/administrar_mantenimieno_preventivo.php?accion=traerMantenimientoPreventivo",
               "dataSrc": "",
             },
+          "stateSave": true,
           "columns":[
             {"data": "id_mantenimiento_preventivo"},
             {"data": "descripcion_activo"},
             {"data": "asunto"},
             {"data": "detalle"},
-            {"data": "fecha_hora_ejecucion_desde_mostrar"},
-            {"data": "fecha_hora_ejecucion_hasta_mostrar"},
+            {"data": "fecha_mostrar"},
+            {"data": "hora_desde_mostrar"},
+            {"data": "hora_hasta_mostrar"},
             {"data": "estado"},
             {"data": "contacto_cliente"},
             //{"data": "vehiculo"},
@@ -951,6 +901,10 @@
           }
         });
       }
+
+      $(document).on("click", "#btnNuevoAdjunto", function(){
+        $("#inputFile").removeClass("d-none");
+      });
 
       $(document).on("change", "#id_almacen", function(){
         let id_almacen=this.value;
@@ -1202,8 +1156,9 @@
         datosEnviar.append("id_contacto_cliente", $.trim($('#id_contacto_cliente').val()));
         datosEnviar.append("id_almacen", $.trim($('#id_almacen').val()));
         //datosEnviar.append("costo_movilidad_estimado", $.trim($('#costo_movilidad_estimado').val()));
-        datosEnviar.append("fecha_hora_ejecucion_desde", $.trim($('#fecha_hora_ejecucion_desde').val()));
-        datosEnviar.append("fecha_hora_ejecucion_hasta", $.trim($('#fecha_hora_ejecucion_hasta').val()));
+        datosEnviar.append("fecha", $.trim($('#fecha').val()));
+        datosEnviar.append("hora_desde", $.trim($('#hora_desde').val()));
+        datosEnviar.append("hora_hasta", $.trim($('#hora_hasta').val()));
 
         datosEnviar.append("frecuencia_cantidad", $.trim($('#frecuencia_cantidad').val()));
         datosEnviar.append("frecuencia_repeticion", $.trim($('#frecuencia_repeticion').val()));
@@ -1266,31 +1221,31 @@
       });
 
       $("#btnNuevoMantenimientoPreventivo").click(function(){
-          accion = "addMantenimientoPreventivo"
-          $("#formMantenimientoPreventivo").trigger("reset");
-          $(".modal-header").css( "background-color", "#17a2b8");
-          $(".modal-header").css( "color", "white" );
-          $(".modal-title").text("Nueva tarea de mantenimiento preventivo");
-          $('#tablaItems').DataTable().clear().draw();
-          $("#tablaItems").dataTable().fnDestroy();
-          $("#tablaItems").dataTable({"language":  idiomaEsp});
-          $('#modalCRUD').modal('show');
-          $("#cardFechaHoraEjecucion").removeClass("d-none");
-          $selectElementosCliente= document.getElementById("id_elemento_cliente");
-          $selectElementosCliente.innerHTML = "";
-          $option = document.createElement("option");
-          let optionTextA = document.createTextNode("Sin resultados");
-          $option.appendChild(optionTextA);
-          $selectElementosCliente.appendChild($option);
-          
-          $selectContactosCliente= document.getElementById("id_contacto_cliente");
-          $selectContactosCliente.innerHTML = "";
-          $option = document.createElement("option");
-          let optionTextB = document.createTextNode("Sin resultados");
-          $option.appendChild(optionTextB);
-          $selectContactosCliente.appendChild($option);
+        accion = "addMantenimientoPreventivo"
+        $("#formMantenimientoPreventivo").trigger("reset");
+        $(".modal-header").css( "background-color", "#17a2b8");
+        $(".modal-header").css( "color", "white" );
+        $(".modal-title").text("Nueva tarea de mantenimiento preventivo");
+        $('#tablaItems').DataTable().clear().draw();
+        $("#tablaItems").dataTable().fnDestroy();
+        $("#tablaItems").dataTable({"language":  idiomaEsp});
+        $('#modalCRUD').modal('show');
+        $("#cardFechaHoraEjecucion").removeClass("d-none");
+        $selectElementosCliente= document.getElementById("id_elemento_cliente");
+        $selectElementosCliente.innerHTML = "";
+        $option = document.createElement("option");
+        let optionTextA = document.createTextNode("Sin resultados");
+        $option.appendChild(optionTextA);
+        $selectElementosCliente.appendChild($option);
+        
+        $selectContactosCliente= document.getElementById("id_contacto_cliente");
+        $selectContactosCliente.innerHTML = "";
+        $option = document.createElement("option");
+        let optionTextB = document.createTextNode("Sin resultados");
+        $option.appendChild(optionTextB);
+        $selectContactosCliente.appendChild($option);
 
-          //tablaItems.ajax.reload(null, false);
+        //tablaItems.ajax.reload(null, false);
       });
 
       $(document).on("click", ".btnEditar", function(){
@@ -1332,8 +1287,9 @@
             $("#id_contacto_cliente").val(dmp.id_contacto_cliente);
             //$("#id_vehiculo_asignado").val(dmp.id_vehiculo_asignado);
             //$("#costo_movilidad_estimado").val(dmp.costo_movilidad_estimado);
-            $("#fecha_hora_ejecucion_desde").val(dmp.fecha_hora_ejecucion_desde);
-            $("#fecha_hora_ejecucion_hasta").val(dmp.fecha_hora_ejecucion_hasta);
+            $("#fecha").val(dmp.fecha);
+            $("#hora_desde").val(dmp.hora_desde);
+            $("#hora_hasta").val(dmp.hora_hasta);
 
             getUbicacionesCliente(dmp.id_cliente,dmp.id_direccion_cliente);
             getContactosUbicacion(dmp.id_cliente,dmp.id_contacto_cliente);
@@ -1365,6 +1321,145 @@
         });
 
         $('#modalCRUD').modal('show');
+      });
+
+      $(document).on("click", ".btnVer", function(){
+        fila = $(this).closest("tr");
+        let id_mantenimiento_preventivo = fila.find('td:eq(0)').text();
+
+        $(".modal-title").text("Ver tarea de mantenimiento preventivo N° "+id_mantenimiento_preventivo);
+        $('#modalVerDetalle').modal('show');
+
+        let datosUpdate = new FormData();
+        datosUpdate.append('accion', 'traerDetalleMantenimientoPreventivo');
+        datosUpdate.append('id_mantenimiento_preventivo', id_mantenimiento_preventivo);
+        $.ajax({
+          data: datosUpdate,
+          url: './models/administrar_mantenimieno_preventivo.php',
+          //url: './models/administrar_mantenimieno_preventivo.php?accion=traerMantenimientoPreventivo&id_mantenimiento_preventivo='+id_mantenimiento_preventivo,
+          method: "post",
+          cache: false,
+          contentType: false,
+          processData: false,
+          beforeSed: function(){
+            //$('#procesando').modal('show');
+          },
+          success: function(datosProcesados){
+            //console.log(datosProcesados);
+            let datosInput = JSON.parse(datosProcesados);
+            console.log(datosInput);
+            let dmp=datosInput.datos_mantenimiento_preventivo;
+            console.log(dmp);
+
+            $("#lblCliente").html(dmp.cliente);
+            $("#lblUbicacion").html(dmp.direccion);
+            $("#lblElemento").html(dmp.descripcion_activo);
+            $("#lblAsunto").html(dmp.asunto);
+            $("#lblDetalle").html(dmp.detalle);
+
+            $tabla = document.getElementById("tablaAdjuntosDetalle");
+            $bodyTablaAdjuntos = $tabla.querySelector("tbody");
+            $bodyTablaAdjuntos.innerHTML="";
+
+            let amp=datosInput.adjuntos_mantenimiento_preventivo;
+            //console.log(amp);
+
+            if(amp.length>0){
+              amp.forEach((adjunto)=>{
+                //console.log(adjunto);
+                $tr=`<tr>
+                      <td>${adjunto.id_adjunto}</td>
+                      <td><a href="./views/mantenimiento_preventivo/adj_${id_mantenimiento_preventivo}_${adjunto.archivo}" target="_blank" >${adjunto.archivo}</a></td>
+                      <td>${adjunto.usuario}</td>
+                      <td>${adjunto.fecha_hora}</td>
+                      <td><button class='btn btn-danger btnBorrarAdjunto'><i class='fa fa-trash-o'></i></button></td>
+                  </tr>`;
+                $bodyTablaAdjuntos.innerHTML +=$tr;
+              })
+            }else{
+              $bodyTablaAdjuntos.innerHTML=`<tr>
+                      <td colspan="5" class="text-center">No se han encontrado registros</td>
+                  </tr>`;
+            }
+
+            $("#lblContacto").html(dmp.contacto_cliente);
+            //$("#lblid_vehiculo_asignado").html(dmp.id_vehiculo_asignado);
+            //$("#lblcosto_movilidad_estimado").html(dmp.costo_movilidad_estimado);
+            $("#lblFecha").html(dmp.fecha_mostrar);
+            $("#lblHoraDesde").html(dmp.hora_desde_mostrar);
+            $("#lblHoraHasta").html(dmp.hora_hasta_mostrar);
+
+            let mmp=datosInput.materiales_mantenimiento_preventivo;
+            //console.log(mmp);
+
+            $tabla = document.getElementById("tablaItemsDetalle");
+            $bodyTablaItems = $tabla.querySelector("tbody");
+            $bodyTablaItems.innerHTML="";
+
+            if(mmp.length>0){
+              //console.log(aItems);
+              let almacen=mmp[0].almacen
+              $("#lblAlmacen").html(almacen);
+
+              mmp.forEach((materiales)=>{
+                //console.log(materiales);
+                $tr=`<tr>
+                      <td>${materiales.item}</td>
+                      <td>${materiales.unidad_medida}</td>
+                      <td>${materiales.proveedor}</td>
+                      <td>${materiales.tipo}</td>
+                      <td>${materiales.categoria}</td>
+                      <td class="text-center">${materiales.cantidad_estimada}</td>
+                  </tr>`;
+                $bodyTablaItems.innerHTML +=$tr;
+              })
+            }else{
+              $bodyTablaItems.innerHTML=`<tr>
+                      <td colspan="6" class="text-center">No se han encontrado registros</td>
+                  </tr>`;
+            }
+            
+            $('#id_mantenimiento_preventivo').html(id_mantenimiento_preventivo);
+            
+            accion = "updateMantenimientoPreventivo";
+          }
+        });
+
+      });
+
+      $(document).on("click", ".btnBorrarAdjunto", function(){
+        fila = $(this).closest("tr");
+        let id_adjunto = fila.find('td:eq(0)').text();
+        let nombre_adjunto = fila.find('td:eq(1)').text()
+        let accion = "borrarAdjunto";
+
+        swal({
+          title: "Estas seguro?",
+          text: "Una vez eliminado este archivo, no volveras a verlo",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        })
+        .then((willDelete) => {
+          if (willDelete) {
+            //accion = "borrarAdjunto";
+            $.ajax({
+              url: "models/administrar_mantenimieno_preventivo.php",
+              type: "POST",
+              datatype:"json",    
+              data:  {accion: accion, id_adjunto: id_adjunto, nombre_adjunto: nombre_adjunto},    
+              success: function(data) {
+                fila.remove();
+                swal({
+                  icon: 'success',
+                  title: 'Archivo eliminado exitosamente'
+                });
+              }
+            }) 
+          } else {
+            swal("El registro no se eliminó!");
+          }
+        })
       });
 
       $(document).on("click", ".btnBorrar", function(){

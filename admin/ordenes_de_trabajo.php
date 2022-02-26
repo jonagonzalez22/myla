@@ -261,6 +261,7 @@
                               <th>Asunto</th>
                               <th>Elemento</th>
                               <th>Detalle</th>
+                              <th>Fecha</th>
                               <th>Desde</th>
                               <th>Hasta</th>
                             </tr>
@@ -271,6 +272,7 @@
                               <th>Asunto</th>
                               <th>Elemento</th>
                               <th>Detalle</th>
+                              <th>Fecha</th>
                               <th>Desde</th>
                               <th>Hasta</th>
                             </tr>
@@ -433,9 +435,11 @@
                         <table class="table table-hover" id="tableTareasDetalle">
                           <thead class="text-center">
                             <tr>
+                              <th>#ID</th>
                               <th>Asunto</th>
                               <th>Elemento</th>
                               <th>Detalle</th>
+                              <th>Fecha</th>
                               <th>Desde</th>
                               <th>Hasta</th>
                             </tr>
@@ -496,6 +500,35 @@
                               <th>Cargado vehiculo</th>
                               <th>Cantidad utilizada</th>
                               <th>Aprobado cliente</th>
+                            </tr>
+                          </thead>
+                          <tbody class="text-center"></tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Fin Accordion card -->
+                <!-- Accordion card -->
+                <div class="card border-secondary">
+                  <!-- Card header -->
+                  <a class="collapsed" data-toggle="collapse" data-parent="#accordionExDetalle" href="#collapseTwo6Detalle" aria-expanded="false" aria-controls="collapseTwo6Detalle">
+                    <div class="card-header" role="tab" id="headingTwo6">
+                      <h6 class="mb-0">Adjuntos <i class="fa fa-angle-down rotate-icon float-right"></i></h6>
+                    </div>
+                  </a>
+                  <!-- Card body -->
+                  <div id="collapseTwo6Detalle" class="collapse show" role="tabpanel" aria-labelledby="headingTwo6" data-parent="#accordionExDetalle">
+                    <div class="card-body border-secondary">
+                      <div class="table-responsive">
+                        <table class="table table-hover" id="tableAdjuntosDetalle">
+                          <thead class="text-center">
+                            <tr>
+                            <th>#ID</th>
+                            <th>Archivo</th>
+                            <th>Usuario</th>
+                            <th>Fecha</th>
+                            <th>Comentarios</th>
                             </tr>
                           </thead>
                           <tbody class="text-center"></tbody>
@@ -663,9 +696,10 @@
         //debugger;
         tablaOrdenesTrabajo= $('#tablaOrdenesTrabajo').DataTable({
           "ajax": {
-              "url" : "./models/administrar_orden_trabajo.php?accion=traerOrdenTrabajo",
-              "dataSrc": "",
-            },
+            "url" : "./models/administrar_orden_trabajo.php?accion=traerOrdenTrabajo",
+            "dataSrc": "",
+          },
+          "stateSave": true,
           "columns":[
             {"data": "id_orden_trabajo"},
             {"data": "cliente"},
@@ -918,8 +952,9 @@
               {"data": "asunto"},
               {"data": "descripcion_activo"},
               {"data": "detalle"},
-              {"data": "fecha_hora_ejecucion_desde_mostrar"},
-              {"data": "fecha_hora_ejecucion_hasta_mostrar"},
+              {"data": "fecha_mostrar"},
+              {"data": "hora_desde_mostrar"},
+              {"data": "hora_hasta_mostrar"},
             ],
             "language": idiomaEsp,
             initComplete: function(){
@@ -1115,67 +1150,118 @@
             $("#lblUbicacion").html(dot.direccion);
 
             $tabla = document.getElementById("tableContactosDetalle");
-            $bodyTablaTareas = $tabla.querySelector("tbody");
-            $bodyTablaTareas.innerHTML="";
+            $bodyTablaContactos = $tabla.querySelector("tbody");
+            $bodyTablaContactos.innerHTML="";
 
-            datos.contactos_orden_trabajo.forEach((contactos)=>{
-                $tr=`<tr>
-                      <td>${contactos.nombre_completo}</td>
-                      <td>
-                        <a href="https://wa.me/${contactos.telefono}?text=" target="_blank" class="item">
-                          <i class="fa fa-whatsapp" aria-hidden="true"></i> ${contactos.telefono}
-                        </a>
-                      </td>
+            if(datos.contactos_orden_trabajo.length>0){
+              datos.contactos_orden_trabajo.forEach((contactos)=>{
+                  $tr=`<tr>
+                        <td>${contactos.nombre_completo}</td>
+                        <td>
+                          <a href="https://wa.me/${contactos.telefono}?text=" target="_blank" class="item">
+                            <i class="fa fa-whatsapp" aria-hidden="true"></i> ${contactos.telefono}
+                          </a>
+                        </td>
+                    </tr>`;
+                  $bodyTablaContactos.innerHTML +=$tr;
+              })
+            }else{
+              $bodyTablaContactos.innerHTML=`<tr>
+                      <td colspan="6" class="text-center">No se han encontrado registros</td>
                   </tr>`;
-                $bodyTablaTareas.innerHTML +=$tr;
-            })
+            }
 
             $tabla = document.getElementById("tableTareasDetalle");
             $bodyTablaTareas = $tabla.querySelector("tbody");
             $bodyTablaTareas.innerHTML="";
 
-            datos.tareas_orden_trabajo.forEach((tareas)=>{
-                $tr=`<tr>
-                      <td>${tareas.asunto}</td>
-                      <td>${tareas.descripcion_activo}</td>
-                      <td>${tareas.detalle}</td>
-                      <td>${tareas.fecha_hora_ejecucion_desde_mostrar}</td>
-                      <td>${tareas.fecha_hora_ejecucion_hasta_mostrar}</td>
+            if(datos.tareas_orden_trabajo.length>0){
+              datos.tareas_orden_trabajo.forEach((tareas)=>{
+                  $tr=`<tr>
+                        <td>${tareas.id_mantenimiento_preventivo}</td>
+                        <td>${tareas.asunto}</td>
+                        <td>${tareas.descripcion_activo}</td>
+                        <td>${tareas.detalle}</td>
+                        <td>${tareas.fecha_mostrar}</td>
+                        <td>${tareas.hora_desde_mostrar}</td>
+                        <td>${tareas.hora_hasta_mostrar}</td>
+                    </tr>`;
+                  $bodyTablaTareas.innerHTML +=$tr;
+              })
+            }else{
+              $bodyTablaTareas.innerHTML=`<tr>
+                      <td colspan="6" class="text-center">No se han encontrado registros</td>
                   </tr>`;
-                $bodyTablaTareas.innerHTML +=$tr;
-            })
+            }
 
             $tabla = document.getElementById("tableTecnicosDetalle");
             $bodyTablaTecnicos = $tabla.querySelector("tbody");
             $bodyTablaTecnicos.innerHTML="";
 
+            console.log("tecnicos_orden_trabajo");
             console.log(datos.tecnicos_orden_trabajo);
-            datos.tecnicos_orden_trabajo.forEach((tecnicos)=>{
-                $tr=`<tr>
-                      <td>${tecnicos.tecnico}</td>
-                      <td>${tecnicos.vehiculo}</td>
-                      <td>${tecnicos.fecha_hora_inicio_trabajo}</td>
-                      <td>${tecnicos.fecha_hora_fin_trabajo}</td>
-                      <td>${tecnicos.geoposicion_inicio_trabajo}</td>
+            if(datos.tecnicos_orden_trabajo.length>0){
+              datos.tecnicos_orden_trabajo.forEach((tecnicos)=>{
+                  $tr=`<tr>
+                        <td>${tecnicos.tecnico}</td>
+                        <td>${tecnicos.vehiculo}</td>
+                        <td>${tecnicos.fecha_hora_inicio_trabajo}</td>
+                        <td>${tecnicos.fecha_hora_fin_trabajo}</td>
+                        <td>${tecnicos.geoposicion_inicio_trabajo}</td>
+                    </tr>`;
+                  $bodyTablaTecnicos.innerHTML +=$tr;
+              })
+            }else{
+              $bodyTablaTecnicos.innerHTML=`<tr>
+                      <td colspan="5" class="text-center">No se han encontrado registros</td>
                   </tr>`;
-                $bodyTablaTecnicos.innerHTML +=$tr;
-            })
+            }
 
             $tabla = document.getElementById("tableMaterialesDetalle");
             $bodyTablaMateriales = $tabla.querySelector("tbody");
             $bodyTablaMateriales.innerHTML="";
 
+            console.log("materiales_orden_trabajo");
             console.log(datos.materiales_orden_trabajo);
-            datos.materiales_orden_trabajo.forEach((materiales)=>{
-                $tr=`<tr>
-                      <td>${materiales.item}</td>
-                      <td>${materiales.cantidad_reservada}</td>
-                      <td>${materiales.cargado_vehiculo_mostrar}</td>
-                      <td>${materiales.cantidad_utilizada}</td>
-                      <td>${materiales.aprobado_cliente}</td>
+            if(datos.materiales_orden_trabajo.length>0){
+              datos.materiales_orden_trabajo.forEach((materiales)=>{
+                  $tr=`<tr>
+                        <td>${materiales.item}</td>
+                        <td>${materiales.cantidad_reservada}</td>
+                        <td>${materiales.cargado_vehiculo_mostrar}</td>
+                        <td>${materiales.cantidad_utilizada}</td>
+                        <td>${materiales.aprobado_cliente}</td>
+                    </tr>`;
+                  $bodyTablaMateriales.innerHTML +=$tr;
+              })
+            }else{
+              $bodyTablaMateriales.innerHTML=`<tr>
+                      <td colspan="5" class="text-center">No se han encontrado registros</td>
                   </tr>`;
-                $bodyTablaMateriales.innerHTML +=$tr;
-            })
+            }
+
+            $tabla = document.getElementById("tableAdjuntosDetalle");
+            $bodyTablaAdjuntos = $tabla.querySelector("tbody");
+            $bodyTablaAdjuntos.innerHTML="";
+
+            console.log("adjuntos_orden_trabajo");
+            console.log(datos.adjuntos_orden_trabajo);
+            if(datos.adjuntos_orden_trabajo.length>0){
+              datos.adjuntos_orden_trabajo.forEach((adjunto)=>{
+                  $tr=`<tr>
+                        <td>${adjunto.id_adjunto}</td>
+                        <td><a href="./views/adjuntosOT/${adjunto.archivo}" target="_blank" >${adjunto.archivo}</a></td>
+                        <td>${adjunto.email}</td>
+                        <td>${adjunto.comentarios}</td>
+                        <td>${adjunto.fecha}</td>
+                    </tr>`;
+                  $bodyTablaAdjuntos.innerHTML +=$tr;
+              })
+            }else{
+              $bodyTablaAdjuntos.innerHTML=`<tr>
+                      <td colspan="5" class="text-center">No se han encontrado registros</td>
+                  </tr>`;
+            }
 
           }
         });

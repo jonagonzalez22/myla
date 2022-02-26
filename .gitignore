@@ -6,3 +6,5 @@ documentacion-nelson/
 cliente-sistema-viejo/
 archivos a subir/
 admin/models/conexion.php
+admin/views/
+conexion.php

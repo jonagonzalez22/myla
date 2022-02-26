@@ -77,3 +77,15 @@ INSERT INTO `estados_ordenes_trabajo` (`id`, `estado`) VALUES (NULL, 'Pendiente'
 ###### JONATHAN #######
 Tabla tecnicos
 ALTER TABLE `tecnicos` ADD `id_empresa` INT NOT NULL AFTER `saldo`;
+
+
+
+
+##### AXEL #######
+ALTER TABLE `calendario_mantenimiento` ADD `fecha` DATE NOT NULL AFTER `detalle`, ADD `hora_desde` TIME NOT NULL AFTER `fecha`, ADD `hora_hasta` TIME NOT NULL AFTER `hora_desde`;
+
+UPDATE `calendario_mantenimiento` SET fecha=date(fecha_hora_ejecucion_desde), hora_desde=time(fecha_hora_ejecucion_desde), hora_hasta=time(fecha_hora_ejecucion_hasta)
+
+ALTER TABLE `calendario_mantenimiento`
+  DROP `fecha_hora_ejecucion_desde`,
+  DROP `fecha_hora_ejecucion_hasta`;
