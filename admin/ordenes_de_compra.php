@@ -236,6 +236,7 @@
                         <thead class="text-center">
                           <tr>
                             <th class="text-center">#ID</th>
+                            <th>imagen</th>
                             <th>Producto</th>
                             <th>Cantidad</th>
                             <th>Precio unit.</th>
@@ -833,6 +834,20 @@ $(document).on("change", "#proveedor", function(){
               },
             "columns":[
               {"data": "id_item"},
+              {
+                    render: function(data, type, full, meta) {
+                        return ()=>{
+                          let $img = "";
+                          if (full.imagen !=""){
+                             
+                             return `<img src="./views/img_items/${full.imagen}" class="img-thumbnail">`;
+                          }else{
+                            return ""
+                          }                               
+                          
+                        };
+                    }
+                },
               {"data": "item"},
               {
                     render: function(data, type, full, meta) {
