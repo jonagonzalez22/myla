@@ -101,7 +101,7 @@
 		public function traerItems($id_proveedor){
 			$this->id_proveedor = $id_proveedor;
 
-			$queryTraerItems="SELECT it.id id_item, it.item, lp.precio
+			$queryTraerItems="SELECT it.id id_item, imagen, it.item, lp.precio
 							FROM item as it JOIN lista_precios as lp
 							ON(it.id = lp.id_item)
 							WHERE lp.id_proveedor = $this->id_proveedor";
@@ -112,9 +112,10 @@
 			if ($traerItems->num_rows > 0) {
 				while ($rowItems= $traerItems->fetch_array()) {
 						$id_item = $rowItems['id_item'];
+						$imagen = $rowItems['imagen'];
 						$item = $rowItems['item'];
 						$precio = $rowItems['precio'];
-						$arrayItems[] = array("id_item"=>$id_item, "item"=>$item, "precio"=>$precio);
+						$arrayItems[] = array("id_item"=>$id_item, "imagen"=>$imagen, "item"=>$item, "precio"=>$precio);
 					}	
 			}
 

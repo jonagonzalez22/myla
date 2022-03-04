@@ -104,7 +104,9 @@
                   $conexion = new Conexion();
 
                   $id_usuario = $_SESSION['rowUsers']['id_usuario'];
-                  $queryGetAccesos = "SELECT * FROM permisos_menu_web WHERE id_usuario = $id_usuario";
+                  $queryGetAccesos = "SELECT * FROM permisos_menu_web 
+                                    WHERE id_usuario = $id_usuario
+                                    order by id_menu_web";
 
                   $getAccesos = $conexion->consultaRetorno($queryGetAccesos);
 
