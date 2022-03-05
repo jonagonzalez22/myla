@@ -86,7 +86,7 @@
 			$arrayDetalleCtaCte = array();
 
 			$queryDetalleCtaCte = "SELECT mp.id, mcta.tipo, mp.detalle, 
-								mp.id_origen, monto as saldo 
+								mp.id_origen, monto as saldo, mp.nro_factura 
 								FROM movimientos_proveedores as mp JOIN tipos_movimientos_ctacte as mcta
 								ON(mp.id_tipo_movimiento = mcta.id)
 								WHERE  id_proveedor = $this->id_proveedor";
@@ -99,8 +99,9 @@
 				$detalle = $rowDetalle['detalle'];
 				$monto = $rowDetalle['saldo'];
 				$id_origen = $rowDetalle['id_origen'];
+				$nro_factura = $rowDetalle['nro_factura'];
 
-				$arrayDetalleCtaCte[] = array('id_movimiento'=>$id_movimiento, 'tipo'=>$tipo, 'detalle'=>$detalle, 'monto'=>$monto, 'id_origen'=>$id_origen);
+				$arrayDetalleCtaCte[] = array('id_movimiento'=>$id_movimiento, 'tipo'=>$tipo, 'detalle'=>$detalle, 'monto'=>$monto, 'id_origen'=>$id_origen, 'nro_factura'=>$nro_factura);
 			}
 
 			echo json_encode($arrayDetalleCtaCte);
