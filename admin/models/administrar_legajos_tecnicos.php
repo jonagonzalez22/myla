@@ -101,12 +101,12 @@
 
 		}
 
-		public function agregarTecnico($nombre, $legajo, $cuit, $telefono, $email, $cargo, $iva, $direccion, $provincia, $valHora, $id_empresa){
+		public function agregarTecnico($nombre, $cuit, $telefono, $email, $cargo, $iva, $direccion, $provincia, $valHora, $id_empresa){
 			$fecha_alta = date('Y-m-d');
 
 
 			/*GUARDO EN TABLA TECNICOS*/
-			$queryInsertTecnico = "INSERT INTO tecnicos(nombre_completo, nro_legajo, cuil, telefono, email, id_cargo, fecha_alta, activo, id_tipo_iva_responsable, valor_hora, direccion, id_provincia, saldo, id_empresa)VALUES('$nombre', '$legajo', '$cuit', '$telefono', '$email', $cargo, '$fecha_alta', 0, $iva, $valHora, '$direccion', $provincia, 0, $id_empresa)";
+			$queryInsertTecnico = "INSERT INTO tecnicos(nombre_completo, cuil, telefono, email, id_cargo, fecha_alta, activo, id_tipo_iva_responsable, valor_hora, direccion, id_provincia, saldo, id_empresa)VALUES('$nombre', $cuit, '$telefono', '$email', $cargo, '$fecha_alta', 0, $iva, $valHora, '$direccion', $provincia, 0, $id_empresa)";
 			$insertTecnico= $this->conexion->consultaSimple($queryInsertTecnico);
 
 			
@@ -158,12 +158,12 @@
 			echo json_encode($arrayDatosTecnicos);
 		}
 
-		public function updateTecnico($nombre, $legajo, $cuit, $telefono, $email, $cargo, $iva, $direccion, $provincia, $valHora, $id_tecnico){
+		public function updateTecnico($nombre, $cuit, $telefono, $email, $cargo, $iva, $direccion, $provincia, $valHora, $id_tecnico){
 
 			$this->id_tecnico=$id_tecnico;
 
 			//Actualizo datos de empresa
-			$queryUpdateTecnico = "UPDATE tecnicos SET nombre_completo = '$nombre', nro_legajo='$legajo', cuil='$cuit', telefono = '$telefono', email='$email', id_cargo=$cargo, id_tipo_iva_responsable=$iva, valor_hora= $valHora, direccion= '$direccion', id_provincia = $provincia
+			$queryUpdateTecnico = "UPDATE tecnicos SET nombre_completo = '$nombre', cuil='$cuit', telefono = '$telefono', email='$email', id_cargo=$cargo, id_tipo_iva_responsable=$iva, valor_hora= $valHora, direccion= '$direccion', id_provincia = $provincia
 				WHERE id = $this->id_tecnico";
 
 			$updateTecnico = $this->conexion->consultaSimple($queryUpdateTecnico);
@@ -190,7 +190,6 @@ if (isset($_POST['accion'])) {
 				break;
 			case 'updateTecnico':
 					$nombre = $_POST['nombre'];
-					$legajo = $_POST['legajo'];
 					$cuit = $_POST['cuit'];
 					$telefono = $_POST['telefono'];
 					$email = $_POST['email'];
@@ -201,11 +200,10 @@ if (isset($_POST['accion'])) {
 					$valHora = $_POST['valHora'];
 					$id_tecnico = $_POST['id_tecnico'];
 
-					$lejagosTecnicos->updateTecnico($nombre, $legajo, $cuit, $telefono, $email, $cargo, $iva, $direccion, $provincia, $valHora, $id_tecnico);
+					$lejagosTecnicos->updateTecnico($nombre, $cuit, $telefono, $email, $cargo, $iva, $direccion, $provincia, $valHora, $id_tecnico);
 				break;
 			case 'addTecnico':
 					$nombre = $_POST['nombre'];
-					$legajo = $_POST['legajo'];
 					$cuit = $_POST['cuit'];
 					$telefono = $_POST['telefono'];
 					$email = $_POST['email'];
@@ -216,7 +214,7 @@ if (isset($_POST['accion'])) {
 					$valHora = $_POST['valHora'];
 					$id_empresa = $_POST['id_empresa'];
 
-					$lejagosTecnicos->agregarTecnico($nombre, $legajo, $cuit, $telefono, $email, $cargo, $iva, $direccion, $provincia, $valHora, $id_empresa);
+					$lejagosTecnicos->agregarTecnico($nombre, $cuit, $telefono, $email, $cargo, $iva, $direccion, $provincia, $valHora, $id_empresa);
 				break;
 			case 'eliminarTecnico':
 					$id_tecnico = $_POST['id_tecnico'];

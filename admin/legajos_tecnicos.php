@@ -99,7 +99,6 @@
                       <table id="tablaTecnicos" class="display responsive nowrap" style="width:100%">
                         <thead class="text-center">
                           <tr>
-                            <th class="text-center">#ID</th>
                             <th>Legajo</th>
                             <th>Nombre completo</th>
                             <th>Cuit</th>
@@ -160,12 +159,6 @@
                             <div class="form-group">
                               <label for="" class="col-form-label">Nombre completo:</label>
                               <input type="text" class="form-control" id="nombre" required>
-                            </div>
-                          </div>
-                          <div class="col-lg-3">
-                            <div class="form-group">
-                              <label for="" class="col-form-label">Legajo:</label>
-                              <input type="number" class="form-control" id="legajo" required>
                             </div>
                           </div> 
                           <div class="col-lg-4">
@@ -281,7 +274,6 @@
               },
             "columns":[
               {"data": "id_tecnico"},
-              {"data": "legajo"},
               {"data": "nombre"},
               {"data": "cuil"},
               {"data": "telefono"},
@@ -523,7 +515,7 @@
 
               let datosInput = JSON.parse(datosProcesados);
               $("#nombre").val(datosInput.datos_tecnico[0].nombre);
-              $("#legajo").val(datosInput.datos_tecnico[0].legajo);
+              //$("#legajo").val(datosInput.datos_tecnico[0].legajo);
               $("#cuit").val(datosInput.datos_tecnico[0].cuil);
               $("#telefono").val(datosInput.datos_tecnico[0].telefono);
               $("#email").val(datosInput.datos_tecnico[0].email);
@@ -547,7 +539,7 @@
     
     let datosEnviar = new FormData();
     datosEnviar.append("nombre", $.trim($('#nombre').val()))
-    datosEnviar.append("legajo", $.trim($('#legajo').val()));
+    //datosEnviar.append("legajo", $.trim($('#legajo').val()));
     datosEnviar.append("cuit", $.trim($('#cuit').val()));
     datosEnviar.append("telefono", $.trim($('#telefono').val()));
     datosEnviar.append("email", $.trim($('#email').val()));
