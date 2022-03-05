@@ -159,6 +159,7 @@
                             <th>Descripción</th>
                             <th>Saldo</th>
                             <th>Origen</th>
+                            <th>Nro. Factura</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -512,6 +513,17 @@ $(document).on("click", ".btnVer", function(){
                         return ()=>{
                           if(full.id_origen > 0 ){
                             return 'orden nro: '+full.id_origen;
+                          }else{
+                             return '';
+                          }
+                        };
+                    }
+                },
+                {
+                    render: function(data, type, full, meta) {
+                        return ()=>{
+                          if(full.nro_factura > 0 ){
+                            return 'Factura nro: '+full.nro_factura;
                           }else{
                              return '';
                           }
