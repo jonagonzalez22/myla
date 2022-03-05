@@ -78,6 +78,12 @@ INSERT INTO `estados_ordenes_trabajo` (`id`, `estado`) VALUES (NULL, 'Pendiente'
 Tabla tecnicos
 ALTER TABLE `tecnicos` ADD `id_empresa` INT NOT NULL AFTER `saldo`;
 
+Tabla movimientos_proveedores
+ALTER TABLE `movimientos_proveedores` ADD `nro_factura` INT NOT NULL AFTER `monto_cancelado`;
+
+Tabla Facturas
+ALTER TABLE `facturas` ADD `nro_factura` INT NOT NULL AFTER `fecha_probable_cobro`;
+
 
 
 
