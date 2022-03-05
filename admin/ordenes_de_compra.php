@@ -1017,7 +1017,7 @@ function traerItemsOrden(id_orden, id_proveedor){
 $(document).on("change", '.cantidadPedir', function(){
   let id_item = parseInt($(this).closest('tr').find('td:eq(0)').text());  
   let cantidad = parseInt($(this).closest('tr').find('input').val()); 
-  let precio = parseFloat($(this).closest('tr').find('td:eq(3)').find('span').text());
+  let precio = parseFloat($(this).closest('tr').find('td:eq(4)').find('span').text());
 
   /*FUNCTION PARA ADHERIR ITEMS AL MAPA*/
   let addItem= (id_item, cantidad, precio)=>{
@@ -1034,11 +1034,11 @@ $(document).on("change", '.cantidadPedir', function(){
 $(document).on("keyup", ".cantidadPedir", function(){
   let id_item = parseInt($(this).closest('tr').find('td:eq(0)').text());  
   let cantidad = parseInt($(this).closest('tr').find('input').val());
-  let precio = parseFloat($(this).closest('tr').find('td:eq(3)').find('span').text());
+  let precio = parseFloat($(this).closest('tr').find('td:eq(4)').find('span').text());
 
 
   if (!isNaN(cantidad)) {
-     let precioTotal = cantidad * parseFloat($(this).closest('tr').find('td:eq(3)').text());
+     let precioTotal = cantidad * parseFloat($(this).closest('tr').find('td:eq(4)').text());
 
     /*FUNCION PARA IR ACUMULANDO LOS TOTALES POR CADA ITEMS*/
     let addMonto = (id_item, precioTotal)=>{
@@ -1070,7 +1070,7 @@ $(document).on("change", ".cantidadPedir", function(){
   if (isNaN(cantidad)) {
       cantidad = 0;
       $(this).closest('tr').find('input').val(0);
-     let precioTotal = cantidad * parseFloat($(this).closest('tr').find('td:eq(3)').text());
+     let precioTotal = cantidad * parseFloat($(this).closest('tr').find('td:eq(4)').text());
 
     /*FUNCION PARA IR ACUMULANDO LOS TOTALES POR CADA ITEMS*/
     let addMonto = (id_item, precioTotal)=>{
@@ -1158,7 +1158,7 @@ $(document).on("change", ".estado", function(){
     fila = $(this);           
     nuevoEstado = $(this).val();
     id_orden = parseInt($(this).closest('tr').find('td:eq(0)').text());
-    totalFormateado = $(this).closest('tr').find('td:eq(3)').text();
+    totalFormateado = $(this).closest('tr').find('td:eq(4)').text();
     
     total = totalFormateado.replace("$", "");
 
