@@ -84,6 +84,12 @@ ALTER TABLE `movimientos_proveedores` ADD `nro_factura` INT NOT NULL AFTER `mont
 Tabla Facturas
 ALTER TABLE `facturas` ADD `nro_factura` INT NOT NULL AFTER `fecha_probable_cobro`;
 
+Tabla caja_diaria_detalles
+ALTER TABLE `caja_diaria_detalles` ADD `importe_neto` DOUBLE NOT NULL AFTER `id_tipo_movimiento`;
+ALTER TABLE `caja_diaria_detalles` ADD `importe_impuestos` DOUBLE NOT NULL AFTER `importe_neto`;
+ALTER TABLE `caja_diaria_detalles` ADD `nro_comprobante` VARCHAR(150) NOT NULL AFTER `detalle`;
+ALTER TABLE `caja_diaria_detalles` ADD `adjunto` VARCHAR(150) NOT NULL AFTER `fecha_hora`;
+
 
 
 
