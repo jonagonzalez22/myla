@@ -67,15 +67,49 @@
 		}
 
 
-		public function emitirPago($id_proveedor, $importe, $detalle){
+		public function emitirPago($id_proveedor, $importeNetoPago, $importeImpuestosPago, $importe, $nroComprobante, $archivo){
 
 			$this->id_proveedor = $id_proveedor;
 
 			$fecha_hora = date("Y-m-d H:i:s");
 
-			$queryInsertCtaCte = "INSERT INTO movimientos_proveedores(id_proveedor, id_tipo_movimiento, detalle, monto, fecha_hora, id_origen, monto_cancelado)VALUES($this->id_proveedor, 3, '$detalle', $importe, '$fecha_hora', 0, 0)";
+			$queryInsertCtaCte = "INSERT INTO movimientos_proveedores(id_proveedor, id_tipo_movimiento, importe_neto, importe_impuestos, monto, fecha_hora, id_origen, monto_cancelado, nro_comprobante)VALUES($this->id_proveedor, 3, $importeNetoPago, $importeImpuestosPago, $importe, '$fecha_hora', 0, 0, '$nroComprobante')";
 
 			$insertCtaCte = $this->conexion->consultaSimple($queryInsertCtaCte);
+
+
+			if($archivo !=""){
+
+				$nombreImagen = $archivo['name'];
+				$directorio = "../views/adjuntosMovProveedores/";
+				$nombreFinalArchivo = $nombreImagen;
+
+				/*BUSCO EL ID DEL MOVIMIENTO CREADO PARA COLOCARLO COMO IDENTIFICADOR EN LA FOTO*/
+				$queryGetIdMov = "SELECT id as id_movimiento 
+								FROM movimientos_proveedores
+								WHERE id_proveedor = $this->id_proveedor
+								AND id_tipo_movimiento = 3
+								AND importe_neto = $importeNetoPago
+								AND importe_impuestos = $importeImpuestosPago
+								AND monto = $importe
+								AND nro_comprobante = '$nroComprobante'
+								AND fecha_hora = '$fecha_hora'";
+				$getIdMov = $this->conexion->consultaRetorno($queryGetIdMov);
+
+				if ($getIdMov->num_rows > 0 ) {
+					$idRow = $getIdMov->fetch_assoc();
+					$id_movimiento = $idRow['id_movimiento'];
+				}
+
+				move_uploaded_file($archivo['tmp_name'], $directorio.$id_movimiento."_".$nroComprobante."_".$nombreFinalArchivo);
+				//$ruta_completa_imagen = $directorio.$nombreFinalArchivo;
+				$archivo = $id_movimiento."_".$nroComprobante."_".$nombreFinalArchivo;
+
+				/*ACTUALIZO NOMBRE DE LA IMAGEN EN TABLA*/
+				$queryUpdateImageName = "UPDATE movimientos_proveedores SET adjunto = '$archivo' WHERE id = $id_movimiento";
+				$updateImageName = $this->conexion->consultaSimple($queryUpdateImageName);
+			}
+
 
 		}
 
@@ -85,8 +119,8 @@
 			
 			$arrayDetalleCtaCte = array();
 
-			$queryDetalleCtaCte = "SELECT mp.id, mcta.tipo, mp.detalle, 
-								mp.id_origen, monto as saldo, mp.nro_factura 
+			$queryDetalleCtaCte = "SELECT mp.id, mcta.tipo, 
+								mp.id_origen, monto as saldo, mp.nro_comprobante, mp.adjunto 
 								FROM movimientos_proveedores as mp JOIN tipos_movimientos_ctacte as mcta
 								ON(mp.id_tipo_movimiento = mcta.id)
 								WHERE  id_proveedor = $this->id_proveedor";
@@ -96,12 +130,12 @@
 				
 				$id_movimiento = $rowDetalle['id'];
 				$tipo = $rowDetalle['tipo'];
-				$detalle = $rowDetalle['detalle'];
 				$monto = $rowDetalle['saldo'];
 				$id_origen = $rowDetalle['id_origen'];
-				$nro_factura = $rowDetalle['nro_factura'];
+				$nro_comprobante = $rowDetalle['nro_comprobante'];
+				$adjunto = $rowDetalle['adjunto'];
 
-				$arrayDetalleCtaCte[] = array('id_movimiento'=>$id_movimiento, 'tipo'=>$tipo, 'detalle'=>$detalle, 'monto'=>$monto, 'id_origen'=>$id_origen, 'nro_factura'=>$nro_factura);
+				$arrayDetalleCtaCte[] = array('id_movimiento'=>$id_movimiento, 'tipo'=>$tipo, 'monto'=>$monto, 'id_origen'=>$id_origen, 'nro_comprobante'=>$nro_comprobante, 'adjunto'=>$adjunto);
 			}
 
 			echo json_encode($arrayDetalleCtaCte);
@@ -114,9 +148,18 @@
 		switch ($_POST['accion']) {
 			case 'emitirPago':
 					$id_proveedor = $_POST['id_proveedor'];
+					$importeNetoPago = $_POST['importeNetoPago'];
+					$importeImpuestosPago = $_POST['importeImpuestosPago'];
 					$importe = $_POST['importe'];
-					$detalle  =$_POST['detalle'];
-					$ctaCteProv->emitirPago($id_proveedor, $importe, $detalle);
+					$nroComprobante = $_POST['nroComprobante'];
+					
+					if(isset($_FILES['file'])) {
+						$archivo = $_FILES['file'];
+					}else{
+						$archivo = "";
+					}
+
+					$ctaCteProv->emitirPago($id_proveedor, $importeNetoPago, $importeImpuestosPago, $importe, $nroComprobante, $archivo);
 				break;
 			case 'traerDatosIniciales':
 				$id_empresa = $_POST['id_empresa'];
