@@ -156,10 +156,10 @@
                           <tr>
                             <th class="text-center">#ID</th>
                             <th>Tipo Movimiento</th>
-                            <th>Descripción</th>
                             <th>Saldo</th>
                             <th>Origen</th>
-                            <th>Nro. Factura</th>
+                            <th>Nro. Comprobante</th>
+                            <th>Adjuntos</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -174,7 +174,7 @@
 
   <!-- Modal emitir pagos -->
       <div class="modal fade" id="emitirPagos" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-sm" role="document">
+          <div class="modal-dialog modal-lg" role="document">
               <div class="modal-content">
                   <div class="modal-header">
                       <h5 class="modal-title" id="exampleModalLabel"></h5>
@@ -185,17 +185,35 @@
                   <div class="modal-body">
                     <form id="formEmitirPago">
                       <div class="row">
-                          <div class="col-lg-12">
+                          <div class="col-lg-4">
                             <div class="form-group">
-                              <label for="" class="col-form-label">Importe:</label>
-                              <input type="number" class="form-control" id="importePago" required>
+                              <label for="" class="col-form-label">Importe neto:</label>
+                              <input type="number" class="form-control" id="importeNetoPago" required>
                             </div>
                           </div>
-                          <div class="col-lg-12">
+                          <div class="col-lg-4">
+                            <div class="form-group">
+                              <label for="" class="col-form-label">Importe impuestos:</label>
+                              <input type="number" class="form-control" id="importeImpuestosPago" required>
+                            </div>
+                          </div>
+                          <div class="col-lg-4">
+                            <div class="form-group">
+                              <label for="" class="col-form-label">Nro comprobante:</label>
+                              <input type="number" class="form-control" id="nroComprobante">
+                            </div>
+                          </div>
+                          <div class="col-lg-8">
+                            <div class="form-group">
+                              <label for="" class="col-form-label">Adjuntar comprobante:</label>
+                              <input class="form-control" type="file" id="adjuntos" accept="*" data-original-title="" title="">
+                            </div>
+                          </div>
+                          <!--<div class="col-lg-8">
                             <div class="form-group">
                               <label for="" class="col-form-label">Descripción:</label>
                               <textarea class="form-control" id="detalle"></textarea>
-                          </div> 
+                          </div>-->
                     
                   </div>
                   <div class="modal-footer">
@@ -418,17 +436,43 @@
     $("#formEmitirPago").submit(function(e){
       e.preventDefault();
 
+      let datosEnviar = new FormData();
       let id_proveedor = document.getElementById("proveedor").value;
-      let importe = document.getElementById("importePago").value;
-      let detalle_movimiento = document.getElementById("detalle").value;
+      let importeNetoPago = document.getElementById("importeNetoPago").value;
+      let importeImpuestosPago = document.getElementById("importeImpuestosPago").value;
+      let nroComprobante = document.getElementById("nroComprobante").value;
+      let adjunto = document.getElementById("adjuntos");
+      //let detalle_movimiento = document.getElementById("detalle").value;
+      let importe = parseFloat(importeNetoPago) + parseFloat(importeImpuestosPago)
+
+      datosEnviar.append("accion", accion);
+      datosEnviar.append("id_proveedor", id_proveedor);
+      datosEnviar.append("importeNetoPago", importeNetoPago);
+      datosEnviar.append("importeImpuestosPago", importeImpuestosPago);
+      datosEnviar.append("importe", importe);
+      datosEnviar.append("nroComprobante", nroComprobante);
+
+      if (adjunto.files.length > 0) {
+        datosEnviar.append("file", adjunto.files[0]);
+      }else{
+        datosEnviar.append("file", "");
+      }
+
+
+
+
+      //accion: accion, id_proveedor: id_proveedor, importe: importe, detalle: detalle_movimiento
+
 
       $.ajax({
-                  "url":"./models/administrar_cta_cte_proveedores.php",
-                  "type": "POST",
-                  "datatype":"json",
-                  "data":{accion: accion, id_proveedor: id_proveedor, importe: importe, detalle: detalle_movimiento},
-                  success: function(response){
-                    reloadDatatable();
+                  data: datosEnviar,
+                  url:"./models/administrar_cta_cte_proveedores.php",
+                  method: "post",
+                  cache: false,
+                  contentType: false,
+                  processData: false,  
+                  success: function(){
+                      reloadDatatable();
                     $('#emitirPagos').modal('hide');
                       swal({
                         icon: 'success',
@@ -496,7 +540,6 @@ $(document).on("click", ".btnVer", function(){
             "columns":[
               {"data": "id_movimiento"},
               {"data": "tipo"},
-              {"data": "detalle"},
               {
                     render: function(data, type, full, meta) {
                         return ()=>{
@@ -522,11 +565,22 @@ $(document).on("click", ".btnVer", function(){
                 {
                     render: function(data, type, full, meta) {
                         return ()=>{
-                          if(full.nro_factura > 0 ){
-                            return 'Factura nro: '+full.nro_factura;
+                          if(full.nro_comprobante > 0 ){
+                            return full.nro_comprobante;
                           }else{
                              return '';
                           }
+                        };
+                    }
+                },
+                {
+                    render: function(data, type, full, meta) {
+                        return ()=>{
+                            if(full.adjunto !==""){
+                              return `<a href="./views/adjuntosMovProveedores/${full.adjunto}" target="_blank">Descargar</a>`
+                            }else{
+                              return ""
+                            }
                         };
                     }
                 },

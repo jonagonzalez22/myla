@@ -90,6 +90,13 @@ ALTER TABLE `caja_diaria_detalles` ADD `importe_impuestos` DOUBLE NOT NULL AFTER
 ALTER TABLE `caja_diaria_detalles` ADD `nro_comprobante` VARCHAR(150) NOT NULL AFTER `detalle`;
 ALTER TABLE `caja_diaria_detalles` ADD `adjunto` VARCHAR(150) NOT NULL AFTER `fecha_hora`;
 
+Tabla movimientos_proveedores
+ALTER TABLE `myla`.`movimientos_proveedores` 
+ADD COLUMN `importe_neto` DOUBLE NOT NULL AFTER `detalle`,
+ADD COLUMN `importe_impuestos` DOUBLE NOT NULL AFTER `importe_neto`,
+ADD COLUMN `adjunto` VARCHAR(150) NOT NULL AFTER `nro_comprobante`,
+CHANGE COLUMN `nro_factura` `nro_comprobante` INT(11) NOT NULL ;
+
 
 
 
