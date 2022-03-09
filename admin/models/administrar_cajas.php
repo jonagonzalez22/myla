@@ -120,20 +120,54 @@
 			$delTipoCaja = $this->conexion->consultaSimple($query);
 		}
 		
-		public function agregarMovimiento($id_caja_diaria, $id_tipo_movimiento, $importe_movimiento, $detalle_movimiento){
+		public function agregarMovimiento($idCajaDiaria, $idTipoMovimiento, $importeNetoMovimiento, $importeImpuestosMovmiento, $nroComprobante, $importeMovimiento, $archivo){
 
-			$this->id_caja_diaria = $id_caja_diaria;
+			$this->id_caja_diaria = $idCajaDiaria;
 			$fecha_hora = date('Y-m-d H:i:s');
 
+
 			/*INSERTO EL MOVIMIENTO*/
-			$queryInsertDetalle = "INSERT INTO caja_diaria_detalles(id_caja_diaria, id_tipo_movimiento, monto, detalle, fecha_hora)VALUES($this->id_caja_diaria, $id_tipo_movimiento, $importe_movimiento, '$detalle_movimiento', '$fecha_hora')";
+			$queryInsertDetalle = "INSERT INTO caja_diaria_detalles(id_caja_diaria, id_tipo_movimiento, importe_neto, importe_impuestos, monto, nro_comprobante, fecha_hora)VALUES($this->id_caja_diaria, $idTipoMovimiento, $importeNetoMovimiento, $importeImpuestosMovmiento, $importeMovimiento, '$nroComprobante', '$fecha_hora')";
 			$insertDetalle = $this->conexion->consultaSimple($queryInsertDetalle);
 
 
-			/*ACTUALIZO SALDO*/
-			$queryUpdateSaldo ="UPDATE caja_diaria SET saldo_cierre = saldo_cierre - $importe_movimiento 
-				WHERE id = $this->id_caja_diaria";
+			if($archivo !=""){
 
+				$nombreImagen = $archivo['name'];
+				$directorio = "../views/adjuntosCajaDiaria/";
+				$nombreFinalArchivo = $nombreImagen;
+
+				/*BUSCO EL ID DEL ITEM CREADO PARA COLOCARLO COMO IDENTIFICADOR EN LA FOTO*/
+				$queryGetIdMov = "SELECT id as id_movimiento 
+								FROM caja_diaria_detalles
+								WHERE id_caja_diaria = $this->id_caja_diaria
+								AND id_tipo_movimiento = $idTipoMovimiento
+								AND importe_neto = $importeNetoMovimiento
+								AND importe_impuestos = $importeImpuestosMovmiento
+								AND monto = $importeMovimiento
+								AND nro_comprobante = '$nroComprobante'
+								AND fecha_hora = '$fecha_hora'";
+				$getIdMov = $this->conexion->consultaRetorno($queryGetIdMov);
+
+				if ($getIdMov->num_rows > 0 ) {
+					$idRow = $getIdMov->fetch_assoc();
+					$id_movimiento = $idRow['id_movimiento'];
+				}
+
+				move_uploaded_file($archivo['tmp_name'], $directorio.$id_movimiento."_".$nroComprobante."_".$nombreFinalArchivo);
+				//$ruta_completa_imagen = $directorio.$nombreFinalArchivo;
+				$archivo = $id_movimiento."_".$nroComprobante."_".$nombreFinalArchivo;
+
+				/*ACTUALIZO NOMBRE DE LA IMAGEN EN TABLA*/
+				$queryUpdateImageName = "UPDATE caja_diaria_detalles SET adjunto = '$archivo' WHERE id = $id_movimiento";
+				$updateImageName = $this->conexion->consultaSimple($queryUpdateImageName);
+			}
+
+
+
+			/*ACTUALIZO SALDO*/
+			$queryUpdateSaldo ="UPDATE caja_diaria SET saldo_cierre = saldo_cierre - $importeMovimiento 
+				WHERE id = $this->id_caja_diaria";
 			$updateSaldo = $this->conexion->consultaSimple($queryUpdateSaldo);
 
 		}
@@ -142,7 +176,7 @@
 			$this->id_caja_diaria = $id_caja_diaria;
 
 			$queryGetDetalleCaja = "SELECT cdd.id as id_cdd, tmp.tipo, monto,
-									detalle, fecha_hora
+									detalle, fecha_hora, nro_comprobante, adjunto
 									FROM caja_diaria_detalles as cdd INNER JOIN tipos_movimientos_caja as tmp
 									ON(cdd.id_tipo_movimiento = tmp.id)
 									WHERE id_caja_diaria = $this->id_caja_diaria";
@@ -156,8 +190,10 @@
 				$monto = $row['monto'];
 				$detalle = $row['detalle'];
 				$fecha_hora = date("d/m/Y H:i:s", strtotime($row['fecha_hora']));
+				$comprobante = $row['nro_comprobante'];
+				$adjunto = $row['adjunto'];
 
-				$arrayMovimientosCaja[]=array('id_cdd'=>$id_cdd, 'tipo'=>$tipo, 'monto'=>$monto, 'detalle'=>$detalle, 'feha_hora'=>$fecha_hora);
+				$arrayMovimientosCaja[]=array('id_cdd'=>$id_cdd, 'tipo'=>$tipo, 'monto'=>$monto, 'detalle'=>$detalle, 'feha_hora'=>$fecha_hora, 'comprobante'=>$comprobante, 'adjunto'=>$adjunto);
 			}
 			echo json_encode($arrayMovimientosCaja);
 		}
@@ -184,11 +220,21 @@
 				$cajas->traerDatosIniciales();
 				break;
 			case 'agregarMovimiento':
-					$id_caja_diaria = $_POST['id_caja_diaria'];
-					$id_tipo_movimiento = $_POST['id_tipo_movimiento'];
-					$importe_movimiento = $_POST['importe_movimiento'];
-					$detalle_movimiento = $_POST['detalle_movimiento'];
-					$cajas->agregarMovimiento($id_caja_diaria, $id_tipo_movimiento, $importe_movimiento, $detalle_movimiento);
+					$idCajaDiaria = $_POST['idCajaDiaria'];
+					$idTipoMovimiento = $_POST['idTipoMovimiento'];
+					$importeNetoMovimiento = $_POST['importeNetoMovimiento'];
+					$importeImpuestosMovmiento = $_POST['importeImpuestosMovmiento'];
+					$nroComprobante = $_POST['nroComprobante'];
+					$importeMovimiento = $_POST['importeMovimiento'];
+					
+					if(isset($_FILES['file'])) {
+						$archivo = $_FILES['file'];
+					}else{
+						$archivo = "";
+					}
+
+
+					$cajas->agregarMovimiento($idCajaDiaria, $idTipoMovimiento, $importeNetoMovimiento, $importeImpuestosMovmiento, $nroComprobante, $importeMovimiento, $archivo);
 				break;
 		}
 	}else{
