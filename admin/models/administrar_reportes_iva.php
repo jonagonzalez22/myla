@@ -58,12 +58,12 @@
 				$total= "$".number_format($row['total'],2,',','.');
 				$impuesto = "$".number_format($row['impuesto'],2,',','.');
 				$fecha= date("d/m/Y", strtotime($row['fecha']));
-				$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha);
+				$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha, 'nro_comprobante'=>'');
 			}
 
 
 			/*BUSCO INGRESO EGRESO CAJA DIARIA*/
-			$queryGetCajaDiaria = "SELECT cd.id as id_caja_diaria, tc.tipo, 
+			/*$queryGetCajaDiaria = "SELECT cd.id as id_caja_diaria, tc.tipo, 
 								(saldo_apertura - saldo_cierre) as total, 
 								((saldo_apertura - saldo_cierre)*0.21) impuesto, 
 								fecha
@@ -71,7 +71,18 @@
 								ON(cd.id_tipo_caja = tc.id)
 								WHERE cd.id_empresa = $this->id_empresa
 								and saldo_cierre < saldo_apertura";
+			$getCajaDiaria = $this->conexion->consultaRetorno($queryGetCajaDiaria);*/
+
+			$queryGetCajaDiaria = "SELECT tc.tipo, cdd.monto total,  
+									cdd.importe_impuestos impuesto, cdd.fecha_hora as fecha, cdd.nro_comprobante
+								FROM caja_diaria_detalles as cdd JOIN caja_diaria as cd
+								ON(cdd.id_caja_diaria = cd.id)
+								JOIN tipos_caja tc
+								on(cd.id_tipo_caja = tc.id)
+								WHERE cd.id_empresa = $this->id_empresa";
 			$getCajaDiaria = $this->conexion->consultaRetorno($queryGetCajaDiaria);
+
+
 			/*LLENO ARRAY REPORTES CON MOVIMIENTOS CAJA*/
 			while ($row = $getCajaDiaria->fetch_array()) {
 				$origen= "<b>Caja diaria: </b>".$row['tipo'];
@@ -79,7 +90,8 @@
 				$total= "$".number_format($row['total'],2,',','.');
 				$impuesto = "$".number_format($row['impuesto'],2,',','.');
 				$fecha= date("d/m/Y", strtotime($row['fecha']));
-				$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha);
+				$nroComprobante = $row['nro_comprobante'];
+				$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha, 'nro_comprobante'=>$nroComprobante);
 			}
 
 
@@ -106,7 +118,7 @@
 						
 						if ($key!="origen") {
 							if($key == "fdesde"){
-								$condicion_fechas_cd = "and fecha between '".$value."' ";
+								$condicion_fechas_cd = "and date_format(fecha_hora, '%Y-%m-%d') between '".$value."' ";
 							}
 							if($key=="fhasta"){
 								$condicion_fechas_cd = $condicion_fechas_cd." and '".$value."'";
@@ -116,14 +128,15 @@
 
 
 					/*BUSCO INGRESO EGRESO CAJA DIARIA*/
-					$queryGetCajaDiaria = "SELECT cd.id as id_caja_diaria, tc.tipo, 
-										(saldo_apertura - saldo_cierre) as total, 
-										((saldo_apertura - saldo_cierre)*0.21) impuesto, 
-										fecha
-										FROM caja_diaria as cd JOIN tipos_caja as tc
-										ON(cd.id_tipo_caja = tc.id)
-										WHERE cd.id_empresa = $this->id_empresa
-										and saldo_cierre < saldo_apertura ".$condicion_fechas_cd;
+
+					$queryGetCajaDiaria = "SELECT tc.tipo, cdd.monto total,  
+								cdd.importe_impuestos impuesto, 
+								cdd.fecha_hora as fecha, cdd.nro_comprobante
+								FROM caja_diaria_detalles as cdd JOIN caja_diaria as cd
+								ON(cdd.id_caja_diaria = cd.id)
+								JOIN tipos_caja tc
+								on(cd.id_tipo_caja = tc.id)
+								WHERE cd.id_empresa = $this->id_empresa ".$condicion_fechas_cd;
 					$getCajaDiaria = $this->conexion->consultaRetorno($queryGetCajaDiaria);
 
 					/*LLENO ARRAY REPORTES CON MOVIMIENTOS CAJA*/
@@ -133,9 +146,9 @@
 						$total= "$".number_format($row['total'],2,',','.');
 						$impuesto = "$".number_format($row['impuesto'],2,',','.');
 						$fecha= date("d/m/Y", strtotime($row['fecha']));
-						$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha);
+						$nroComprobante = $row['nro_comprobante'];
+						$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha, 'nro_comprobante'=>$nroComprobante);
 					}
-
 
 				 }else if($filtros->origen == "oc" || (isset($filtros->id_proveedor) && $filtros->id_proveedor !=="")){
 
@@ -169,7 +182,7 @@
 						$total= "$".number_format($row['total'],2,',','.');
 						$impuesto = "$".number_format($row['impuesto'],2,',','.');
 						$fecha= date("d/m/Y", strtotime($row['fecha']));
-						$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha);
+						$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha, 'nro_comprobante'=>'');
 					}	
 
 				 }
@@ -180,7 +193,7 @@
 						
 						if ($key!="origen") {
 							if($key == "fdesde"){
-								$condicion_fechas_cd = "and fecha between '".$value."' ";
+								$condicion_fechas_cd = "and date_format(fecha_hora, '%Y-%m-%d') between '".$value."' ";
 							}
 							if($key=="fhasta"){
 								$condicion_fechas_cd = $condicion_fechas_cd." and '".$value."'";
@@ -218,20 +231,21 @@
 						$total= "$".number_format($row['total'],2,',','.');
 						$impuesto = "$".number_format($row['impuesto'],2,',','.');
 						$fecha= date("d/m/Y", strtotime($row['fecha']));
-						$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha);
+						$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha, 'nro_comprobante'=>'');
 					}
 
 
 					/*BUSCO INGRESO EGRESO CAJA DIARIA*/
-					$queryGetCajaDiaria = "SELECT cd.id as id_caja_diaria, tc.tipo, 
-										(saldo_apertura - saldo_cierre) as total, 
-										((saldo_apertura - saldo_cierre)*0.21) impuesto, 
-										fecha
-										FROM caja_diaria as cd JOIN tipos_caja as tc
-										ON(cd.id_tipo_caja = tc.id)
-										WHERE cd.id_empresa = $this->id_empresa
-										and saldo_cierre < saldo_apertura".$condicion_fechas_cd;
+					$queryGetCajaDiaria = "SELECT tc.tipo, cdd.monto total,  
+								cdd.importe_impuestos impuesto, 
+								cdd.fecha_hora as fecha, cdd.nro_comprobante
+								FROM caja_diaria_detalles as cdd JOIN caja_diaria as cd
+								ON(cdd.id_caja_diaria = cd.id)
+								JOIN tipos_caja tc
+								on(cd.id_tipo_caja = tc.id)
+								WHERE cd.id_empresa = $this->id_empresa ".$condicion_fechas_cd;
 					$getCajaDiaria = $this->conexion->consultaRetorno($queryGetCajaDiaria);
+
 					/*LLENO ARRAY REPORTES CON MOVIMIENTOS CAJA*/
 					while ($row = $getCajaDiaria->fetch_array()) {
 						$origen= "<b>Caja diaria: </b>".$row['tipo'];
@@ -239,9 +253,9 @@
 						$total= "$".number_format($row['total'],2,',','.');
 						$impuesto = "$".number_format($row['impuesto'],2,',','.');
 						$fecha= date("d/m/Y", strtotime($row['fecha']));
-						$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha);
+						$nroComprobante = $row['nro_comprobante'];
+						$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha, 'nro_comprobante'=>$nroComprobante);
 					}
-
 			}
 			echo json_encode($arrayReportesIva);
 		}
