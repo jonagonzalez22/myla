@@ -58,7 +58,8 @@
 			$arrayMovimientos = array();
 
 			$queryGetMovimientos = "SELECT cdd.id as id_cdd, tmp.tipo, 
-								tc.tipo as caja, monto, detalle, fecha_hora
+								tc.tipo as caja, monto, detalle, fecha_hora,
+								cdd.nro_comprobante, cdd.adjunto
 								FROM caja_diaria_detalles as cdd JOIN tipos_movimientos_caja as tmp
 								ON(cdd.id_tipo_movimiento = tmp.id)
 								JOIN caja_diaria as cd
@@ -74,7 +75,9 @@
 				$monto = "$".number_format($rowMovimiento['monto'],2,',','.');
 				$detalle = $rowMovimiento['detalle'];
 				$fecha_hora= date("d/m/Y H:m:s", strtotime($rowMovimiento['fecha_hora']));
-				$arrayMovimientos[] = array('id_cdd'=>$id_cdd, 'tipo'=>$tipo, 'caja'=>$caja, 'monto'=>$monto, 'detalle'=>$detalle, 'fecha_hora'=>$fecha_hora);
+				$nroComprobante = $rowMovimiento['nro_comprobante'];
+				$adjunto = $rowMovimiento['adjunto'];
+				$arrayMovimientos[] = array('id_cdd'=>$id_cdd, 'tipo'=>$tipo, 'caja'=>$caja, 'monto'=>$monto, 'detalle'=>$detalle, 'fecha_hora'=>$fecha_hora, 'nroComprobante'=>$nroComprobante, 'adjunto'=>$adjunto);
 			}
 
 			echo json_encode($arrayMovimientos);
@@ -105,7 +108,8 @@
 
 			
 			$queryGetMovimientos = "SELECT cdd.id as id_cdd, tmp.tipo, 
-								tc.tipo as caja, monto, detalle, fecha_hora
+								tc.tipo as caja, monto, detalle, fecha_hora,
+								cdd.nro_comprobante, cdd.adjunto
 								FROM caja_diaria_detalles as cdd JOIN tipos_movimientos_caja as tmp
 								ON(cdd.id_tipo_movimiento = tmp.id)
 								JOIN caja_diaria as cd
@@ -122,7 +126,9 @@
 				$monto = "$".number_format($rowMovimiento['monto'],2,',','.');
 				$detalle = $rowMovimiento['detalle'];
 				$fecha_hora= date("d/m/Y H:m:s", strtotime($rowMovimiento['fecha_hora']));
-				$arrayMovimientos[] = array('id_cdd'=>$id_cdd, 'tipo'=>$tipo, 'caja'=>$caja, 'monto'=>$monto, 'detalle'=>$detalle, 'fecha_hora'=>$fecha_hora);
+				$nroComprobante = $rowMovimiento['nro_comprobante'];
+				$adjunto = $rowMovimiento['adjunto'];
+				$arrayMovimientos[] = array('id_cdd'=>$id_cdd, 'tipo'=>$tipo, 'caja'=>$caja, 'monto'=>$monto, 'detalle'=>$detalle, 'fecha_hora'=>$fecha_hora, 'nroComprobante'=>$nroComprobante, 'adjunto'=>$adjunto);
 			}
 
 			echo json_encode($arrayMovimientos);

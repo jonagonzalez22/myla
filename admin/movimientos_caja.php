@@ -119,8 +119,9 @@
                         <label>Fecha:</label>
                         <input type="date" id="fecha" class="form-control">
                       </div>
-                      <div class="col-2 align-self-end">
+                      <div class="col-12 align-self-end mt-2">
                         <button class="btn btn-success btnBuscar">Buscar</button>
+                        <button id="btnExportar" type="button" class="btn btn-outline-primary" data-toggle="modal"><i class="fa fa-file-excel-o"></i> Exportar</button>
                       </div>
                       <div class="col-2 align-self-end">
                       </div>
@@ -143,9 +144,11 @@
                             <tr>
                               <th class="text-center">#ID</th>
                               <th>Tipo</th>
+                              <th>Nro. Comprobante</th>
                               <th>Caja</th>
                               <th>Monto</th>
                               <th>Detalle</th>
+                              <th>Adjuntos</th>
                               <th>Fecha</th>
                             </tr>
                           </thead>
@@ -310,9 +313,21 @@
             "columns":[
               {"data": "id_cdd"},
               {"data": "tipo"},
+              {"data": "nroComprobante"},
               {"data": "caja"},
               {"data":"monto"},
               {"data": "detalle"},
+              {
+                    render: function(data, type, full, meta) {
+                        return ()=>{
+                            if(full.adjunto !==""){
+                              return `<a href="./views/adjuntosCajaDiaria/${full.adjunto}" target="_blank">Descargar</a>`
+                            }else{
+                              return ""
+                            }
+                        };
+                    }
+                },
               {"data": "fecha_hora"},
             ],
             "language":  idiomaEsp
@@ -398,11 +413,23 @@
                 },
               "columns":[
                 {"data": "id_cdd"},
-                {"data": "tipo"},
-                {"data": "caja"},
-                {"data":"monto"},
-                {"data": "detalle"},
-                {"data": "fecha_hora"},
+              {"data": "tipo"},
+              {"data": "nroComprobante"},
+              {"data": "caja"},
+              {"data":"monto"},
+              {"data": "detalle"},
+              {
+                    render: function(data, type, full, meta) {
+                        return ()=>{
+                            if(full.adjunto !==""){
+                              return `<a href="./views/adjuntosCajaDiaria/${full.adjunto}" target="_blank">Descargar</a>`
+                            }else{
+                              return ""
+                            }
+                        };
+                    }
+                },
+              {"data": "fecha_hora"},
               ],
               "language":  idiomaEsp
           });
@@ -411,6 +438,32 @@
                       
          
   })
+
+  $(document).on('click', '#btnExportar', function(){
+
+      let id_tipo_movimiento = $("#tipoMovimiento").val();
+      let id_tipo_caja =$("#caja").val();
+      let fecha_hora = $("#fecha").val()
+      let id_empresa = parseInt(document.getElementById("id_empresa").textContent)
+
+      let filtros={
+        id_tipo_movimiento,
+        id_tipo_caja,
+        fecha_hora
+      }
+
+      for(const propiedad in filtros){
+        if(filtros[propiedad]==""){
+          delete filtros[propiedad];
+        }
+        
+      }
+
+      let filtroEnvair = JSON.stringify(filtros);
+
+    window.open(`./models/descarga_archivos.php?accion=exportarReporteMovCajas&id_empresa=${id_empresa}&filtros=${filtroEnvair}`);
+    
+  });
 
     </script>
   </body>
