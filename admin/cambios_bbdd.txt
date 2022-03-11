@@ -97,7 +97,9 @@ ADD COLUMN `importe_impuestos` DOUBLE NOT NULL AFTER `importe_neto`,
 ADD COLUMN `adjunto` VARCHAR(150) NOT NULL AFTER `nro_comprobante`,
 CHANGE COLUMN `nro_factura` `nro_comprobante` INT(11) NOT NULL ;
 
-
+Tabla tecnicos
+ALTER TABLE `myla`.`tecnicos` 
+ADD COLUMN `adjunto` VARCHAR(150) NOT NULL AFTER `id_empresa`;
 
 
 ##### AXEL #######

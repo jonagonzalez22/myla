@@ -148,6 +148,7 @@
                             <tr>
                               <th>Fecha</th>
                               <th class="text-center">Origen</th>
+                              <th>Nro. Comprobante</th>
                               <th>Proveedor</th>
                               <th>Total</th>
                               <th>Total impuesto</th>
@@ -313,6 +314,7 @@
             "columns":[
               {"data": "fecha"},
               {"data": "origen"},
+              {"data": "nro_comprobante"},
               {"data": "proveedor"},
               {"data": "total"},
               {"data": "impuesto"}
@@ -429,6 +431,7 @@
                 "columns":[
                   {"data": "fecha"},
                   {"data": "origen"},
+                  {"data": "nro_comprobante"},
                   {"data": "proveedor"},
                   {"data": "total"},
                   {"data": "impuesto"}

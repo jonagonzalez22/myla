@@ -100,14 +100,15 @@
                         <thead class="text-center">
                           <tr>
                             <th>Legajo</th>
+                            <th>Imagen</th>
                             <th>Nombre completo</th>
                             <th>Cuit</th>
                             <th>Teléfono</th>
-                            <th>EMail</th>
                             <th>Estado</th>
                             <th>Acciones</th>
-                            <th>Cargo</th>
                             <th>Tipo Iva</th>
+                            <th>Cargo</th>
+                            <th>EMail</th>
                             <th>Valor hora</th>
                             <th>Dirección</th>
                             <th>Provincia</th>
@@ -221,7 +222,25 @@
                               <input type="number" class="form-control" id="valHora" required>
                             </div>
                           </div>
-                      </div>                
+                      </div>
+                      <div class="row"> 
+                          <div class="col-lg-8">
+                            <div class="form-group">
+                              <label for="" class="col-form-label">Adjuntar foto de perfil:</label>
+                              <input class="form-control" type="file" id="adjuntos" accept="image/*" data-original-title="" title="">
+                            </div>
+                          </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-lg-12">
+                            <div class="text-center">
+                              <img src="" class="img-thumbnail w-25 d-none" id="imgUpdate">
+                            </div>
+                        </div> 
+                        <div class="col-lg-12 text-center mt-1">
+                           <a class="btn btn-outline-danger btnBorrarFoto text-danger d-none"><i class='fa fa-trash-o'></i></a>
+                        </div>
+                      </div>               
                   </div>
                   <div class="modal-footer">
                       <button type="button" class="btn btn-light" data-dismiss="modal">Cancelar</button>
@@ -274,10 +293,23 @@
               },
             "columns":[
               {"data": "id_tecnico"},
+              {
+                    render: function(data, type, full, meta) {
+                        return ()=>{
+                          let $img = "";
+                          if (full.imagen !=""){
+                             
+                             return `<img src="./views/adjuntosTecnicos/${full.imagen}" class="img-thumbnail">`;
+                          }else{
+                            return `<img src="./views/adjuntosTecnicos/user.png" class="img-thumbnail">`
+                          }                               
+                          
+                        };
+                    }
+                },
               {"data": "nombre"},
               {"data": "cuil"},
               {"data": "telefono"},
-              {"data": "email"},
               {
                     render: function(data, type, full, meta) {
                         return ()=>{
@@ -310,8 +342,9 @@
                         return `<div class="text-center"><div class="btn-group"><button class="btn btn-success btnEditar" data-id-tecnico-edit = "${full.id_tecnico}"><i class="fa fa-edit"></i></button><button class="btn btn-danger btnBorrar" data-id-tecnico-del = "${full.id_tecnico}"><i class="fa fa-trash-o"></i></button></div></div>`;
                     }
                 },
-              {"data": "cargo"},
               {"data": "tipo_iva"},
+              {"data": "cargo"},
+              {"data": "email"},
               {"data": "valor_hora"},
               {"data": "direccion"},
               {"data": "provincia"},
@@ -526,6 +559,18 @@
               $("#valHora").val(datosInput.datos_tecnico[0].valor_hora);
               $('#id_tecnico').html(id_tecnico);
               
+  
+              if(datosInput.datos_tecnico[0].imagen !=""){
+                $srcImagen = "./views/adjuntosTecnicos/"+datosInput.datos_tecnico[0].imagen;
+                $('#imgUpdate').attr("src", $srcImagen);
+                $('#imgUpdate').removeClass("d-none")
+                $('.btnBorrarFoto').removeClass("d-none");
+              }else{
+                $('#imgUpdate').attr("src", "");
+                $('#imgUpdate').addClass("d-none");
+                $('.btnBorrarFoto').addClass("d-none");
+              }
+
               accion = "updateTecnico";
             }
           });
@@ -538,6 +583,7 @@
      
     
     let datosEnviar = new FormData();
+    let adjunto = document.getElementById("adjuntos");
     datosEnviar.append("nombre", $.trim($('#nombre').val()))
     //datosEnviar.append("legajo", $.trim($('#legajo').val()));
     datosEnviar.append("cuit", $.trim($('#cuit').val()));
@@ -550,12 +596,18 @@
     datosEnviar.append("valHora", $.trim($('#valHora').val()));
     datosEnviar.append("id_empresa", $.trim($('#id_empresa').html()));
 
+
     if(accion == 'updateTecnico'){
        datosEnviar.append("id_tecnico", $.trim($('#id_tecnico').html()));
     }else{
        datosEnviar.append("id_tecnico", "");
     }
 
+     if (adjunto.files.length > 0) {
+        datosEnviar.append("file", adjunto.files[0]);
+      }else{
+        datosEnviar.append("file", "");
+      }
 
     datosEnviar.append("accion", accion);
         $.ajax({
@@ -641,6 +693,44 @@ $(document).on("click", ".btnBorrar", function(){
                 })
  }); 
 
+
+$(document).on("click", ".btnBorrarFoto", function(){
+    let id_tecnico = parseInt($('#id_tecnico').text());
+
+    /*SACAMOS EL NOMBRE DE LA FOTO A ELIMINAR*/
+    /*1 - Tomo el src de la foto*/
+    let nombreFotoCompleto = $("#imgUpdate").attr("src");
+    /*2 - Separo todo el src y creo un array*/
+    let nombreFotoSeparada = nombreFotoCompleto.split('/');
+    /*3 Tomo la última posición del array donde estaría el nombre*/
+    let nombreFoto = nombreFotoSeparada[nombreFotoSeparada.length-1];
+    swal({
+                    title: "Estas seguro?",
+                    text: "Una vez eliminado este archivo, no volveras a verla",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        accion = "eliminarArchivoTecnico";
+                        $.ajax({
+                                url: "models/administrar_legajos_tecnicos.php",
+                                type: "POST",
+                                datatype:"json",    
+                                data:  {accion:accion, id_tecnico:id_tecnico, nombreFoto: nombreFoto},    
+                                success: function() {
+                                   $(".btnBorrarFoto").addClass("d-none"); 
+                                   $("#imgUpdate").addClass("d-none");
+                                   $("#imgUpdate").attr("src", "");              
+                                }
+                            }); 
+                    } else {
+                        swal("El archivo no se eliminó!");
+                    }
+                })
+
+})
 
 
 

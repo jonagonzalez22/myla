@@ -14,9 +14,9 @@ class Descargas{
 			date_default_timezone_set("America/Buenos_Aires");
 		}
 
-	public function traerReporteIva($filtrosRecibidos, $id_empresa){
-		
-		$this->id_empresa = $id_empresa;
+			public function traerReporteIva($filtrosRecibidos, $id_empresa){
+			
+			$this->id_empresa = $id_empresa;
 			$arrayReportesIva = array();
 
 
@@ -34,7 +34,7 @@ class Descargas{
 						
 						if ($key!="origen") {
 							if($key == "fdesde"){
-								$condicion_fechas_cd = "and fecha between '".$value."' ";
+								$condicion_fechas_cd = "and date_format(fecha_hora, '%Y-%m-%d') between '".$value."' ";
 							}
 							if($key=="fhasta"){
 								$condicion_fechas_cd = $condicion_fechas_cd." and '".$value."'";
@@ -44,14 +44,15 @@ class Descargas{
 
 
 					/*BUSCO INGRESO EGRESO CAJA DIARIA*/
-					$queryGetCajaDiaria = "SELECT cd.id as id_caja_diaria, tc.tipo, 
-										(saldo_apertura - saldo_cierre) as total, 
-										((saldo_apertura - saldo_cierre)*0.21) impuesto, 
-										fecha
-										FROM caja_diaria as cd JOIN tipos_caja as tc
-										ON(cd.id_tipo_caja = tc.id)
-										WHERE cd.id_empresa = $this->id_empresa
-										and saldo_cierre < saldo_apertura ".$condicion_fechas_cd;
+
+					$queryGetCajaDiaria = "SELECT tc.tipo, cdd.monto total,  
+								cdd.importe_impuestos impuesto, 
+								cdd.fecha_hora as fecha, cdd.nro_comprobante
+								FROM caja_diaria_detalles as cdd JOIN caja_diaria as cd
+								ON(cdd.id_caja_diaria = cd.id)
+								JOIN tipos_caja tc
+								on(cd.id_tipo_caja = tc.id)
+								WHERE cd.id_empresa = $this->id_empresa ".$condicion_fechas_cd;
 					$getCajaDiaria = $this->conexion->consultaRetorno($queryGetCajaDiaria);
 
 					/*LLENO ARRAY REPORTES CON MOVIMIENTOS CAJA*/
@@ -61,9 +62,9 @@ class Descargas{
 						$total= "$".number_format($row['total'],2,',','.');
 						$impuesto = "$".number_format($row['impuesto'],2,',','.');
 						$fecha= date("d/m/Y", strtotime($row['fecha']));
-						$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha);
+						$nroComprobante = $row['nro_comprobante'];
+						$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha, 'nro_comprobante'=>$nroComprobante);
 					}
-
 
 				 }else if($filtros->origen == "oc" || (isset($filtros->id_proveedor) && $filtros->id_proveedor !=="")){
 
@@ -97,7 +98,7 @@ class Descargas{
 						$total= "$".number_format($row['total'],2,',','.');
 						$impuesto = "$".number_format($row['impuesto'],2,',','.');
 						$fecha= date("d/m/Y", strtotime($row['fecha']));
-						$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha);
+						$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha, 'nro_comprobante'=>'');
 					}	
 
 				 }
@@ -108,7 +109,7 @@ class Descargas{
 						
 						if ($key!="origen") {
 							if($key == "fdesde"){
-								$condicion_fechas_cd = "and fecha between '".$value."' ";
+								$condicion_fechas_cd = "and date_format(fecha_hora, '%Y-%m-%d') between '".$value."' ";
 							}
 							if($key=="fhasta"){
 								$condicion_fechas_cd = $condicion_fechas_cd." and '".$value."'";
@@ -146,20 +147,21 @@ class Descargas{
 						$total= "$".number_format($row['total'],2,',','.');
 						$impuesto = "$".number_format($row['impuesto'],2,',','.');
 						$fecha= date("d/m/Y", strtotime($row['fecha']));
-						$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha);
+						$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha, 'nro_comprobante'=>'');
 					}
 
 
 					/*BUSCO INGRESO EGRESO CAJA DIARIA*/
-					$queryGetCajaDiaria = "SELECT cd.id as id_caja_diaria, tc.tipo, 
-										(saldo_apertura - saldo_cierre) as total, 
-										((saldo_apertura - saldo_cierre)*0.21) impuesto, 
-										fecha
-										FROM caja_diaria as cd JOIN tipos_caja as tc
-										ON(cd.id_tipo_caja = tc.id)
-										WHERE cd.id_empresa = $this->id_empresa
-										and saldo_cierre < saldo_apertura".$condicion_fechas_cd;
+					$queryGetCajaDiaria = "SELECT tc.tipo, cdd.monto total,  
+								cdd.importe_impuestos impuesto, 
+								cdd.fecha_hora as fecha, cdd.nro_comprobante
+								FROM caja_diaria_detalles as cdd JOIN caja_diaria as cd
+								ON(cdd.id_caja_diaria = cd.id)
+								JOIN tipos_caja tc
+								on(cd.id_tipo_caja = tc.id)
+								WHERE cd.id_empresa = $this->id_empresa ".$condicion_fechas_cd;
 					$getCajaDiaria = $this->conexion->consultaRetorno($queryGetCajaDiaria);
+
 					/*LLENO ARRAY REPORTES CON MOVIMIENTOS CAJA*/
 					while ($row = $getCajaDiaria->fetch_array()) {
 						$origen= "Caja diaria: ".$row['tipo'];
@@ -167,13 +169,12 @@ class Descargas{
 						$total= "$".number_format($row['total'],2,',','.');
 						$impuesto = "$".number_format($row['impuesto'],2,',','.');
 						$fecha= date("d/m/Y", strtotime($row['fecha']));
-						$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha);
+						$nroComprobante = $row['nro_comprobante'];
+						$arrayReportesIva[] = array('origen'=>$origen, 'proveedor'=>$proveedor, 'total'=>$total, 'impuesto'=>$impuesto, 'fecha'=>$fecha, 'nro_comprobante'=>$nroComprobante);
 					}
-
 			}
 			$this->descargarArchivosIva($arrayReportesIva);
-
-	}
+		}
 
 	public function descargarArchivosIva($arrayReportesIva){
 		
@@ -197,14 +198,15 @@ class Descargas{
 
 		$pagina->setCellValue('A1', 'FECHA');
 		$pagina->setCellValue('B1', 'ORIGEN');
-		$pagina->setCellValue('C1', 'PROVEEDOR');
-		$pagina->setCellValue('D1', 'TOTAL');
-		$pagina->setCellValue('E1', 'TOTAL IMPUESTOS');
+		$pagina->setCellValue('C1', 'NRO. COMPROBANTE');
+		$pagina->setCellValue('D1', 'PROVEEDOR');
+		$pagina->setCellValue('E1', 'TOTAL');
+		$pagina->setCellValue('F1', 'TOTAL IMPUESTOS');
 
-		$pagina->getStyle('A1:E1')->getFont()->setBold(true);
+		$pagina->getStyle('A1:F1')->getFont()->setBold(true);
 		/*$pagina->getStyle('A1:C1')->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_THICK);*/
 
-		$pagina->getStyle('A1:E1')->applyFromArray(
+		$pagina->getStyle('A1:F1')->applyFromArray(
 			array(
 				'borders'=> array(
 					'allborders' => array(
@@ -214,7 +216,7 @@ class Descargas{
 			)
 		);
 
-		$pagina->getStyle('A1:E1')->applyFromArray( array( 'fill' => array( 'type' => PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => 'EFF1F1') ) ) );
+		$pagina->getStyle('A1:F1')->applyFromArray( array( 'fill' => array( 'type' => PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => 'EFF1F1') ) ) );
 
 
 			$j=2;
@@ -223,11 +225,12 @@ class Descargas{
 			foreach ($arrayReportesIva as $value) {
 				$pagina->setCellValue('A'.($j), $value['fecha']);
 				$pagina->setCellValue('B'.($j), $value['origen']);
-				$pagina->setCellValue('C'.($j), $value['proveedor']);
-				$pagina->setCellValue('D'.($j), $value['total']);
-				$pagina->setCellValue('E'.($j), $value['impuesto']);
+				$pagina->setCellValue('C'.($j), $value['nro_comprobante']);
+				$pagina->setCellValue('D'.($j), $value['proveedor']);
+				$pagina->setCellValue('E'.($j), $value['total']);
+				$pagina->setCellValue('F'.($j), $value['impuesto']);
 				
-				$pagina->getStyle('A'.$j.':E'.$j)->applyFromArray(
+				$pagina->getStyle('A'.$j.':F'.$j)->applyFromArray(
 				array(
 					'borders'=> array(
 						'allborders' => array(
@@ -243,7 +246,7 @@ class Descargas{
 			}
 
 
-			foreach (range('A', 'E') as $column) {
+			foreach (range('A', 'F') as $column) {
 				$pagina->getColumnDimension($column)->setAutoSize(true);
 			}
 
