@@ -151,6 +151,23 @@
                               <input type="text" class="form-control" id="tipo_caja" required>
                             </div>
                           </div>   
+                      </div>
+                      <div class="row">
+                          <div class="col-lg-12">
+                            <div class="form-group">
+                              <input type="checkbox" class="" id="vincularTecnico"><label for="" class="col-form-label">&nbsp;Vincular a técnico</label>
+                            </div>
+                          </div>   
+                      </div> 
+                      <div class="row d-none" id="selectTecnicos">
+                          <div class="col-lg-12">
+                            <div class="form-group">
+                              <label for="" class="col-form-label">Técnico:</label>
+                             <select id="id_tecnico" class="form-control">
+                               <option value="">Seleccione...</option>
+                             </select>
+                            </div>
+                          </div>   
                       </div>              
                   </div>
                   <div class="modal-footer">
@@ -204,6 +221,14 @@
               {"defaultContent" : "<div class='text-center'><div class='btn-group'><button class='btn btn-success btnEditar'><i class='fa fa-edit'></i></button><button class='btn btn-danger btnBorrar'><i class='fa fa-trash-o'></i></button></div></div>"},
             ],
             "language":  idiomaEsp
+        });
+       cargarDatosComponentes()
+       $('#modalCRUD').on('hidden.bs.modal', function (e) {
+
+          document.getElementById("id_tecnico").value="";
+          document.getElementById("vincularTecnico").checked = false;
+          document.getElementById("selectTecnicos").classList.add("d-none");
+
         });
       });
       idiomaEsp = {
@@ -299,10 +324,12 @@
                     }
     function cargarDatosComponentes(){
                 let datosIniciales = new FormData();
+                let id_empresa = parseInt(document.getElementById("id_empresa").textContent);
                 datosIniciales.append('accion', 'traerDatosIniciales');
+                datosIniciales.append('id_empresa', id_empresa);
                 $.ajax({
                     data: datosIniciales,
-                    url: "./models/administrar_almacenes.php",
+                    url: "./models/administrar_tipos_caja.php",
                     method: "post",
                     cache: false,
                     contentType: false,
@@ -312,20 +339,20 @@
                     },
                     success: function(respuesta){
                        
-                        /*Identifico el select de provincia*/
-                        $selecProv = document.getElementById("provincia");
+                        /*Identifico el select de tecnicos*/
+                        $selecTecnicos= document.getElementById("id_tecnico");
 
                         
                         /*Convierto en json la respuesta del servidor*/
                         respuestaJson = JSON.parse(respuesta);
 
-                        /*Genero los options del select provincia*/
-                        respuestaJson.provincias.forEach((provincias)=>{
+                        /*Genero los options del select tecnicos*/
+                        respuestaJson.tecnicos.forEach((tecnicos)=>{
                             $option = document.createElement("option");
-                            let optionText = document.createTextNode(provincias.nombreProv);
+                            let optionText = document.createTextNode(tecnicos.tecnico);
                             $option.appendChild(optionText);
-                            $option.setAttribute("value", provincias.id_provincia);
-                            $selecProv.appendChild($option);
+                            $option.setAttribute("value", tecnicos.id_tecnico);
+                            $selecTecnicos.appendChild($option);
                         })
 
                     }
@@ -339,18 +366,38 @@
       let fila = $(this).closest("tr");
       let id_tipo_caja = fila.find('td:eq(0)').text();    
       let id_empresa = parseInt(document.getElementById("id_empresa").textContent);
-      accion = "updateTipoCaja";
+      accion = "traerCajaUpdate";
       $tipo_caja = document.getElementById("tipo_caja");
-      $tipo_caja.value=fila.find('td:eq(1)').text();
+      //$tipo_caja.value=fila.find('td:eq(1)').text();
 
       $('#id_tipo_caja').html(id_tipo_caja);
+
+
+      $.ajax({
+          url: "models/administrar_tipos_caja.php",
+          type: "POST",
+          datatype:"json",    
+          data:  {accion: accion,id_tipo_caja:id_tipo_caja},    
+          success: function(respuesta) {
+              let datosInput = JSON.parse(respuesta);
+              $("#tipo_caja").val(datosInput[0].tipo);
+              //$('#id_uMedida').html(datosInput[0].id_unidad);
+
+              if(datosInput[0].id_tecnico != ""){
+                document.getElementById("vincularTecnico").checked = true;
+                document.getElementById("id_tecnico").value = datosInput[0].id_tecnico;
+                document.getElementById("selectTecnicos").classList.remove("d-none");
+              }
+           }
+      })
+
 
        /*$("#rubro").val(datosInput[0].rubro);
               $("#comentarios").val(datosInput[0].comentarios);
               $('#id_rubro').html(datosInput[0].id_rubro);
               ;*/
 
-
+      accion = "updateTipoCaja";
       $('#modalCRUD').modal('show');
     });
 
@@ -358,21 +405,31 @@
     e.preventDefault(); //evita el comportambiento normal del submit, es decir, recarga total de la página   
     let tipo_caja = $.trim($('#tipo_caja').val());    
     let id_tipo_caja = $.trim($('#id_tipo_caja').html());
-    let id_empresa = parseInt(document.getElementById("id_empresa").textContent);                
-        $.ajax({
+    let id_empresa = parseInt(document.getElementById("id_empresa").textContent);
+    let vincularTecnico = document.getElementById("vincularTecnico");
+    let id_tecnico = document.getElementById("id_tecnico").value;
+
+    if (vincularTecnico.checked && id_tecnico == "") {
+            swal({
+                  icon: 'error',
+                  title: 'Debe seleccionar tecnico'
+                });
+    }else{
+      $.ajax({
           url: "models/administrar_tipos_caja.php",
           type: "POST",
           datatype:"json",    
-          data:  {accion: accion,id_tipo_caja:id_tipo_caja, tipo_caja:tipo_caja, id_empresa, id_empresa},    
+          data:  {accion: accion,id_tipo_caja:id_tipo_caja, tipo_caja:tipo_caja, id_empresa, id_empresa, id_tecnico: id_tecnico},    
           success: function(data) {
             tablaTiposCaja.ajax.reload(null, false);
-           }
-        });             
-    $('#modalCRUD').modal('hide'); 
-    swal({
+            $('#modalCRUD').modal('hide'); 
+            swal({
                   icon: 'success',
                   title: 'Accion realizada correctamente'
-                });                               
+                });
+           }
+        });
+    }                        
 });
 
 
@@ -414,6 +471,10 @@ $(document).on("click", ".btnBorrar", function(){
                     }
                 })
  }); 
+
+  $(document).on("change", "#vincularTecnico", function(){
+      document.getElementById("selectTecnicos").classList.toggle("d-none");
+  })
     </script>
   </body>
 </html>
