@@ -91,15 +91,20 @@ ALTER TABLE `caja_diaria_detalles` ADD `nro_comprobante` VARCHAR(150) NOT NULL A
 ALTER TABLE `caja_diaria_detalles` ADD `adjunto` VARCHAR(150) NOT NULL AFTER `fecha_hora`;
 
 Tabla movimientos_proveedores
-ALTER TABLE `myla`.`movimientos_proveedores` 
+ALTER TABLE `movimientos_proveedores` 
 ADD COLUMN `importe_neto` DOUBLE NOT NULL AFTER `detalle`,
 ADD COLUMN `importe_impuestos` DOUBLE NOT NULL AFTER `importe_neto`,
 ADD COLUMN `adjunto` VARCHAR(150) NOT NULL AFTER `nro_comprobante`,
 CHANGE COLUMN `nro_factura` `nro_comprobante` INT(11) NOT NULL ;
 
 Tabla tecnicos
-ALTER TABLE `myla`.`tecnicos` 
+ALTER TABLE `tecnicos` 
 ADD COLUMN `adjunto` VARCHAR(150) NOT NULL AFTER `id_empresa`;
+
+Tabla tipos_caja
+ALTER TABLE `tipos_caja` 
+ADD COLUMN `id_tecnico` VARCHAR(45) NOT NULL AFTER `tipo`,
+CHANGE COLUMN `id_empresa` `id_empresa` INT(11) NULL ;
 
 
 ##### AXEL #######
