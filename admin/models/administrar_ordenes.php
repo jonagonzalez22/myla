@@ -33,10 +33,29 @@
 			$getCCostos = $this->conexion->consultaRetorno($queryCcosto);
 
 
+			/*CATEGORÍA*/
+			$queryCategoria = "SELECT id as id_categoria, categoria FROM categorias_item";
+			$getCategoria = $this->conexion->consultaRetorno($queryCategoria);
+
+			/*UNIDAD DE MEDIDA*/
+			$queryUmedida = "SELECT id as id_medida, unidad_medida
+									FROM unidades_medida";
+			$getUmedida = $this->conexion->consultaRetorno($queryUmedida);
+
+			/*TIPO DE ITEM*/
+			$queryTipoItem = "SELECT id as id_tipo, tipo as nombre_tipo
+									FROM tipos_items";
+			$getTipoItem = $this->conexion->consultaRetorno($queryTipoItem);
+
+
+
 			$datosIniciales = array();
 			$almacenes = array();
 			$proveedores = array();
 			$centroCostos = array();
+			$arrayCategoria = array();
+			$arrayUnidMedida = array();
+			$arrayTipoIetm = array();
 
 			/*CARGO ARRAY ALMACENES*/
 			while ($rowsAlmacenes= $getAlmacenes->fetch_array()) {
@@ -59,10 +78,34 @@
 				$centroCostos[]=array('id_cc'=>$id_cc, 'nombreCC'=>$nombreCC);
 			}
 
+			/*CARGO ARRAY CATEGORÍA*/
+			while ($rowCategoria = $getCategoria->fetch_array()) {
+				$id_categoria = $rowCategoria['id_categoria'];
+				$categoria = $rowCategoria['categoria'];
+				$arrayCategoria[]= array('id_categoria' => $id_categoria, 'categoria' =>$categoria);
+			}
+
+			/*CARGO ARRAY UNIDAD DE MEDIDA*/
+			while ($rowUnidMed = $getUmedida->fetch_array()) {
+				$id_medida = $rowUnidMed['id_medida'];
+				$unidad_medida = $rowUnidMed['unidad_medida'];
+				$arrayUnidMedida[]= array('id_medida' => $id_medida, 'unidad_medida' =>$unidad_medida);
+			}
+
+			/*CARGO ARRAY TIPO ITEMS*/
+			while ($rowTipoItem = $getTipoItem->fetch_array()) {
+				$id_tipo = $rowTipoItem['id_tipo'];
+				$nombre_tipo = $rowTipoItem['nombre_tipo'];
+				$arrayTipoIetm[]= array('id_tipo' => $id_tipo, 'nombre_tipo' =>$nombre_tipo);
+			}
+
 
 			$datosIniciales["almacenes"] = $almacenes;
 			$datosIniciales["proveedores"] = $proveedores;
 			$datosIniciales["centroCostos"] = $centroCostos;
+			$datosIniciales["categorias"] = $arrayCategoria;
+			$datosIniciales["unidad_medida"] = $arrayUnidMedida;
+			$datosIniciales["tipo_items"] = $arrayTipoIetm;
 
 			echo json_encode($datosIniciales);
 		}
@@ -168,7 +211,7 @@
 				$insertDOC = $this->conexion->consultaSimple($queryInsertDOC);
 			}
 
-
+			echo $id_orden_compra;
 		}
 
 		public function delOrden($id_orden){
@@ -241,7 +284,7 @@
 			$this->id_proveedor = $id_proveedor;
 
 			/*Traigo detalle orden de compra*/
-			$queryGetDetalleOrden = "SELECT id_item, it.item, cantidad, precio_unitario
+			$queryGetDetalleOrden = "SELECT id_item, it.item, dc.cantidad, precio_unitario, it.imagen
 									FROM ordenes_compra_detalle dc
 									JOIN item as it
 									ON(dc.id_item = it.id)
@@ -257,26 +300,27 @@
 				$item = $rowDetallOrden['item'];
 				$cantidad = $rowDetallOrden['cantidad'];
 				$precio_unitario = $rowDetallOrden['precio_unitario'];
-				$itemsDetalleOrden[] = array("id_item"=>$id_item, "item"=>$item, "cantidad"=>$cantidad, "precio"=>$precio_unitario);
+				$imagen = $rowDetallOrden['imagen'];
+				$itemsDetalleOrden[] = array("id_item"=>$id_item, "item"=>$item, "cantidad"=>$cantidad, "precio"=>$precio_unitario, 'imagen'=>$imagen);
 			}
 
-			/*Traigo items del proveedor menos los que tiene pedidos*/
+			/*Traigo items del proveedor menos los que tiene pedidos
 			$queryGetItemProv ="SELECT it.id id_item, it.item, lp.precio, 0 cantidad
 							FROM item as it JOIN lista_precios as lp
 							ON(it.id = lp.id_item)
 							WHERE lp.id_proveedor = $this->id_proveedor
 							AND it.id not in(SELECT id_item FROM ordenes_compra_detalle WHERE id_orden_compra = $this->id_orden)";
-			$getItemProv = $this->conexion->consultaRetorno($queryGetItemProv);
+			$getItemProv = $this->conexion->consultaRetorno($queryGetItemProv);*/
 
 
-			/*Completo array con items de proveedor faltante*/
+			/*Completo array con items de proveedor faltante
 			while ($rowItemProv = $getItemProv->fetch_array()) {
 				$id_item = $rowItemProv['id_item'];
 				$item = $rowItemProv['item'];
 				$cantidad = $rowItemProv['cantidad'];
 				$precio_unitario = $rowItemProv['precio'];
 				$itemsDetalleOrden[] = array("id_item"=>$id_item, "item"=>$item, "cantidad"=>$cantidad, "precio"=>$precio_unitario);
-			}
+			}*/
 
 
 
@@ -372,6 +416,7 @@
 				}
 
 			}
+			echo $id_orden;
 		}
 
 		public function updateEstado($id_orden, $id_estado){
@@ -796,6 +841,62 @@
 			$updateAdjuntos= $this->conexion->consultaSimple($queryUpdateAdjuntos);
 		}
 
+		public function agregarItemManual($descripcion, $categoria, $Umedida, $tipo, $preposicion, $estado, $linkVideo, $archivo, $id_empresa, $id_cc, $precio, $id_proveedor){
+			$fecha_alta = date('Y-m-d');
+
+			$id_item= "";
+
+			if ($estado == 'Activo') {
+				$estado = 1;
+			}else{
+				$estado = 0;
+			}
+
+
+			/*GUARDO EN TABLA ITEM*/
+			$queryInsertItem = "INSERT INTO item(item, id_tipo, id_categoria, id_unidad_medida, link_video, punto_reposicion, fecha_alta, activo, id_cc, id_empresa)VALUES('$descripcion', $tipo, $categoria, $Umedida, '$linkVideo', $preposicion, '$fecha_alta',$estado, $id_cc, $id_empresa)";
+			$insertarItem= $this->conexion->consultaSimple($queryInsertItem);
+
+			/*BUSCO EL ID DEL ITEM CREADO PARA COLOCARLO COMO IDENTIFICADOR EN LA FOTO*/
+			$queryGetIdItem = "SELECT id as id_item FROM item 
+							WHERE item = '$descripcion'
+							AND id_tipo = $tipo
+							AND id_categoria = $categoria
+							AND id_unidad_medida = $Umedida
+							AND punto_reposicion = $preposicion
+							AND fecha_alta = '$fecha_alta'";
+			$getIdItem = $this->conexion->consultaRetorno($queryGetIdItem);
+
+			if ($getIdItem->num_rows > 0 ) {
+				$idRow = $getIdItem->fetch_assoc();
+				$id_item = $idRow['id_item'];
+			}
+
+			//GUARDO IMAGEN EN EL DIRECTORIO
+			if($archivo !=""){
+				$nombreImagen = $archivo['name'];
+				$directorio = "../views/img_items/";
+				$nombreFinalArchivo = $nombreImagen;
+				move_uploaded_file($archivo['tmp_name'], $directorio.$id_item."_".$nombreFinalArchivo);
+				//$ruta_completa_imagen = $directorio.$nombreFinalArchivo;
+				$archivo = $id_item."_".$nombreFinalArchivo;
+			}
+
+			//ACTUALIZO NOMBRE IMAGEN DEL ITEM
+			$queryUpdateImageName = "UPDATE item SET imagen='$archivo'
+									WHERE id = $id_item";
+			$updateImageName = $this->conexion->consultaSimple($queryUpdateImageName);
+
+
+
+			/*Inserto el movimiento en la tabla lista_precios*/
+			$queryInsertLP = "INSERT INTO lista_precios(id_item, id_proveedor,  
+							precio, fecha_hora_ultima_actualizacion) VALUES($id_item, $id_proveedor, $precio, '$fecha_alta')";
+			$insertLP = $this->conexion->consultaSimple($queryInsertLP);
+
+
+		}
+
 	}
 
 	if (isset($_POST['accion'])) {
@@ -875,6 +976,31 @@
 				$archivo = $_FILES['file'];
 				$comentarios = $_POST['comentarios'];
 				$ordenes->adjuntarArchivo($id_orden, $archivo, $comentarios);
+				break;
+			case 'traerItems':
+					$id_proveedor = $_POST['id_proveedor'];
+					$ordenes->traerItems($id_proveedor);
+				break;
+			case 'addArticulo':
+					$descripcion = $_POST['descripcion'];
+					$categoria = $_POST['categoria'];
+					$Umedida = $_POST['Umedida'];
+					$tipo = $_POST['tipo'];
+					$preposicion = $_POST['preposicion'];
+					$estado = $_POST['estado'];
+					$linkVideo = $_POST['linkVideo'];
+					$id_item = $_POST['id_item'];
+					$id_empresa = $_POST['id_empresa'];
+					$id_cc = $_POST['id_cc'];
+					$precio = $_POST['precio'];
+					$id_proveedor = $_POST['id_proveedor'];
+
+					if(isset($_FILES['file'])) {
+						$archivo = $_FILES['file'];
+					}else{
+						$archivo = "";
+					}
+					$ordenes->agregarItemManual($descripcion, $categoria, $Umedida, $tipo, $preposicion, $estado, $linkVideo, $archivo, $id_empresa, $id_cc, $precio, $id_proveedor);
 				break;
 		}
 	}else{
