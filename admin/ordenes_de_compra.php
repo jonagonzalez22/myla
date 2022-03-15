@@ -53,6 +53,12 @@
         margin: 0;
         }
     input[type=number] { -moz-appearance:textfield; }
+
+
+    .btnCancelAdd{
+      position: fixed;
+    }
+
     </style>
   </head>
   <body>
@@ -230,6 +236,27 @@
                               </select>
                             </div>
                           </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="" class="col-form-label">ingrese 3 letras para buscar:</label>
+                              <input type="text" name="" class="form-control" id="item_buscar">
+                              <div style="background-color:#EBF5FB; border-radius: 0 0 5px 5px;" id="resultadoSearch"></div>
+                          </div>
+                        </div>
+                        <div class="d-none col-lg-5" id="contAgregarProdItem">
+                          <div class="row">
+                            <div class="col-lg-6">
+                                <input type="hidden" id="id_item_agragar">
+                                <label for="" class="col-form-label">Cantidad:</label>
+                                <input type="number" name="" id="cantidad" class="form-control">
+                            </div>
+                            <div class="col-lg-6 align-self-end mt-2 mt-lg-0">
+                                  <button class='btn btn-success btnAgregarProdItem'><i class='fa fa-plus-circle'></i></button>
+                            </div>
+                          </div>
+                        </div>
                       </div>                
                       <div class="table-responsive" id="contTablaOrden" style="">
                       <table class="table table-hover" id="tablaItems">
@@ -263,8 +290,95 @@
                           <span class="total d-none"></span>
                       </span>
                     </div>
+                    <div id="contAddItem" class="d-none border p-3 rounded border-dark">
+                      <h5 class="d-block text-center font-weight-bold">Agregar Item</h5>
+                      <form id="formAddItem">
+                        <div class="row">
+                            <div class="col-lg-4">
+                              <div class="form-group">
+                                <label for="" class="col-form-label">Descripción:</label>
+                                <input type="text" class="form-control" id="descripcion_producto" required>
+                              </div>
+                            </div>
+                            <div class="col-lg-4">    
+                                <div class="form-group">
+                                <label for="" class="col-form-label">Categoria:</label>
+                                <select class="form-control" id="categoria" required>
+                                  <option value="">Seleccione</option>
+                                </select>
+                                </div>            
+                            </div>
+                            <div class="col-lg-4">    
+                                <div class="form-group">
+                                <label for="" class="col-form-label">Unidad de medida:</label>
+                                <select class="form-control" id="Umedida" required>
+                                  <option value="">Seleccione</option>
+                                </select>
+                                </div>            
+                            </div>     
+                        </div>
+                        <div class="row"> 
+                            <div class="col-lg-4">    
+                                <div class="form-group">
+                                <label for="" class="col-form-label">Tipo</label>
+                                <select class="form-control" id="tipo" required>
+                                  <option value="">Seleccione</option>
+                                </select>
+                                </div>            
+                            </div>
+                            <div class="col-lg-4">
+                              <div class="form-group">
+                                <label for="" class="col-form-label">Punto de reposición:</label>
+                                <input type="number" class="form-control" id="preposicion" required>
+                              </div>
+                            </div>
+                            <div class="col-lg-4">    
+                                <div class="form-group">
+                                <label for="" class="col-form-label">Precio</label>
+                                <input type="number" class="form-control" id="precioNewItem">
+                                </div>
+                            </div>
+                            <!--<div class="col-lg-4">    
+                                <div class="form-group">
+                                <label for="" class="col-form-label">Centro de costos</label>
+                                <select class="form-control" id="cCostos" required>
+                                  <option value="">Seleccione</option>
+                                </select>
+                                </div>            
+                            </div>-->
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-4">    
+                                <div class="form-group">
+                                <label for="" class="col-form-label">Estado</label>
+                                <select class="form-control" id="estado" required>
+                                  <option value="">Seleccione</option>
+                                  <option value="Activo">Activo</option>
+                                  <option value="Inactivo">Inactivo</option>
+                                </select>
+                                </div>            
+                            </div>
+                          <div class="col-lg-8">
+                              <div class="form-group">
+                                <label for="" class="col-form-label">Link video:</label>
+                                <input type="url" class="form-control" id="linkVideo">
+                              </div>
+                            </div>  
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-8">
+                              <div class="form-group">
+                                <label for="" class="col-form-label">Imagen:</label>
+                                <input class="form-control" type="file" id="imagen" accept="image/*">
+                              </div>
+                            </div>
+                        </div> 
+                        <button type="button" class="btn btn-light bntCancelAddItem">Cancelar</button>
+                        <button type="submit" id="" class="btn btn-dark">Guardar</button>
+                      </form>
+                      </div>
                   </div>
-                  <div class="modal-footer">
+                  <div class="modal-footer" id="footerOC">
                       <button type="button" class="btn btn-light" data-dismiss="modal">Cancelar</button>
                       <button type="submit" id="btnGuardar" class="btn btn-dark">Guardar</button>
                   </div>
@@ -547,6 +661,7 @@
        itemsOrden = new Map();
        montoTotalOC = new Map();
        itemsPedir = new Map();
+       itemsXProveedor = new Map();
        itemsImprimir = [];
        var accion = "";
        let id_empresa = parseInt(document.getElementById("id_empresa").innerText);
@@ -716,6 +831,19 @@
       $('#modalCRUD').on('hidden.bs.modal', function (e) {
           montoTotalOC.clear();
           itemsOrden.clear();
+          document.querySelector(".id_ordenEditar").innerHTML="";
+          document.getElementById("item_buscar").value="";
+          document.getElementById("id_item_agragar").value="";
+          document.getElementById("cantidad").value = "";
+          document.getElementById("contAgregarProdItem").classList.add("d-none")
+
+          document.getElementById("contAddItem").classList.add("d-none");
+          document.getElementById("contTablaOrden").classList.remove("d-none");
+          document.getElementById("resultadoSearch").innerHTML="";
+          document.getElementById("item_buscar").focus();
+          document.getElementById("footerOC").classList.remove("d-none");
+          $("#formAddItem").trigger("reset");
+
         });
 
       $('#modalVer').on('hidden.bs.modal', function (e) {
@@ -758,7 +886,17 @@
 
                         /*Identifico el select centro de costo*/
                         $selectCentroCosto = document.getElementById("cCostos");
-                        
+
+
+                        /*Identifico el select de categorias*/
+                        $selectCategorias = document.getElementById('categoria');
+
+                        /*Identifico el select de unidad de medida*/
+                        $selectUmedida = document.getElementById('Umedida');
+
+                        /*Identifico el select tipo de items*/
+                        $selectTipo = document.getElementById('tipo');
+
                         /*Convierto en json la respuesta del servidor*/
                         respuestaJson = JSON.parse(respuesta);
 
@@ -790,6 +928,35 @@
                           $option.setAttribute("value", cCosto.id_cc);
                           $selectCentroCosto.appendChild($option);
                         });
+
+                        /*Genero los options del select categoria*/
+                        respuestaJson.categorias.forEach((categorias)=>{
+                          let $optionCat = document.createElement("option");
+                          let $optionText = document.createTextNode(categorias.categoria);
+                          $optionCat.appendChild($optionText);
+                          $optionCat.setAttribute("value", categorias.id_categoria);
+                          $selectCategorias.appendChild($optionCat);
+                        })
+
+                        /*Genero los options del select Unidad de medida*/
+                        respuestaJson.unidad_medida.forEach((unidad_medida)=>{
+                          let $optionMedida = document.createElement("option");
+                          let $optionText = document.createTextNode(unidad_medida.unidad_medida);
+                          $optionMedida.appendChild($optionText);
+                          $optionMedida.setAttribute("value", unidad_medida.id_medida);
+                          $selectUmedida.appendChild($optionMedida);
+                        });
+
+                        /*Genero los options del select Tipo de items*/
+
+                        respuestaJson.tipo_items.forEach((tipo_items)=>{
+                          let $optionTipo = document.createElement("option");
+                          let $optionTipoText = document.createTextNode(tipo_items.nombre_tipo);
+                          $optionTipo.appendChild($optionTipoText);
+                          $optionTipo.setAttribute("value", tipo_items.id_tipo);
+                          $selectTipo.appendChild($optionTipo);
+                        });
+
 
                     }
                 });
@@ -825,11 +992,194 @@ $("#btnNuevo").click(function(){
 /*BUSCAR ITEMS POR PROVEEDOR*/
 $(document).on("change", "#proveedor", function(){
     let id_proveedor = $(this).val();
-    //$("#contTablaOrden").css("display", "block");
-    $("#tablaItems").dataTable().fnDestroy();
-    tablaItems= $('#tablaItems').DataTable({
+    itemsXProveedor.clear();
+    document.getElementById("item_buscar").value = "";
+    let accion = "traerItems";
+    $.ajax({
+          url: "./models/administrar_ordenes.php",
+          type: "POST",
+          datatype: "json",
+          data: {accion: accion, id_proveedor: id_proveedor},
+          success: function(response){
+            //itemsOrden.set(id_item, {cantidad, precio});
+              let respuestaJson = JSON.parse(response);
+
+              respuestaJson.forEach(item=>{
+                itemsXProveedor.set(item.id_item, {imagen: item.imagen, item:item.item, precio:item.precio})
+              });
+          }
+    });
+});
+
+$(document).on("keyup", "#item_buscar", function(){
+    let palabraABuscar = $(this).val();
+    let $divResultadoSearch = document.getElementById("resultadoSearch");
+    let $id_item_agragar = document.getElementById("id_item_agragar");
+    let contador = 0;
+
+    if(palabraABuscar.length > 2){
+      $id_item_agragar.value = "";
+      $divResultadoSearch.innerHTML="";
+      for(let[key, value] of itemsXProveedor){
+
+        /*console.log(value.item.toLowerCase().indexOf(palabraABuscar.toLowerCase()))
+        console.log(value.item);*/
+
+      if (value.item.toLowerCase().indexOf(palabraABuscar.toLowerCase())!=-1){
+          let precio = new Intl.NumberFormat('es-AR', {currency: 'ARS', style: 'currency'}).format(value.precio);
+          let $span = `<a href="" class="selItem" id="${key}">
+                        <span class="d-block p-1">
+                          ${value.item}  ${precio}
+                        </span>
+                      </a>`
+           $divResultadoSearch.innerHTML+=$span;
+           contador++;
+      }
+    }
+
+    if(contador == 0 && document.getElementById("proveedor").value !=0){
+      let $spanNone = `<span class="d-block p-2 text-center">
+                        No se encontraron resultados.<br>
+                        <button class="btn btn-success btnAgregarNuevoProducto" data-original-title="" title="">Agregar</button>
+                  </span>`
+           $divResultadoSearch.innerHTML+=$spanNone;
+    }
+
+    if(contador == 0 && document.getElementById("proveedor").value ==0){
+      let $spanNone = `<span class="d-block p-2 text-center">
+                        Seleccione proveedor.<br>
+                  </span>`
+           $divResultadoSearch.innerHTML+=$spanNone;
+    }
+
+    }else{
+      $divResultadoSearch.innerHTML="";
+    }
+
+
+
+})
+
+$(document).on("click", ".selItem", function(){
+  event.preventDefault();
+
+  let id_producto = $(this).attr("id");
+  let $item_buscar = document.getElementById("item_buscar");
+  let $resultadoSearch = document.getElementById("resultadoSearch");
+  let $contAgregarProdItem = document.getElementById("contAgregarProdItem");
+  let $id_item_agragar = document.getElementById("id_item_agragar");
+  let $cantidadEnviar = document.getElementById("cantidad");
+
+  $item_buscar.value=itemsXProveedor.get(id_producto).item;
+  $resultadoSearch.innerHTML="";
+  $id_item_agragar.value=id_producto;
+  $contAgregarProdItem.classList.remove("d-none");
+  document.getElementById("contTablaOrden").classList.remove("d-none");
+  $cantidadEnviar.focus();
+
+});
+
+
+$(document).on("click", ".btnAgregarProdItem", function(){
+
+    let id_empresa = parseInt(document.getElementById("id_empresa").innerText);
+    let id_proveedor = $('#proveedor').val();
+    let cCostos = $('#cCostos').val();
+    let id_almacen = $('#almacen').val();
+    let id_item_agragar = document.getElementById("id_item_agragar").value;
+    let cantidad_agregar = document.getElementById("cantidad").value;
+
+    let totalEnviar = parseFloat($('.total').text());
+    let id_orden= parseInt($(".id_ordenEditar").text());
+    let comentarios = $("#comentarios").val();
+
+    if (id_almacen == 0 || id_proveedor ==0 || id_item_agragar =="" || cCostos ==0) {
+      swal({
+                          icon: 'error',
+                          title: 'Debe seleccionar proveedor, almacen, centro de costos e items'
+                        });
+  }else{
+
+    const itemsOrdenArray = [];
+
+    let precio = parseFloat(itemsXProveedor.get(id_item_agragar).precio);
+    itemsOrdenArray.push({
+          id: id_item_agragar,
+          valor: cantidad_agregar,
+          precio
+        })
+
+    items = JSON.stringify(itemsOrdenArray);
+
+    if (!isNaN(cantidad_agregar)) {
+     let precioTotal = precio * cantidad_agregar;
+
+    let monto = parseFloat($('.total').text()) +precioTotal
+    
+    let montoFormateado= new Intl.NumberFormat('es-AR', {currency: 'ARS', style: 'currency'}).format(monto);
+    $('.totalFormateado').text(montoFormateado);
+    $('.total').text(monto)
+    montoTotalOC.set(parseInt(id_item_agragar), precioTotal)
+  }
+
+
+  let totalEnviar = parseFloat($('.total').text());
+
+    //let totalEnviar = precio * parseFloat(cantidad_agregar);
+
+    if(!isNaN(id_orden)){
+      window.accion = "UpdateOrden";
+    }else{
+      //window.accion = "addOrdenCompraaaa"
+    }
+
+    
+
+    $.ajax({
+            url: "models/administrar_ordenes.php",
+            type: "POST",
+            datatype:"json",    
+            data:  {accion: accion,items:items, total:totalEnviar, proveedor: id_proveedor, almacen: id_almacen, cCostos: cCostos, id_orden: id_orden, comentarios: comentarios, id_empresa: id_empresa},    
+            success: function(respuesta) {
+              
+              
+              //$('#modalCRUD').modal('hide');
+              tablaOrdenes.ajax.reload(null, false);
+
+              document.getElementById("item_buscar").value="";
+              document.getElementById("item_buscar").focus();
+              document.getElementById("id_item_agragar").value="";
+              document.getElementById("cantidad").value = "";
+              document.getElementById("contAgregarProdItem").classList.add("d-none")
+              
+              document.querySelector(".id_ordenEditar").innerHTML = respuesta;
+              window.accion = "UpdateOrden";
+              reloadTablaItems("traerItemsUpdateOrden",id_proveedor, respuesta);
+              /*swal({
+                  icon: 'success',
+                  title: 'Accion realizada correctamente'
+                });   */ 
+             }
+          })
+
+  }
+
+})
+
+$(document).on("keypress", "#cantidad", function(e){
+    if(e.keyCode == 13){
+      document.querySelector(".btnAgregarProdItem").click();
+    }
+});
+
+
+function reloadTablaItems(accion, id_proveedor, id_orden){
+
+  $("#tablaItems").dataTable().fnDestroy();
+
+  tablaItems= $('#tablaItems').DataTable({
             "ajax": {
-                "url" : "./models/administrar_ordenes.php?accion=traerItems&id_proveedor="+id_proveedor,
+                "url" : "./models/administrar_ordenes.php?accion="+accion+"&id_proveedor="+id_proveedor+"&id_orden="+id_orden,
                 "dataSrc": "",
               },
             "columns":[
@@ -851,7 +1201,7 @@ $(document).on("change", "#proveedor", function(){
               {"data": "item"},
               {
                     render: function(data, type, full, meta) {
-                        return '<input class="cantidadPedir form-control quitFlechas" type="number" value="0" min="0" step="0" >';
+                        return `<input class="cantidadPedir form-control quitFlechas" type="number" value="${full.cantidad}" min="0" step="0" >`;
                     }
                 },
               {
@@ -862,12 +1212,34 @@ $(document).on("change", "#proveedor", function(){
             ],
             "language":  idiomaEsp
         });
-});
+}
 
 
+$(document).on("click", ".btnAgregarNuevoProducto", function(){
+    document.getElementById("contTablaOrden").classList.add("d-none");
+    document.getElementById("resultadoSearch").innerHTML="";
+    document.getElementById("descripcion_producto").value = document.getElementById("item_buscar").value;
+    document.getElementById("item_buscar").value="";
+    document.getElementById("contAddItem").classList.remove("d-none");
+    document.getElementById("descripcion_producto").focus();
+    document.getElementById("footerOC").classList.add("d-none");
+})
+
+$(document).on("click", ".bntCancelAddItem", function(){
+
+    document.getElementById("contAddItem").classList.add("d-none");
+    document.getElementById("contTablaOrden").classList.remove("d-none");
+    document.getElementById("resultadoSearch").innerHTML="";
+    document.getElementById("item_buscar").focus();
+    document.getElementById("footerOC").classList.remove("d-none");
+    $("#formAddItem").trigger("reset");
+
+
+})
 
 
 $(document).on("click", "#btnGuardar", function(){
+
   let id_proveedor = $('#proveedor').val();
   let cCostos = $('#cCostos').val();
   let id_almacen = $('#almacen').val();
@@ -969,6 +1341,9 @@ $(document).on("click", ".btnEditar", function(){
 
               itemsOrden.set(id_item, {cantidad, precio});
 
+              /*Seteo los datos del maps items por proveedor*/
+              reloadMapItemsXProveedor(respuestaJson.orden[0].id_proveedor);
+
             });
 
             window.accion = "UpdateOrden";
@@ -995,6 +1370,20 @@ function traerItemsOrden(id_orden, id_proveedor){
               },
             "columns":[
               {"data": "id_item"},
+              {
+                    render: function(data, type, full, meta) {
+                        return ()=>{
+                          let $img = "";
+                          if (full.imagen !=""){
+                             
+                             return `<img src="./views/img_items/${full.imagen}" class="img-thumbnail">`;
+                          }else{
+                            return ""
+                          }                               
+                          
+                        };
+                    }
+                },
               {"data": "item"},
               {
                     render: function(data, type, full, meta) {
@@ -1022,7 +1411,8 @@ $(document).on("change", '.cantidadPedir', function(){
   /*FUNCTION PARA ADHERIR ITEMS AL MAPA*/
   let addItem= (id_item, cantidad, precio)=>{
     itemsOrden.set(id_item, {cantidad, precio});
-    //console.log(itemsOrden);
+    console.log("itemsOrden");
+    console.log(itemsOrden);
   }
 
   /*LLAMO Y PASO PARAMETROS A LA FUNCION PARA ADHERIR ITEMS AL MAPA*/
@@ -1045,7 +1435,8 @@ $(document).on("keyup", ".cantidadPedir", function(){
     
     montoTotalOC.set(id_item, precioTotal);
     let monto = 0;
-    
+    console.log("montoTotalOC");
+    console.log(montoTotalOC)
     for(let [key, value] of montoTotalOC){
         monto +=value;
     }
@@ -1834,6 +2225,78 @@ $(document).on("click", "#btnGuardarRecibido", function(){
     }
   
 })
+
+$("#formAddItem").submit(function(e){
+  e.preventDefault();
+
+  let id_empresa = parseInt(document.getElementById("id_empresa").innerText); 
+  let id_proveedor = parseInt(document.getElementById("proveedor").value)
+  let datosEnviar = new FormData();
+  datosEnviar.append("descripcion", $.trim($('#descripcion_producto').val()))
+  datosEnviar.append("categoria", $.trim($('#categoria').val()));
+  datosEnviar.append("Umedida", $.trim($('#Umedida').val()));
+  datosEnviar.append("tipo", $.trim($('#tipo').val()));
+  datosEnviar.append("preposicion", $.trim($('#preposicion').val()));
+  datosEnviar.append("estado", $.trim($('#estado').val()));
+  datosEnviar.append("linkVideo", $.trim($('#linkVideo').val()));
+  datosEnviar.append("id_item", $.trim($('#id_item').html()));
+  datosEnviar.append("accion", "addArticulo");
+  datosEnviar.append("id_cc", $.trim($('#cCostos').val()));
+  datosEnviar.append("precio", $.trim($('#precioNewItem').val()));
+  datosEnviar.append("id_empresa", id_empresa);
+  datosEnviar.append("id_proveedor", id_proveedor);
+  img = document.getElementById("imagen");
+
+  if (img.files.length > 0) {
+    datosEnviar.append("file", img.files[0]);
+  }else{
+      datosEnviar.append("file", "");
+  }
+  $.ajax({
+          data: datosEnviar,
+          url: "models/administrar_ordenes.php",
+          method: "post",
+          cache: false,
+          contentType: false,
+          processData: false,     
+          success: function(data) {
+
+            swal({
+                  icon: 'success',
+                  title: 'Accion realizada correctamente'
+                });            
+            document.getElementById("contAddItem").classList.add("d-none");
+            document.getElementById("contTablaOrden").classList.remove("d-none");
+            document.getElementById("resultadoSearch").innerHTML="";
+            document.getElementById("item_buscar").focus();
+            document.getElementById("footerOC").classList.remove("d-none");
+            $("#formAddItem").trigger("reset");
+            reloadMapItemsXProveedor(id_proveedor);
+           }
+        });             
+    
+
+
+});
+function reloadMapItemsXProveedor(id_proveedor){
+    itemsXProveedor.clear();
+    document.getElementById("item_buscar").value = "";
+    let accion = "traerItems";
+    $.ajax({
+          url: "./models/administrar_ordenes.php",
+          type: "POST",
+          datatype: "json",
+          data: {accion: accion, id_proveedor: id_proveedor},
+          success: function(response){
+            //itemsOrden.set(id_item, {cantidad, precio});
+              let respuestaJson = JSON.parse(response);
+
+              respuestaJson.forEach(item=>{
+                itemsXProveedor.set(item.id_item, {imagen: item.imagen, item:item.item, precio:item.precio})
+              });
+          }
+    });
+}
 
     </script>
   </body>
