@@ -71,6 +71,8 @@
                       <li><a href="#"><i class="fa fa-circle"></i> Puestos</a></li>
                       <li><a href="categorias_items.php"><i class="fa fa-circle"></i> Categorias</a></li>
                       <li><a href="tipos_items.php"><i class="fa fa-circle"></i> Tipos de productos</a></li>
+                      <li><a href="sindicatos.php"><i class="fa fa-circle"></i> Sindicatos</a></li>
+                      <li><a href="cargos.php"><i class="fa fa-circle"></i> Cargos</a></li>
                     </ul>
                   </li>
                 </ul>

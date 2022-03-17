@@ -107,6 +107,30 @@ ADD COLUMN `id_tecnico` VARCHAR(45) NOT NULL AFTER `tipo`,
 CHANGE COLUMN `id_empresa` `id_empresa` INT(11) NULL ;
 
 
+CREATE TABLE `sindicatos` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `sindicato` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id`));
+
+CREATE TABLE `jornadas_laborales` (
+  `id` INT NOT NULL,
+  `tipo_jornada` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`));
+
+
+CREATE TABLE `sueldos_sindicatos` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `id_sindicato` INT NULL,
+  `id_jornadas_laborales` INT NULL,
+  `valor` DOUBLE NULL,
+  PRIMARY KEY (`id`));
+
+ALTER TABLE `sindicatos` ADD `fecha_alta` DATETIME NOT NULL AFTER `sindicato`;
+
+ALTER TABLE `myla`.`cargos` 
+ADD COLUMN `id_sindicato` INT NOT NULL AFTER `cargo`;
+
+
 ##### AXEL #######
 ALTER TABLE `calendario_mantenimiento` ADD `fecha` DATE NOT NULL AFTER `detalle`, ADD `hora_desde` TIME NOT NULL AFTER `fecha`, ADD `hora_hasta` TIME NOT NULL AFTER `hora_desde`;
 
