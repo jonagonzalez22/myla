@@ -115,3 +115,37 @@ UPDATE `calendario_mantenimiento` SET fecha=date(fecha_hora_ejecucion_desde), ho
 ALTER TABLE `calendario_mantenimiento`
   DROP `fecha_hora_ejecucion_desde`,
   DROP `fecha_hora_ejecucion_hasta`;
+
+ALTER TABLE `vehiculos` ADD `numero_movil` VARCHAR(99) NOT NULL AFTER `id`;
+ALTER TABLE `vehiculos` ADD `vencimiento_cedula_verde` DATE NOT NULL AFTER `nro_cedula_verde`, ADD `vencimiento_seguro` DATE NOT NULL AFTER `vencimiento_cedula_verde`, ADD `vencimiento_gnc` DATE NOT NULL AFTER `vencimiento_seguro`;
+
+CREATE TABLE `documentos_vehiculo` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `id_vehiculo` int(11) NOT NULL,
+ `documento` varchar(99) NOT NULL,
+ `comentario` varchar(199) NOT NULL,
+ `fecha_hora_alta` datetime NOT NULL DEFAULT current_timestamp(),
+ `id_usuario_alta` int(11) NOT NULL,
+ PRIMARY KEY (`id`),
+ KEY `id_vehiculo` (`id_vehiculo`),
+ KEY `id_usuario_alta` (`id_usuario_alta`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+ALTER TABLE `documentos_vehiculo` ADD FOREIGN KEY (`id_usuario_alta`) REFERENCES `usuarios`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT; ALTER TABLE `documentos_vehiculo` ADD FOREIGN KEY (`id_vehiculo`) REFERENCES `vehiculos`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+CREATE TABLE `adjuntos_mantenimiento_vehicular` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `id_mantenimiento_vehicular` int(11) NOT NULL,
+ `adjunto` varchar(99) NOT NULL,
+ `comentario` varchar(199) NOT NULL,
+ `fecha_hora_alta` datetime NOT NULL DEFAULT current_timestamp(),
+ `id_usuario_alta` int(11) NOT NULL,
+ PRIMARY KEY (`id`),
+ KEY `id_mantenimiento_vehicular` (`id_mantenimiento_vehicular`),
+ KEY `id_usuario_alta` (`id_usuario_alta`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+ALTER TABLE `adjuntos_mantenimiento_vehicular` ADD FOREIGN KEY (`id_usuario_alta`) REFERENCES `usuarios`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT; ALTER TABLE `adjuntos_mantenimiento_vehicular` ADD FOREIGN KEY (`id_mantenimiento_vehicular`) REFERENCES `mantenimientos_vehiculares`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+

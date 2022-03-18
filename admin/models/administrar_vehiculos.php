@@ -74,7 +74,7 @@
 			
 			$arrayVehiculos = array();
 
-			$queryGetVehiculos = "SELECT v.id AS id_vehiculo,patente,id_marca,mv.marca,modelo,anio,codigo_motor,codigo_chasis,nro_cedula_verde,v.fecha_alta,IF(v.activo=1,'Activo','Inactivo') AS estado,fecha_adquirido,v.fecha_baja,id_tecnico_asignado,t.nombre_completo AS tecnico,comentarios,proximo_service_general,proximo_vencimiento_vtv,km_adquirido,km_actuales,fecha_ultima_actualizacion,u.email AS usuario_ultima_actualizacion
+			$queryGetVehiculos = "SELECT v.id AS id_vehiculo,patente,id_marca,mv.marca,modelo,anio,codigo_motor,codigo_chasis,nro_cedula_verde,v.fecha_alta,IF(v.activo=1,'Activo','Inactivo') AS estado,fecha_adquirido,v.fecha_baja,id_tecnico_asignado,t.nombre_completo AS tecnico,comentarios,proximo_service_general,proximo_vencimiento_vtv,km_adquirido,km_actuales,fecha_ultima_actualizacion,u.email AS usuario_ultima_actualizacion, numero_movil, vencimiento_cedula_verde, vencimiento_seguro, vencimiento_gnc
       FROM vehiculos v 
       LEFT JOIN marcas_vehiculos mv ON v.id_marca=mv.id
       INNER JOIN tecnicos t ON v.id_tecnico_asignado=t.id
@@ -82,78 +82,138 @@
       WHERE 1 $filtro_vehiculo";
 			$getVehiculos = $this->conexion->consultaRetorno($queryGetVehiculos);
 
-			while ($rowVehiculo = $getVehiculos->fetch_array()) {
-				$id_vehiculo = $rowVehiculo['id_vehiculo'];
-				$patente = strtoupper($rowVehiculo['patente']);
-        $id_marca = strtoupper($rowVehiculo['id_marca']);
-        $marca = strtoupper($rowVehiculo['marca']);
-        $modelo = strtoupper($rowVehiculo['modelo']);
-        $anio = strtoupper($rowVehiculo['anio']);
+			while ($row = $getVehiculos->fetch_array()) {
+				$patente = strtoupper($row['patente']);
+        $marca = strtoupper($row['marca']);
+        $modelo = strtoupper($row['modelo']);
+        $anio = strtoupper($row['anio']);
         $vehiculo = $marca." ".$modelo." ".$anio. "(".$patente.")";
-        $codigo_motor = strtoupper($rowVehiculo['codigo_motor']);
-        $codigo_chasis = strtoupper($rowVehiculo['codigo_chasis']);
-        $nro_cedula_verde = strtoupper($rowVehiculo['nro_cedula_verde']);
-        $id_tecnico_asignado = $rowVehiculo['id_tecnico_asignado'];
-				$tecnico = $rowVehiculo['tecnico'];
-        $comentarios = $rowVehiculo['comentarios'];
-        $km_adquirido = $rowVehiculo['km_adquirido'];
-        $km_adquirido_mostrar = number_format($km_adquirido,0,",",".");
-				$km_actuales = $rowVehiculo['km_actuales'];
-        $km_actuales_mostrar = number_format($km_actuales,0,",",".");
-        $estado = $rowVehiculo['estado'];
 
-        $fecha_alta = $rowVehiculo['fecha_alta'];
+        $km_adquirido = $row['km_adquirido'];
+        $km_adquirido_mostrar = number_format($km_adquirido,0,",",".");
+				$km_actuales = $row['km_actuales'];
+        $km_actuales_mostrar = number_format($km_actuales,0,",",".");
+
+        $fecha_alta = $row['fecha_alta'];
         $fecha_alta_mostrar = date("d/m/Y", strtotime($fecha_alta));
 				
-        $fecha_adquirido = $rowVehiculo['fecha_adquirido'];
+        $fecha_adquirido = $row['fecha_adquirido'];
         $fecha_adquirido_mostrar = date("d/m/Y", strtotime($fecha_adquirido));
         
-        $fecha_baja = $rowVehiculo['fecha_baja'];
+        $fecha_baja = $row['fecha_baja'];
         $fecha_baja = ($fecha_baja == 0) ? "" : $fecha_baja;
         $fecha_baja_mostrar = ($fecha_baja == "") ? "" : date("d/m/Y", strtotime($fecha_baja));
 
-        $proximo_service_general = $rowVehiculo['proximo_service_general'];
+        $proximo_service_general = $row['proximo_service_general'];
         $proximo_service_general = ($proximo_service_general == 0) ? "" : $proximo_service_general;
         $proximo_service_general_mostrar = ($proximo_service_general == "") ? "" : date("d/m/Y", strtotime($proximo_service_general));
 
-        $proximo_vencimiento_vtv = $rowVehiculo['proximo_vencimiento_vtv'];
+        $proximo_vencimiento_vtv = $row['proximo_vencimiento_vtv'];
         $proximo_vencimiento_vtv = ($proximo_vencimiento_vtv == 0) ? "" : $proximo_vencimiento_vtv;
         $proximo_vencimiento_vtv_mostrar = ($proximo_vencimiento_vtv == "") ? "" : date("d/m/Y", strtotime($proximo_vencimiento_vtv));
-        
-        $fecha_ultima_actualizacion = date("d/m/Y H:m:s", strtotime($rowVehiculo['fecha_ultima_actualizacion']))."hs";
-				$usuario_ultima_actualizacion = $rowVehiculo['usuario_ultima_actualizacion'];
 
-				$arrayVehiculos[] = array('id_vehiculo'=>$id_vehiculo, 'vehiculo'=>$vehiculo, 'patente'=>$patente, 'id_marca' => $id_marca, 'marca' => $marca, 'modelo' => $modelo, 'anio' => $anio, 'codigo_motor' => $codigo_motor, 'codigo_chasis' => $codigo_chasis, 'nro_cedula_verde' => $nro_cedula_verde, 'fecha_alta'=>$fecha_alta_mostrar, 'estado'=>$estado, 'fecha_adquirido_mostrar'=>$fecha_adquirido_mostrar, 'fecha_adquirido'=>$fecha_adquirido, 'fecha_baja_mostrar'=>$fecha_baja_mostrar, 'fecha_baja'=>$fecha_baja, 'id_tecnico_asignado' => $id_tecnico_asignado, 'tecnico'=>$tecnico, 'comentarios'=>$comentarios, 'proximo_service_general_mostrar'=>$proximo_service_general_mostrar, 'proximo_service_general'=>$proximo_service_general, 'proximo_vencimiento_vtv'=>$proximo_vencimiento_vtv, 'proximo_vencimiento_vtv_mostrar'=>$proximo_vencimiento_vtv_mostrar, 'km_adquirido_mostrar'=>$km_adquirido_mostrar, 'km_adquirido'=>$km_adquirido, 'km_actuales_mostrar'=>$km_actuales_mostrar, 'km_actuales'=>$km_actuales, 'fecha_ultima_actualizacion'=>$fecha_ultima_actualizacion, 'usuario_ultima_actualizacion'=>$usuario_ultima_actualizacion);
+        $vencimiento_cedula_verde = $row['vencimiento_cedula_verde'];
+        $vencimiento_cedula_verde = ($vencimiento_cedula_verde == 0) ? "" : $vencimiento_cedula_verde;
+        $vencimiento_cedula_verde_mostrar = ($vencimiento_cedula_verde == "") ? "" : date("d/m/Y", strtotime($vencimiento_cedula_verde));
+        
+        $vencimiento_seguro = $row['vencimiento_seguro'];
+        $vencimiento_seguro = ($vencimiento_seguro == 0) ? "" : $vencimiento_seguro;
+        $vencimiento_seguro_mostrar = ($vencimiento_seguro == "") ? "" : date("d/m/Y", strtotime($vencimiento_seguro));
+        
+        $vencimiento_gnc = $row['vencimiento_gnc'];
+        $vencimiento_gnc = ($vencimiento_gnc == 0) ? "" : $vencimiento_gnc;
+        $vencimiento_gnc_mostrar = ($vencimiento_gnc == "") ? "" : date("d/m/Y", strtotime($vencimiento_gnc));
+        
+        $fecha_ultima_actualizacion = date("d/m/Y H:m:s", strtotime($row['fecha_ultima_actualizacion']))."hs";
+				$usuario_ultima_actualizacion = $row['usuario_ultima_actualizacion'];
+
+				$arrayVehiculos[] = array(
+          'id_vehiculo'                     =>$row['id_vehiculo'],
+          'numero_movil'                    =>$row['numero_movil'],
+          'vehiculo'                        =>$vehiculo,
+          'patente'                         =>$patente,
+          'id_marca'                        =>$row['id_marca'],
+          'marca'                           =>$marca,
+          'modelo'                          =>$modelo,
+          'anio'                            =>$anio,
+          'codigo_motor'                    =>strtoupper($row['codigo_motor']),
+          'codigo_chasis'                   =>strtoupper($row['codigo_chasis']),
+          'nro_cedula_verde'                =>strtoupper($row['nro_cedula_verde']),
+          'fecha_alta'                      =>$fecha_alta_mostrar,
+          'estado'                          =>$row['estado'],
+          'fecha_adquirido_mostrar'         =>$fecha_adquirido_mostrar,
+          'fecha_adquirido'                 =>$fecha_adquirido,
+          'fecha_baja_mostrar'              =>$fecha_baja_mostrar,
+          'fecha_baja'                      =>$fecha_baja,
+          'id_tecnico_asignado'             =>$row['id_tecnico_asignado'],
+          'tecnico'                         =>$row['tecnico'],
+          'comentarios'                     =>$row['comentarios'],
+          'proximo_service_general_mostrar' =>$proximo_service_general_mostrar,
+          'proximo_service_general'         =>$proximo_service_general,
+          'proximo_vencimiento_vtv'         =>$proximo_vencimiento_vtv,
+          'proximo_vencimiento_vtv_mostrar' =>$proximo_vencimiento_vtv_mostrar,
+          'km_adquirido_mostrar'            =>$km_adquirido_mostrar,
+          'km_adquirido'                    =>$km_adquirido,
+          'km_actuales_mostrar'             =>$km_actuales_mostrar,
+          'km_actuales'                     =>$km_actuales,
+          'fecha_ultima_actualizacion'      =>$fecha_ultima_actualizacion,
+          'usuario_ultima_actualizacion'    =>$usuario_ultima_actualizacion,
+          'vencimiento_cedula_verde'        =>$vencimiento_cedula_verde,
+          'vencimiento_cedula_verde_mostrar'=>$vencimiento_cedula_verde_mostrar,
+          'vencimiento_seguro'              =>$vencimiento_seguro,
+          'vencimiento_seguro_mostrar'      =>$vencimiento_seguro_mostrar,
+          'vencimiento_gnc'                 =>$vencimiento_gnc,
+          'vencimiento_gnc_mostrar'         =>$vencimiento_gnc_mostrar,
+        );
 			}
 			//echo json_encode($arrayVehiculos);
       return json_encode($arrayVehiculos);
 		}
 
-		public function agregarVehiculo($patente, $marca, $modelo, $anio, $codigo_motor, $codigo_chasis, $nro_cedula_verde, $fecha_alta, $fecha_adquirido, $fecha_baja, $tecnico, $comentarios, $proximo_service_general, $km_adquirido, $proximo_vencimiento_vtv, $km_actuales){
+		public function agregarVehiculo($patente, $marca, $modelo, $anio, $codigo_motor, $codigo_chasis, $nro_cedula_verde, $fecha_alta, $fecha_adquirido, $fecha_baja, $tecnico, $comentarios, $proximo_service_general, $km_adquirido, $proximo_vencimiento_vtv, $km_actuales, $numero_movil, $vencimiento_cedula_verde, $vencimiento_seguro, $vencimiento_gnc, $adjuntos, $cantAdjuntos){
 			//$fecha_alta = date('Y-m-d H:i:s');
       $activo = 1;
       $id_usuario_ultima_actualizacion=$_SESSION["rowUsers"]["id_usuario"];
 
 			/*GUARDO EN TABLA EMPRESA*/
-			$queryInsertVehiculo = "INSERT INTO vehiculos (patente, id_marca, modelo, anio, codigo_motor, codigo_chasis, nro_cedula_verde, fecha_alta, activo, fecha_adquirido, fecha_baja, id_tecnico_asignado, comentarios, proximo_service_general, km_adquirido, proximo_vencimiento_vtv, km_actuales, fecha_ultima_actualizacion,id_usuario_ultima_actualizacion) VALUES('$patente', '$marca', '$modelo', '$anio', '$codigo_motor', '$codigo_chasis', '$nro_cedula_verde', '$fecha_alta', '$activo', '$fecha_adquirido', '$fecha_baja', '$tecnico', '$comentarios','$proximo_service_general','$km_adquirido','$proximo_vencimiento_vtv','$km_actuales',NOW(),'$id_usuario_ultima_actualizacion')";
+			$queryInsertVehiculo = "INSERT INTO vehiculos (patente, id_marca, modelo, anio, codigo_motor, codigo_chasis, nro_cedula_verde, fecha_alta, activo, fecha_adquirido, fecha_baja, id_tecnico_asignado, comentarios, proximo_service_general, km_adquirido, proximo_vencimiento_vtv, km_actuales, fecha_ultima_actualizacion, id_usuario_ultima_actualizacion, numero_movil, vencimiento_cedula_verde, vencimiento_seguro, vencimiento_gnc) VALUES('$patente', '$marca', '$modelo', '$anio', '$codigo_motor', '$codigo_chasis', '$nro_cedula_verde', '$fecha_alta', '$activo', '$fecha_adquirido', '$fecha_baja', '$tecnico', '$comentarios','$proximo_service_general','$km_adquirido','$proximo_vencimiento_vtv','$km_actuales',NOW(),'$id_usuario_ultima_actualizacion','$numero_movil','$vencimiento_cedula_verde','$vencimiento_seguro','$vencimiento_gnc')";
       //echo $queryInsertVehiculo;
 			$insertarVehiculo= $this->conexion->consultaSimple($queryInsertVehiculo);
+      $id_vehiculo=$this->conexion->conectar->insert_id;
 
-      /*BUSCO EL ID DEL VEHICULO CREADO PARA GUARDAR EL HISTORIAL DE TECNICOS*/
-      /*$queryGetIdVehiculo = "SELECT id as id_vehiculo FROM vehiculos 
-        WHERE patente = '$patente'
-        AND fecha_alta = '$fecha_alta'";
-      $getIdVehiculo = $this->conexion->consultaRetorno($queryGetIdVehiculo);
-      if ($getIdVehiculo->num_rows > 0 ) {
-          $idRow = $getIdVehiculo->fetch_assoc();
-          $id_vehiculo = $idRow['id_vehiculo'];
-      }*/
+      $this->agregarDocumentosVehiculo($id_vehiculo, $adjuntos, $cantAdjuntos);
 
-      /*GUARDO EL HISTORIAL DE TECNICOS*/
-			/*$queryInsertVehiculo = "INSERT INTO asignacion_tecnico_vehiculo (id_vehiculo, id_tecnico, fecha, validado) VALUES('$id_vehiculo', '$tecnico', NOW(), 1)";
-			$insertarVehiculo= $this->conexion->consultaSimple($queryInsertVehiculo);*/
-			
 		}
+
+    public function agregarDocumentosVehiculo($id_vehiculo, $adjuntos, $cantAdjuntos){
+      $id_usuario_alta=$_SESSION["rowUsers"]["id_usuario"];
+      //SI VIENEN ADJUNTOS LOS GUARDO.
+      $comentarios="";
+      if ($adjuntos > 0) {
+        for ($i=0; $i < $cantAdjuntos; $i++) { 
+          $indice = "file".$i;
+          $nombreADJ = $_FILES[$indice]['name'];
+  
+          //INSERTO DATOS EN LA TABLA ADJUNTOS ORDEN_COMPRA
+          $queryInsertAdjuntos = "INSERT INTO documentos_vehiculo (id_vehiculo, documento, comentario, fecha_hora_alta, id_usuario_alta)VALUES($id_vehiculo, '$nombreADJ', '$comentarios', NOW(),'$id_usuario_alta')";
+          //var_dump($queryInsertAdjuntos);
+          $insertAdjuntos = $this->conexion->consultaSimple($queryInsertAdjuntos);
+  
+          $mensajeError=$this->conexion->conectar->error;
+      
+          echo $mensajeError;
+          if($mensajeError!=""){
+            echo "<br><br>".$queryInsert;
+          }
+          
+          //INGRESO ARCHIVOS EN EL DIRECTORIO
+          $directorio = "../views/documentos_vehiculo/";
+          $nombre_archivo_guardado=$directorio."adj_".$id_vehiculo."_".$nombreADJ;
+  
+          $imagenGuardada=move_uploaded_file($_FILES[$indice]['tmp_name'], $nombre_archivo_guardado);
+        }
+      }
+    }
 
     /*public function traerVechiculoUpdate($id_vehiculo){
 			$this->id_vehiculo = $id_vehiculo;
@@ -185,13 +245,13 @@
       return json_encode($arrayDatosVehiculos);
 		}*/
 
-    public function updateVehiculo($id_vehiculo, $patente, $marca, $modelo, $anio, $codigo_motor, $codigo_chasis, $nro_cedula_verde, $fecha_adquirido, $fecha_baja, $tecnico, $comentarios, $proximo_service_general, $km_adquirido, $proximo_vencimiento_vtv, $km_actuales){
+    public function updateVehiculo($id_vehiculo, $patente, $marca, $modelo, $anio, $codigo_motor, $codigo_chasis, $nro_cedula_verde, $fecha_adquirido, $fecha_baja, $tecnico, $comentarios, $proximo_service_general, $km_adquirido, $proximo_vencimiento_vtv, $km_actuales, $numero_movil, $vencimiento_cedula_verde, $vencimiento_seguro, $vencimiento_gnc, $adjuntos, $cantAdjuntos){
 
 			$this->id_vehiculo=$id_vehiculo;
       $id_usuario_ultima_actualizacion=$_SESSION["rowUsers"]["id_usuario"];
 
 			//Actualizo datos del vehiculo
-      $queryUpdateVehiculo = "UPDATE vehiculos set patente = '$patente', id_marca = '$marca', modelo = '$modelo', anio = '$anio', codigo_motor = '$codigo_motor', codigo_chasis = '$codigo_chasis', nro_cedula_verde = '$nro_cedula_verde', fecha_adquirido = '$fecha_adquirido', fecha_baja = '$fecha_baja', id_tecnico_asignado = '$tecnico', comentarios = '$comentarios', proximo_service_general = '$proximo_service_general', km_adquirido = '$km_adquirido', proximo_vencimiento_vtv = '$proximo_vencimiento_vtv', km_actuales = '$km_actuales', fecha_ultima_actualizacion = NOW(), id_usuario_ultima_actualizacion = '$id_usuario_ultima_actualizacion'
+      $queryUpdateVehiculo = "UPDATE vehiculos set patente = '$patente', id_marca = '$marca', modelo = '$modelo', anio = '$anio', codigo_motor = '$codigo_motor', codigo_chasis = '$codigo_chasis', nro_cedula_verde = '$nro_cedula_verde', fecha_adquirido = '$fecha_adquirido', fecha_baja = '$fecha_baja', id_tecnico_asignado = '$tecnico', comentarios = '$comentarios', proximo_service_general = '$proximo_service_general', km_adquirido = '$km_adquirido', proximo_vencimiento_vtv = '$proximo_vencimiento_vtv', km_actuales = '$km_actuales', fecha_ultima_actualizacion = NOW(), id_usuario_ultima_actualizacion = '$id_usuario_ultima_actualizacion', numero_movil = '$numero_movil', vencimiento_cedula_verde = '$vencimiento_cedula_verde', vencimiento_seguro = '$vencimiento_seguro', vencimiento_gnc = '$vencimiento_gnc'
       WHERE id = $this->id_vehiculo";
       //echo $queryUpdateVehiculo;
 			$updateVehiculo = $this->conexion->consultaSimple($queryUpdateVehiculo);
@@ -203,31 +263,22 @@
       if($mensajeError!=""){
         $error=1;
       }*/
-
-      /*BUSCO EL ID DEL VEHICULO CREADO PARA GUARDAR EL HISTORIAL DE TECNICOS*/
-      /*$queryGetIdTecnico = "SELECT id_tecnico FROM asignacion_tecnico_vehiculo 
-        WHERE id_vehiculo = '$id_vehiculo'
-        ORDER BY fecha DESC LIMIT 1";
-      $getIdTecnico = $this->conexion->consultaRetorno($queryGetIdTecnico);
-      $id_tecnico=0;
-      if ($getIdTecnico->num_rows > 0 ) {
-        $idRow = $getIdTecnico->fetch_assoc();
-        $id_tecnico = $idRow['id_tecnico'];
-      }*/
-
-      /*SI LOS TECNICOS SON DIFERENTES, GUARDO EL HISTORIAL DE TECNICOS*/
-      /*if($id_tecnico!=$tecnico){
-        $queryInsertVehiculo = "INSERT INTO asignacion_tecnico_vehiculo (id_vehiculo, id_tecnico, fecha, validado) VALUES('$id_vehiculo', '$tecnico', NOW(), 1)";
-        $insertarVehiculo= $this->conexion->consultaSimple($queryInsertVehiculo);
-      }*/
+      $this->agregarDocumentosVehiculo($id_vehiculo, $adjuntos, $cantAdjuntos);
 
 		}
 
-    public function trerDetalleVehiculo($id_vehiculo){
+    public function traerDetalleVehiculo($id_vehiculo){
 			$this->id_vehiculo = $id_vehiculo;
 
       $arrayDatosVehiculos=$this->traerVehiculos($id_vehiculo);
       $arrayDatosVehiculos=json_decode($arrayDatosVehiculos,true);
+
+      $arrayDocumentosVehiculos=$this->traerDocumentosVehiculo($id_vehiculo);
+      $arrayDocumentosVehiculos=json_decode($arrayDocumentosVehiculos,true);
+
+      $filtros["id_vehiculo"]=$id_vehiculo;
+      $tareasMantenimientoVehiculos=$this->traerTareasMantenimientoVehiculos($filtros);
+      $tareasMantenimientoVehiculos=json_decode($tareasMantenimientoVehiculos,true);
 
 			/*TRAIGO DATOS DE TAREAS DE MANTENIMINETO*/
 			$queryGetVehiculoUpdate = "SELECT u.email AS usuario,fecha_hora,detalle,costo_estimado,IF(realizado=1,'Si','No') AS realizado, comentarios FROM mantenimientos_vehiculares mv INNER JOIN usuarios u ON mv.id_usuario=u.id
@@ -235,7 +286,7 @@
       //var_dump($queryGetVehiculoUpdate);
 			$getVehiculoUpdate= $this->conexion->consultaRetorno($queryGetVehiculoUpdate);
 
-			$arrayDetalleVehiculos= array();
+			//$arrayDetalleVehiculos= array();
 			$arrayMantenimientoVehiculo = array();
 
 			/*CARGO ARRAY CON DATOS DE LAs TAREAS DE MANTENIMINETO*/
@@ -254,10 +305,55 @@
       //var_dump($arrayDatosVehiculos);
 			$arrayDetalleVehiculos=[
         'datos_vehiculo' => $arrayDatosVehiculos[0],
-        'mantenimiento_vehiculo' => $arrayMantenimientoVehiculo
+        //'mantenimiento_vehiculo' => $arrayMantenimientoVehiculo,
+        'mantenimiento_vehiculo' => $tareasMantenimientoVehiculos,
+        'documentos_vehiculo' => $arrayDocumentosVehiculos
       ];
 			echo json_encode($arrayDetalleVehiculos);
 		}
+
+    public function eliminarDocumento($id_documento, $nombre_adjunto){
+
+      $this->id_documento = $id_documento;
+  
+      $queryGet = "SELECT id_vehiculo FROM documentos_vehiculo WHERE id = $this->id_documento";
+      $getDatos = $this->conexion->consultaRetorno($queryGet);
+      $row = $getDatos->fetch_array();
+      $id_vehiculo=$row["id_vehiculo"];
+  
+      $queryDelAdjunto= "DELETE FROM documentos_vehiculo WHERE id = $this->id_documento";
+      $delAdjunto = $this->conexion->consultaSimple($queryDelAdjunto);
+  
+      $directorio = "../views/documentos_vehiculo/";
+  
+      $rutaCompleta = $directorio."adj_".$id_vehiculo."_".$nombre_adjunto;
+      
+      unlink($rutaCompleta);
+  
+    }
+
+    public function traerDocumentosVehiculo($id_vehiculo){
+
+      $arrayDocumentosVehiculo = [];
+  
+      $queryGet = "SELECT dv.id AS id_documento,dv.documento,dv.fecha_hora_alta,u.email AS usuario
+      FROM documentos_vehiculo dv 
+        INNER JOIN usuarios u ON dv.id_usuario_alta=u.id 
+      WHERE dv.id_vehiculo = $id_vehiculo";
+      //var_dump($queryGet);
+      $getDatos = $this->conexion->consultaRetorno($queryGet);
+  
+      while ($row = $getDatos->fetch_array()) {
+        $arrayDocumentosVehiculo[] =[
+          "id_documento"  =>$row["id_documento"],
+          "documento"     =>$row["documento"],
+          "fecha_hora_alta"  =>date("d-M-Y H:i",strtotime($row["fecha_hora_alta"]))."hs",
+          "usuario"     =>$row["usuario"],
+        ];
+      }
+      //echo json_encode($arrayDocumentosVehiculo);
+      return json_encode($arrayDocumentosVehiculo);
+    }
 
     public function deleteVehiculo($id_vehiculo){
 			$this->id_vehiculo = $id_vehiculo;
@@ -291,10 +387,10 @@
       if($filtros!=0){
           //var_dump($filtros);
           if(isset($filtros["id_tarea_mantenimiento"]) and $filtros["id_tarea_mantenimiento"]!=""){
-              $filtro_tarea_mantenimiento=" AND manv.id = ".$filtros["id_tarea_mantenimiento"];
+              $filtro_tarea_mantenimiento=" AND mv.id = ".$filtros["id_tarea_mantenimiento"];
           }
           if(isset($filtros["id_vehiculo"]) and $filtros["id_vehiculo"]!=""){
-              $filtro_vehiculo=" AND manv.id = ".$filtros["id_vehiculo"];
+              $filtro_vehiculo=" AND mv.id_vehiculo = ".$filtros["id_vehiculo"];
           }
           if(isset($filtros["desde"]) and $filtros["desde"]!=""){
               $filtro_desde=" AND DATE(fecha_hora) >= '".$filtros["desde"]."'";
@@ -306,56 +402,66 @@
 			
 			$tareasMantenimiento = array();
 
-			$queryGetTareasMantenimiento = "SELECT manv.id AS id_tarea_mantenimiento,manv.id_vehiculo,patente,marv.marca,v.modelo,v.anio,fecha_hora,DATE(fecha_hora) AS fecha,TIME(fecha_hora) AS hora,detalle,manv.comentarios,manv.realizado,v.id_tecnico_asignado,t.nombre_completo,costo_estimado
+			/*$queryGetTareasMantenimiento = "SELECT manv.id AS id_tarea_mantenimiento,manv.id_vehiculo,patente,marv.marca,v.modelo,v.anio,fecha_hora,DATE(fecha_hora) AS fecha,TIME(fecha_hora) AS hora,detalle,manv.comentarios,manv.realizado,v.id_tecnico_asignado,t.nombre_completo,costo_estimado
       FROM mantenimientos_vehiculares manv 
       INNER JOIN vehiculos v ON manv.id_vehiculo=v.id 
       INNER JOIN marcas_vehiculos marv ON v.id_marca=marv.id
       INNER JOIN tecnicos t ON v.id_tecnico_asignado=t.id
+      WHERE 1 $filtro_tarea_mantenimiento $filtro_vehiculo $filtro_desde $filtro_hasta";*/
+      $queryGetTareasMantenimiento = "SELECT mv.id AS id_tarea_mantenimiento,mv.id_vehiculo,mv.fecha_hora,DATE(mv.fecha_hora) AS fecha,TIME(mv.fecha_hora) AS hora,mv.detalle,mv.comentarios,mv.realizado,mv.costo_estimado,u.email AS usuario
+      FROM mantenimientos_vehiculares mv 
+        INNER JOIN usuarios u ON mv.id_usuario=u.id
       WHERE 1 $filtro_tarea_mantenimiento $filtro_vehiculo $filtro_desde $filtro_hasta";
       //echo $queryGetTareasMantenimiento;
 			$getTareasMantenimiento = $this->conexion->consultaRetorno($queryGetTareasMantenimiento);
 
-			while ($rowTareaMantenimiento = $getTareasMantenimiento->fetch_array()) {
-				$id_tarea_mantenimiento= $rowTareaMantenimiento['id_tarea_mantenimiento'];
-        $id_vehiculo= $rowTareaMantenimiento['id_vehiculo'];
-				$patente= strtoupper($rowTareaMantenimiento['patente']);
-        $marca= strtoupper($rowTareaMantenimiento['marca']);
-        $modelo= strtoupper($rowTareaMantenimiento['modelo']);
-        $anio= strtoupper($rowTareaMantenimiento['anio']);
-        $fecha_hora= $rowTareaMantenimiento['fecha_hora'];
-        $fecha_hora_mostrar= date("d/m/Y H:i",strtotime($fecha_hora))."hs";
-        $fecha= $rowTareaMantenimiento['fecha'];
-        $fecha_mostrar= date("d/m/Y",strtotime($fecha));
-        $hora= $rowTareaMantenimiento['hora'];
-        $costo_estimado= $rowTareaMantenimiento['costo_estimado'];
-        $costo_estimado_mostrar= "$ ".number_format($costo_estimado,"2",",",".");
-        $realizado= $rowTareaMantenimiento['realizado'];
-        $realizado_mostrar= ($realizado==1) ? "Si" : "No";
-        $detalle= $rowTareaMantenimiento['detalle'];
-        $id_tecnico_asignado = $rowTareaMantenimiento['id_tecnico_asignado'];
-				$tecnico = $rowTareaMantenimiento['nombre_completo'];
-				$comentarios = $rowTareaMantenimiento['comentarios'];
+			while ($row = $getTareasMantenimiento->fetch_array()) {
+				$id_tarea_mantenimiento=$row['id_tarea_mantenimiento'];
+        /*$id_vehiculo=$row['id_vehiculo'];
+				$patente=strtoupper($row['patente']);
+        $marca=strtoupper($row['marca']);
+        $modelo=strtoupper($row['modelo']);
+        $anio=strtoupper($row['anio']);*/
+        $fecha_hora=$row['fecha_hora'];
+        $fecha_hora_mostrar=date("d/m/Y H:i",strtotime($fecha_hora))."hs";
+        $fecha=$row['fecha'];
+        $fecha_mostrar=date("d/m/Y",strtotime($fecha));
+        $costo_estimado=$row['costo_estimado'];
+        $costo_estimado_mostrar="$ ".number_format($costo_estimado,"2",",",".");
+        $realizado=$row['realizado'];
+        $realizado_mostrar=($realizado==1) ? "Si" : "No";
+        /*$id_tecnico_asignado =$row['id_tecnico_asignado'];
+				$tecnico =$row['nombre_completo'];*/
+
+        $vehiculo=$this->traerVehiculos($row['id_vehiculo']);
+        $vehiculo=json_decode($vehiculo,true);
+        $vehiculo=$vehiculo[0];
+        
+        $adjuntosMantenimientoVehiculos=$this->traerAdjuntosMantenimientoVehiculos($id_tarea_mantenimiento);
+        $adjuntosMantenimientoVehiculos=json_decode($adjuntosMantenimientoVehiculos,true);
 
         $tareasMantenimiento[]=[
           "id_tarea_mantenimiento"  =>$id_tarea_mantenimiento,
-          "id_vehiculo"             =>$id_vehiculo,
-          "vehiculo"                =>$marca." ".$modelo." - ".$patente,
+          /*"vehiculo"                =>$marca." ".$modelo." - ".$patente,
           "patente"                 =>$patente,
           "marca"                   =>$marca,
           "modelo"                  =>$modelo,
-          "anio"                    =>$anio,
+          "anio"                    =>$anio,*/
+          "vehiculo"                =>$vehiculo,
           "fecha_hora"              =>$fecha_hora,
           "fecha"                   =>$fecha,
           "fecha_mostrar"           =>$fecha_mostrar,
-          "hora"                    =>$hora,
+          "hora"                    =>$row['hora'],
           "costo_estimado"          =>$costo_estimado,
           "costo_estimado_mostrar"  =>$costo_estimado_mostrar,
           "realizado"               =>$realizado,
           "realizado_mostrar"       =>$realizado_mostrar,
-          "detalle"                 =>$detalle,
-          "id_tecnico_asignado"     =>$id_tecnico_asignado,
-          "tecnico"                 =>$tecnico,
-          "comentarios"             =>$comentarios,
+          "detalle"                 =>$row['detalle'],
+          /*"id_tecnico_asignado"     =>$id_tecnico_asignado,
+          "tecnico"                 =>$tecnico,*/
+          "usuario"                 =>$row['usuario'],
+          "comentarios"             =>$row['comentarios'],
+          "adjuntosMantenimientoVehiculos"=>$adjuntosMantenimientoVehiculos
         ];
 
 			}
@@ -363,7 +469,32 @@
       return json_encode($tareasMantenimiento);
 		}
 
-    public function marcarTareaMantenimientoCompleta($id_tarea_mantenimiento){
+    public function traerAdjuntosMantenimientoVehiculos($id_tarea_mantenimiento){
+
+      $arrayDocumentosVehiculo = [];
+  
+      $queryGet = "SELECT amv.id AS id_adjunto,amv.adjunto,amv.comentario,amv.fecha_hora_alta,u.email AS usuario
+      FROM adjuntos_mantenimiento_vehicular amv 
+        INNER JOIN usuarios u ON amv.id_usuario_alta=u.id 
+      WHERE amv.id_mantenimiento_vehicular = $id_tarea_mantenimiento";
+      //var_dump($queryGet);
+      $getDatos = $this->conexion->consultaRetorno($queryGet);
+  
+      while ($row = $getDatos->fetch_array()) {
+        $arrayDocumentosVehiculo[] =[
+          "id_adjunto"      =>$row["id_adjunto"],
+          "adjunto"         =>$row["adjunto"],
+          "comentario"      =>$row["comentario"],
+          "fecha_hora_alta" =>date("d-M-Y H:i",strtotime($row["fecha_hora_alta"]))."hs",
+          "usuario"         =>$row["usuario"],
+        ];
+      }
+      //echo json_encode($arrayDocumentosVehiculo);
+      return json_encode($arrayDocumentosVehiculo);
+    }
+
+    public function marcarTareaMantenimientoCompleta($id_tarea_mantenimiento, $archivo, $comentarios_mantenimiento_vehicular){
+
       $id_usuario_ultima_actualizacion=$_SESSION["rowUsers"]["id_usuario"];
 
       $queryMarcarTareaCompleta = "UPDATE mantenimientos_vehiculares set realizado = 1
@@ -372,16 +503,37 @@
 			$marcarTareaCompleta = $this->conexion->consultaSimple($queryMarcarTareaCompleta);
 
       /*BUSCO EL ID DEL VEHICULO CREADO PARA GUARDAR EL HISTORIAL DE TECNICOS*/
-      $queryGetRealizadoTareaMantenimiento = "SELECT realizado FROM mantenimientos_vehiculares 
-        WHERE id_tarea_mantenimiento = '$id_tarea_mantenimiento'";
+      /*$queryGetRealizadoTareaMantenimiento = "SELECT realizado FROM mantenimientos_vehiculares WHERE id_tarea_mantenimiento = '$id_tarea_mantenimiento'";
       $getRealizadoTareaMantenimiento = $this->conexion->consultaRetorno($queryGetRealizadoTareaMantenimiento);
+      
       $realizado=0;
       if ($getRealizadoTareaMantenimiento->num_rows > 0 ) {
         $idRow = $getRealizadoTareaMantenimiento->fetch_assoc();
         $realizado = $idRow['realizado'];
-      }
+      }*/
 
-      echo $realizado;
+      $this->agregarAdjuntoMantenimientoVehicular($id_tarea_mantenimiento, $archivo, $comentarios_mantenimiento_vehicular);
+
+      //echo $realizado;
+		}
+
+    public function agregarAdjuntoMantenimientoVehicular($id_tarea_mantenimiento, $archivo, $comentarios_mantenimiento_vehicular){
+			if($archivo !=""){
+        $id_usuario_alta=$_SESSION["rowUsers"]["id_usuario"];
+
+				$nombreImagen = $archivo['name'];
+				$directorio = "../views/adjuntos_mantenimiento_vehicular/";
+				$nombreFinalArchivo = $nombreImagen;
+
+        $nombre_archivo = $id_tarea_mantenimiento."_".$nombreFinalArchivo;
+
+				move_uploaded_file($archivo['tmp_name'], $directorio.$nombre_archivo);
+				//$ruta_completa_imagen = $directorio.$nombreFinalArchivo;
+
+        $queryInsertAdjuntos = "INSERT INTO adjuntos_mantenimiento_vehicular (id_mantenimiento_vehicular, adjunto, comentario, fecha_hora_alta, id_usuario_alta)VALUES($id_tarea_mantenimiento, '$nombreFinalArchivo', '$comentarios_mantenimiento_vehicular', NOW(),'$id_usuario_alta')";
+				//$queryUpdateImageName = "UPDATE tecnicos SET adjunto = '$archivo' WHERE id = $id_tarea_mantenimiento";
+				$updateImageName = $this->conexion->consultaSimple($queryInsertAdjuntos);
+			}
 		}
 
     public function updateTareaMantenimiento($id_tarea_mantenimiento,$id_vehiculo, $detalle, $costo_estimado, $fecha, $hora, $comentarios){
@@ -422,25 +574,32 @@
           echo $vehiculo->traerVehiculos($id_vehiculo);
 			break;
 			case 'addVehiculo':
-					//$fecha_alta = $_POST['fecha_alta'];
           $fecha_alta = date('Y-m-d H:i:s');
-          /*$patente = $_POST['patente'];
-					$fecha_adquirido = $_POST['fecha_adquirido'];
-					$fecha_baja = $_POST['fecha_baja'];
-					$tecnico = $_POST['tecnico'];
-					$comentarios = $_POST['comentarios'];
-					$proximo_service_general = $_POST['proximo_service_general'];
-					$km_adquirido = $_POST['km_adquirido'];
-          $proximo_vencimiento_vtv = $_POST['proximo_vencimiento_vtv'];
-					$km_actuales = $_POST['km_actuales'];*/
-					$vehiculo->agregarVehiculo($patente, $marca, $modelo, $anio, $codigo_motor, $codigo_chasis, $nro_cedula_verde, $fecha_alta, $fecha_adquirido, $fecha_baja, $tecnico, $comentarios, $proximo_service_general, $km_adquirido, $proximo_vencimiento_vtv, $km_actuales);
+          /*echo 1;
+          var_dump($_FILES);*/
+
+          if(isset($_FILES['file0'])) {
+            $adjuntos = 1;
+          }else{
+            $adjuntos = 0;
+          }
+					$vehiculo->agregarVehiculo($patente, $marca, $modelo, $anio, $codigo_motor, $codigo_chasis, $nro_cedula_verde, $fecha_alta, $fecha_adquirido, $fecha_baja, $tecnico, $comentarios, $proximo_service_general, $km_adquirido, $proximo_vencimiento_vtv, $km_actuales,$numero_movil,$vencimiento_cedula_verde,$vencimiento_seguro,$vencimiento_gnc, $adjuntos, $cantAdjuntos);
 			break;
       case 'updateVehiculo':
-        $vehiculo->updateVehiculo($id_vehiculo, $patente, $marca, $modelo, $anio, $codigo_motor, $codigo_chasis, $nro_cedula_verde, $fecha_adquirido, $fecha_baja, $tecnico, $comentarios, $proximo_service_general, $km_adquirido, $proximo_vencimiento_vtv, $km_actuales);
+        if(isset($_FILES['file0'])) {
+          $adjuntos = 1;
+        }else{
+          $adjuntos = 0;
+        }
+
+        $vehiculo->updateVehiculo($id_vehiculo, $patente, $marca, $modelo, $anio, $codigo_motor, $codigo_chasis, $nro_cedula_verde, $fecha_adquirido, $fecha_baja, $tecnico, $comentarios, $proximo_service_general, $km_adquirido, $proximo_vencimiento_vtv, $km_actuales, $numero_movil ,$vencimiento_cedula_verde, $vencimiento_seguro, $vencimiento_gnc, $adjuntos, $cantAdjuntos);
       break;
-      case 'trerDetalleVehiculo':
+      case 'traerDetalleVehiculo':
         //$id_vehiculo = $_POST['id_vehiculo'];
-        $vehiculo->trerDetalleVehiculo($id_vehiculo);
+        $vehiculo->traerDetalleVehiculo($id_vehiculo);
+      break;
+      case 'borrarDocumento':
+        $vehiculo->eliminarDocumento($id_documento, $nombre_adjunto);
       break;
       case 'eliminarVehiculo':
         //$id_vehiculo = $_POST['id_vehiculo'];
@@ -452,7 +611,12 @@
       break;
       case 'marcarTareaMantenimientoRealizada':
         //$id_vehiculo = $_POST['id_vehiculo'];
-        $vehiculo->marcarTareaMantenimientoCompleta($id_tarea_mantenimiento);
+        if(isset($_FILES['file'])) {
+          $archivo = $_FILES['file'];
+        }else{
+          $archivo = "";
+        }
+        $vehiculo->marcarTareaMantenimientoCompleta($id_tarea_mantenimiento, $archivo, $comentarios_mantenimiento_vehicular);
       break;
       case 'traerTareaMantenimientoUpdate':
         //$id_vehiculo = $_POST['id_vehiculo'];
@@ -505,7 +669,7 @@
           $tareasMantenimientoCalendario=[];
           foreach ($tareasMantenimientoVehiculos as $tareaMantenimiento) {
             $id_tarea_mantenimiento= $tareaMantenimiento['id_tarea_mantenimiento'];
-            $patente= strtoupper($tareaMantenimiento['patente']);
+            $patente= strtoupper($tareaMantenimiento['vehiculo']['patente']);
             $fecha_hora= $tareaMantenimiento['fecha_hora'];
             $realizado= $tareaMantenimiento['realizado'];
             $color="orange";
@@ -514,7 +678,7 @@
             }
             
             $detalle= $tareaMantenimiento['detalle'];
-            $tecnico = $tareaMantenimiento['tecnico'];
+            $tecnico = $tareaMantenimiento['vehiculo']['tecnico'];
             $costo_estimado = $tareaMantenimiento['costo_estimado_mostrar'];
             $comentarios = $tareaMantenimiento['comentarios'];
             
