@@ -1,6 +1,8 @@
 <?php
 require_once('../../conexion.php');
 require_once('administrar_clientes.php');
+require_once('administrar_rubros.php');
+require_once('administrar_subrubros.php');
 if(session_id() == '' || !isset($_SESSION) || session_status() === PHP_SESSION_NONE) {
     // session isn't started
     session_start();
@@ -28,14 +30,19 @@ class Elemento{
       $listaClientes=json_decode($listaClientes,true);
       //var_dump($listaClientes);
 
+      $rubro = new Rubros();
+      $listaRubros=$rubro->traerRubros();
+      $listaRubros=json_decode($listaRubros,true);
+
       /*DIRECCIONES CLIENTES*/
 			$query = "SELECT id as id_direccion_cliente, direccion FROM direcciones_clientes";
 			$getDatos = $this->conexion->consultaRetorno($query);
       /*CARGO ARRAY TECNICOS*/
 			while ($row= $getDatos->fetch_array()) {
-				$id_direccion_cliente = $row['id_direccion_cliente'];
-				$direccion = $row['direccion'];
-				$direcciones_cliente[] = array('id_direccion_cliente' => $id_direccion_cliente, 'direccion' =>$direccion);
+				$direcciones_cliente[] = array(
+          'id_direccion_cliente' => $row['id_direccion_cliente'],
+          'direccion' =>$row['direccion']
+        );
 			}
       //var_dump($direcciones_cliente);
 
@@ -43,7 +50,7 @@ class Elemento{
       //$datosIniciales["tecnicos"] = $tecnicos;
       $datosIniciales["direcciones_cliente"] = $direcciones_cliente;
       $datosIniciales["clientes"] = $listaClientes;
-			//$datosIniciales["totalizadores"] = $totalizadores;
+			$datosIniciales["rubros"] = $listaRubros;
 
 			echo json_encode($datosIniciales);
 		}
@@ -68,10 +75,11 @@ class Elemento{
       
 			$arrayElementos = array();
 
-			$queryGet = "SELECT ac.id AS id_elemento,ac.id_direccion_cliente,ac.descripcion,ac.ubicacion,ac.fecha_alta,ac.id_tecnico_ultima_revision,ac.fecha_hora_ultima_revision,ac.activo,IF(ac.activo=1,'Activo','Inactivo') AS estado,c.id AS id_cliente,c.razon_social
+			$queryGet = "SELECT ac.id AS id_elemento,ac.id_direccion_cliente,ac.descripcion,ac.ubicacion,ac.fecha_alta,ac.id_tecnico_ultima_revision,ac.fecha_hora_ultima_revision,ac.activo,IF(ac.activo=1,'Activo','Inactivo') AS estado,c.id AS id_cliente,c.razon_social,dc.direccion,u.email AS tecnico_ultima_revision,id_subrubro, datos_adicionales, hash, imagen
       FROM activos_cliente ac 
       INNER JOIN direcciones_clientes dc ON ac.id_direccion_cliente=dc.id 
       INNER JOIN clientes c ON dc.id_cliente=c.id
+      LEFT JOIN usuarios u ON u.id=ac.id_tecnico_ultima_revision
       WHERE c.id_empresa = $this->id_empresa $filtro_elemento $filtro_cliente $filtro_ubicacion";
       //var_dump($queryGet);
 			$getDatos = $this->conexion->consultaRetorno($queryGet);
@@ -84,7 +92,10 @@ class Elemento{
         $fecha_alta = $row['fecha_alta'];
         $fecha_hora_ultima_revision = $row['fecha_hora_ultima_revision'];
 
-				//$arrayElementos[] = array('id_elemento'=>$id_elemento, 'id_direccion_cliente'=>$id_direccion_cliente, 'descripcion' => $descripcion, 'ubicacion' => $ubicacion, 'id_tecnico_ultima_revision' => $id_tecnico_ultima_revision, 'activo' => $activo, 'estado'=>$estado, 'fecha_alta'=>$fecha_alta, 'fecha_alta_mostrar'=>$fecha_alta_mostrar, 'fecha_hora_ultima_revision'=>$fecha_hora_ultima_revision);
+        $subrubro = new Subrubros();
+        $subrubro=$subrubro->traerSubrubros($row['id_subrubro']);
+        $subrubro=json_decode($subrubro,true);
+        $subrubro=$subrubro[0];
 
         $arrayElementos[] = array(
           'id_elemento'=>$row['id_elemento'],
@@ -93,9 +104,15 @@ class Elemento{
           'cliente'=>$row['razon_social'],
           'descripcion' => $row['descripcion'],
           'ubicacion' => $row['ubicacion'],
+          'direccion' => $row['direccion'],
           'id_tecnico_ultima_revision' => $row['id_tecnico_ultima_revision'],
+          'tecnico_ultima_revision' => $row['tecnico_ultima_revision'],
           'activo' => $row['activo'],
           'estado'=>$row['estado'],
+          'subrubro'=>$subrubro,
+          'datos_adicionales'=>$row['datos_adicionales'],
+          'codigo'=>$row['hash'],
+          'imagen'=>$row["imagen"],
           'fecha_alta'=>$fecha_alta,
           'fecha_alta_mostrar'=>date("d/m/Y", strtotime($fecha_alta)),
           'fecha_hora_ultima_revision'=>$fecha_hora_ultima_revision,
@@ -106,13 +123,12 @@ class Elemento{
       return json_encode($arrayElementos);
 		}
 
-		public function agregarElemento($id_direccion_cliente, $descripcion, $ubicacion){
+		public function agregarElemento($id_direccion_cliente, $descripcion, $ubicacion, $id_subrubro, $codigo, $datos_adicionales, $archivo){
 			//$fecha_alta = date('Y-m-d H:i:s');
       $activo = 1;
-      $hash="";
 
 			/*GUARDO EN TABLA EMPRESA*/
-			$queryInsert = "INSERT INTO activos_cliente (id_direccion_cliente, descripcion, ubicacion, hash, activo) VALUES('$id_direccion_cliente', '$descripcion', '$ubicacion', '$hash', '$activo')";
+			$queryInsert = "INSERT INTO activos_cliente (id_direccion_cliente, descripcion, ubicacion, hash, activo, id_subrubro, datos_adicionales) VALUES('$id_direccion_cliente', '$descripcion', '$ubicacion', '$codigo', '$activo', '$id_subrubro', '$datos_adicionales')";
       //echo $queryInsert;
 			$insertar= $this->conexion->consultaSimple($queryInsert);
 
@@ -122,21 +138,22 @@ class Elemento{
       if($mensajeError!=""){
         echo "<br><br>".$queryInsert;
       }
+      $id_elemento=$this->conexion->conectar->insert_id;
 
-      /*BUSCO EL ID DEL VEHICULO CREADO PARA GUARDAR EL HISTORIAL DE TECNICOS*/
-      /*$queryGetIdVehiculo = "SELECT id as id_elemento FROM vehiculos 
-        WHERE patente = '$patente'
-        AND fecha_alta = '$fecha_alta'";
-      $getIdVehiculo = $this->conexion->consultaRetorno($queryGetIdVehiculo);
-      if ($getIdVehiculo->num_rows > 0 ) {
-          $idRow = $getIdVehiculo->fetch_assoc();
-          $id_elemento = $idRow['id_elemento'];
-      }*/
+      /*GUARDO IMAGEN EN EL DIRECTORIO*/
+			if($archivo !=""){
+				$nombreImagen = $archivo['name'];
+				$directorio = "../views/elementos/";
+				$nombreFinalArchivo = $nombreImagen;
+				move_uploaded_file($archivo['tmp_name'], $directorio.$id_elemento."_".$nombreFinalArchivo);
+				//$ruta_completa_imagen = $directorio.$nombreFinalArchivo;
+				$archivo = $id_elemento."_".$nombreFinalArchivo;
+			}
 
-      /*GUARDO EL HISTORIAL DE TECNICOS*/
-			/*$queryInsertVehiculo = "INSERT INTO asignacion_tecnico_vehiculo (id_elemento, id_tecnico, fecha, validado) VALUES('$id_elemento', '$tecnico', NOW(), 1)";
-			$insertarVehiculo= $this->conexion->consultaSimple($queryInsertVehiculo);*/
-			
+			//ACTUALIZO NOMBRE IMAGEN DEL ITEM
+			$queryUpdateLogoName = "UPDATE activos_cliente SET imagen='$archivo' WHERE id = $id_elemento";
+			$updateLogoName = $this->conexion->consultaSimple($queryUpdateLogoName);
+
 		}
 
     /*public function traerVechiculoUpdate($id_elemento){
@@ -169,12 +186,12 @@ class Elemento{
       return json_encode($arrayDatosVehiculos);
 		}*/
 
-    public function updateElemento($id_elemento, $id_direccion_cliente, $descripcion, $ubicacion){
+    public function updateElemento($id_elemento, $id_direccion_cliente, $descripcion, $ubicacion, $id_subrubro, $codigo, $datos_adicionales, $archivo){
 
 			$this->id_elemento=$id_elemento;
 
 			//Actualizo datos del vehiculo
-      $queryUpdate = "UPDATE activos_cliente set id_direccion_cliente = '$id_direccion_cliente', descripcion = '$descripcion', ubicacion = '$ubicacion'
+      $queryUpdate = "UPDATE activos_cliente set id_direccion_cliente = '$id_direccion_cliente', descripcion = '$descripcion', ubicacion = '$ubicacion' , id_subrubro = '$id_subrubro', hash = '$codigo', datos_adicionales = '$datos_adicionales'
       WHERE id = $this->id_elemento";
       //echo $queryUpdate;
 			$update = $this->conexion->consultaSimple($queryUpdate);
@@ -187,22 +204,26 @@ class Elemento{
         $error=1;
       }*/
 
-      /*BUSCO EL ID DEL VEHICULO CREADO PARA GUARDAR EL HISTORIAL DE TECNICOS*/
-      /*$queryGetIdTecnico = "SELECT id_tecnico FROM asignacion_tecnico_vehiculo 
-        WHERE id_elemento = '$id_elemento'
-        ORDER BY fecha DESC LIMIT 1";
-      $getIdTecnico = $this->conexion->consultaRetorno($queryGetIdTecnico);
-      $id_tecnico=0;
-      if ($getIdTecnico->num_rows > 0 ) {
-        $idRow = $getIdTecnico->fetch_assoc();
-        $id_tecnico = $idRow['id_tecnico'];
-      }*/
+      if($archivo !=""){
 
-      /*SI LOS TECNICOS SON DIFERENTES, GUARDO EL HISTORIAL DE TECNICOS*/
-      /*if($id_tecnico!=$tecnico){
-        $queryInsertVehiculo = "INSERT INTO asignacion_tecnico_vehiculo (id_elemento, id_tecnico, fecha, validado) VALUES('$id_elemento', '$tecnico', NOW(), 1)";
-        $insertarVehiculo= $this->conexion->consultaSimple($queryInsertVehiculo);
-      }*/
+				$directorio = "../views/elementos/";
+				$queryGetLogo = "SELECT imagen FROM activos_cliente WHERE id= $this->id_elemento";
+				$getLogo = $this->conexion->consultaRetorno($queryGetLogo);
+				$nombreRow = $getLogo->fetch_assoc();
+				$nombreAnterior = $nombreRow['imagen'];
+
+        $nombre_completo =  $this->id_elemento."_".$archivo['name'];
+				if($nombreAnterior != ""){
+					//Elimino archivo existente en directorio y agrego el nuevo
+					unlink($directorio.$nombreAnterior);
+				}
+
+        $queryUpdateLogo = "UPDATE activos_cliente SET imagen = '$nombre_completo' WHERE id = $this->id_elemento";
+				$updateLogo = $this->conexion->consultaSimple($queryUpdateLogo);
+        
+        move_uploaded_file($archivo['tmp_name'], $directorio.$nombre_completo);
+
+			}
 
 		}
 
@@ -213,6 +234,24 @@ class Elemento{
 
 			/*Tabla activos_cliente*/
 			$queryDelete = "DELETE FROM activos_cliente WHERE id=$this->id_elemento";
+			$delte = $this->conexion->consultaSimple($queryDelete);
+
+		}
+
+    public function eliminarImagen($id_elemento){
+			$this->id_elemento = $id_elemento;
+
+      $directorio = "../views/elementos/";
+      $queryGetLogo = "SELECT imagen FROM activos_cliente WHERE id= $this->id_elemento";
+      $getLogo = $this->conexion->consultaRetorno($queryGetLogo);
+      $nombreRow = $getLogo->fetch_assoc();
+      $nombreAnterior = $nombreRow['imagen'];
+
+      //Elimino archivo existente en directorio y agrego el nuevo
+      unlink($directorio.$nombreAnterior);
+
+			/*Eliminamos registros de la base de datos*/
+			$queryDelete = "UPDATE activos_cliente SET imagen = '' WHERE id=$this->id_elemento";
 			$delte = $this->conexion->consultaSimple($queryDelete);
 
 		}
@@ -232,25 +271,32 @@ class Elemento{
 			  	$elemento->traerDatosInicialesElementos();
 			break;
 			case 'addElemento':
-					$elemento->agregarElemento($id_direccion_cliente, $descripcion, $ubicacion);
+          $archivo = "";
+          if(isset($_FILES['file'])) {
+            $archivo = $_FILES['file'];
+          }
+					$elemento->agregarElemento($id_direccion_cliente, $descripcion, $ubicacion, $id_subrubro, $codigo, $datos_adicionales, $archivo);
 			break;
       case 'traerElementoUpdate':
       case 'trerDetalleElemento':
+      case 'traerElementosCliente':
 					//$id_elemento = $_POST['id_elemento'];
 					//echo $elemento->traerVechiculoUpdate($id_elemento);
           echo $elemento->traerElementos($filtros);
 			break;
       case 'updateElemento':
-        $elemento->updateElemento($id_elemento, $id_direccion_cliente, $descripcion, $ubicacion);
+        $archivo = "";
+        if(isset($_FILES['file'])) {
+          $archivo = $_FILES['file'];
+        }
+        $elemento->updateElemento($id_elemento, $id_direccion_cliente, $descripcion, $ubicacion, $id_subrubro, $codigo, $datos_adicionales, $archivo);
       break;
       case 'eliminarElemento':
         //$id_elemento = $_POST['id_elemento'];
         $elemento->deleteElemento($id_elemento);
       break;
-      case 'trerElementosCliente':
-        //$id_elemento = $_POST['id_elemento'];
-        //echo $elemento->traerVechiculoUpdate($id_elemento);
-        echo $elemento->traerElementos($filtros);
+      case 'eliminarImagen':
+        $elemento->eliminarImagen($id_elemento);
     break;
 		}
 	}else{
@@ -259,9 +305,11 @@ class Elemento{
 
 			switch ($_GET['accion']) {
 				case 'traerElementos':
-					$elementos=$elemento->traerElementos();
-          $elementos=json_decode($elementos,true);
+					echo $elementos=$elemento->traerElementos();
+          /*$elementos=json_decode($elementos,true);
 
+          //var_dump($elementos);
+          
           $listarElementos=[];
           foreach ($elementos as $elemento) {
             $listarElementos[]=[
@@ -275,7 +323,7 @@ class Elemento{
               "estado"                    =>$elemento["estado"],
             ];
           }
-          echo json_encode($listarElementos);
+          echo json_encode($listarElementos);*/
 				break;
 			}
 		}

@@ -136,17 +136,27 @@
                             <th class="text-center">#ID</th>
                             <th>Cliente</th>
                             <th>Elemento</th>
-                            <!-- <th>Asunto</th> -->
                             <th>Ubicacion</th>
                             <th>Estado</th>
                             <th>Fecha</th>
                             <th>Desde</th>
                             <th>Hasta</th>
-                            <!-- <th>Vehiculo</th> -->
-                            <!-- <th>Costo estimado de movilidad</th> -->
                             <th>Acciones</th>
                           </tr>
                         </thead>
+                        <tfoot class="text-center">
+                          <tr>
+                            <th class="text-center">#ID</th>
+                            <th>Cliente</th>
+                            <th>Elemento</th>
+                            <th>Ubicacion</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>Desde</th>
+                            <th>Hasta</th>
+                            <th>Acciones</th>
+                          </tr>
+                        </tfoot>
                         <tbody>
                         </tbody>
                       </table>
@@ -582,7 +592,7 @@
     <script src="assets/js/datatable/datatable-extension/buttons.bootstrap4.min.js"></script>
     <script src="assets/js/datatable/datatable-extension/buttons.html5.min.js"></script>
     <script src="assets/js/datatable/datatable-extension/buttons.print.min.js"></script>
-    <script src="assets/js/datatable/datatable-extension/dataTables.bootstrap4.min.js"></script>
+    <!-- <script src="assets/js/datatable/datatable-extension/dataTables.bootstrap4.min.js"></script> -->
     <script src="assets/js/datatable/datatable-extension/dataTables.responsive.min.js"></script>
     <script src="assets/js/datatable/datatable-extension/responsive.bootstrap4.min.js"></script>
     <script src="assets/js/datatable/datatable-extension/dataTables.keyTable.min.js"></script>
@@ -733,7 +743,65 @@
               }
             },
           ],
-          "language":  idiomaEsp
+          "language":  idiomaEsp,
+          dom: '<"mr-2 d-inline"l>Bfrtip',
+          buttons: [
+            {
+              extend:    'excelHtml5',
+              text:      '<i class="fa fa-file-excel-o"></i>',
+              titleAttr: 'Excel',
+              title:     "Ordenes de trabajo",
+              className: 'btn-success',
+              exportOptions: {
+                columns: ':not(:last-child)',
+                /*format: {
+                  body: function ( data, row, column, node ) {
+                    // Strip $ from salary column to make it numeric
+                    return column === 7 ? data.replace( /[$.]/g, '' ).replace( /[,]/g, '.' ) : data;
+                  }
+                }*/
+              }
+            },
+            {
+              extend:    'pdfHtml5',
+              text:      '<i class="fa fa-file-pdf-o"></i>',
+              title:     "Ordenes de trabajo",
+              titleAttr: 'PDF',
+              download: 'open',
+              className: 'btn-danger',
+              exportOptions: {
+                columns: ':not(:last-child)',
+              }
+            }
+          ],
+          initComplete: function(){
+            var b=1;
+            var c=0;
+            this.api().columns.adjust().draw();//Columns sin parentesis
+            this.api().columns().every(function(){//Columns() con parentesis
+              if(b!=1 && b!=9){
+                var column=this;
+                var name=$(column.footer()).text();
+                var select=$("<select id='filtro"+name+"' class='form-control form-control-sm filtrosTrato'><option value=''>Todos</option></select>")
+                  .appendTo($(column.footer()).empty())
+                  .on("change",function(){
+                    var val=$.fn.dataTable.util.escapeRegex(
+                      $(this).val()
+                    );
+                    column.search(val ? '^'+val+'$':'',true,false).draw();
+                  });
+                column.data().unique().sort().each(function(d,j){
+                  var val=$("<div/>").html(d).text();
+                  if(column.search()==='^'+val+'$'){
+                    select.append("<option value='"+val+"' selected='selected'>"+val+"</option>");
+                  }else{
+                    select.append("<option value='"+val+"'>"+val+"</option>");
+                  }
+                })
+              }
+              b++;
+            })
+          }
         });
 
         tablaTecnicos.DataTable({
@@ -748,7 +816,7 @@
             {
               render: function(data, type, full, meta) {
                 return ()=>{
-                  //genero los select vacíos para luego obtener os vehiculos. Guardo en el atributo data el id_vehiculo de cada tecnico 
+                  //genero los select vacíos para luego obtener los vehiculos. Guardo en el atributo data el id_vehiculo de cada tecnico 
                   let id="vehiculo"+full.id_tecnico;
                   return `<div class="input-group mb-3">
                     <div class="input-group-prepend">
@@ -759,14 +827,6 @@
                     <button class='btn btn-sm btn-secondary sinVehiculo' type="button" data-id-select-vehiculo='#`+id+`' title='Sin vehiculo'><i class="fa fa-ban" aria-hidden="true"></i></button>
                     </div>`;
                 };
-                /*<div class="input-group">
-                    <span class="input-group-btn">
-                      <select class="select_vehiculos" data-id-vehiculo="`+full.id_vehiculo+`">
-                        <option value="0">- Sin vehiculo -</option>
-                      </select>
-                    </span>
-                    <button class='btn btn-sm btn-secondary sinVehiculo'>Sin vehiculo</button>
-                  </div>*/
               }
             }
           ],

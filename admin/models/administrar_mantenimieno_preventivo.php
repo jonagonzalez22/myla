@@ -38,9 +38,21 @@ class MantenimientoPreventivo{
     $listaAlmacenes=json_decode($listaAlmacenes,true);
     //var_dump($listaAlmacenes);
 
+    /*PRIORIDADES*/
+    $prioridades=[];
+    $query = "SELECT id as id_prioridad, prioridad FROM prioridades_tareas";
+    $get = $this->conexion->consultaRetorno($query);
+    while ($row= $get->fetch_array()) {
+      $prioridades[] = array(
+        'id_prioridad' => $row['id_prioridad'],
+        'prioridad' =>$row['prioridad']
+      );
+    }
+
     $datosIniciales["vehiculos"] = $listaVehiculos;
     $datosIniciales["clientes"] = $listaClientes;
     $datosIniciales["almacenes"] = $listaAlmacenes;
+    $datosIniciales["prioridades"] = $prioridades;
 
     echo json_encode($datosIniciales);
   }
@@ -77,13 +89,14 @@ class MantenimientoPreventivo{
     
     $arrayMantenimientoPreventivo = [];
 
-    $queryGet = "SELECT cm.id AS id_mantenimiento_preventivo,cm.id_usuario_alta,cm.fecha_alta,cm.id_activo_cliente,ac.descripcion AS descripcion_activo,dc.id AS id_direccion_cliente,dc.direccion,cm.asunto,cm.detalle,cm.fecha,cm.hora_desde,cm.hora_hasta,cm.id_estado,etm.estado,cm.id_contacto_cliente,cc.nombre_completo AS contacto_cliente,c.id AS id_cliente,c.razon_social AS cliente
+    $queryGet = "SELECT cm.id AS id_mantenimiento_preventivo,cm.id_usuario_alta,cm.fecha_alta,cm.id_activo_cliente,ac.descripcion AS descripcion_activo,dc.id AS id_direccion_cliente,dc.direccion,cm.asunto,cm.detalle,cm.fecha,cm.hora_desde,cm.hora_hasta,cm.id_estado,etm.estado,cm.id_contacto_cliente,cc.nombre_completo AS contacto_cliente,c.id AS id_cliente,c.razon_social AS cliente, cm.id_prioridad, pt.prioridad
     FROM calendario_mantenimiento cm 
     INNER JOIN activos_cliente ac ON cm.id_activo_cliente=ac.id 
     INNER JOIN direcciones_clientes dc ON ac.id_direccion_cliente=dc.id
     INNER JOIN estados_tareas_mantenimiento etm ON cm.id_estado=etm.id 
     INNER JOIN contactos_clientes cc ON cm.id_contacto_cliente=cc.id 
     INNER JOIN clientes c ON cc.id_cliente=c.id
+    INNER JOIN prioridades_tareas pt ON cm.id_prioridad=pt.id
     WHERE c.id_empresa = $this->id_empresa $filtro_mantenimiento_preventivo $filtro_cliente $filtro_ubicacion $filtro_estado $filtro_fecha";
     //var_dump($queryGet);
     $getDatos = $this->conexion->consultaRetorno($queryGet);
@@ -115,7 +128,9 @@ class MantenimientoPreventivo{
         "id_contacto_cliente"               =>$row["id_contacto_cliente"],
         "id_cliente"                        =>$row["id_cliente"],
         "cliente"                           =>$row["cliente"],
-        "contacto_cliente"                  =>$row["contacto_cliente"]
+        "contacto_cliente"                  =>$row["contacto_cliente"],
+        "id_prioridad"                      =>$row["id_prioridad"],
+        "prioridad"                         =>$row["prioridad"],
       ];
     }
     //echo json_encode($arrayMantenimientoPreventivo);
@@ -179,7 +194,7 @@ class MantenimientoPreventivo{
     return json_encode($arrayAdjuntosMantenimientoPreventivo);
   }
 
-  public function agregarMantenimientoPreventivo($id_elemento_cliente, $asunto, $detalle, $id_contacto_cliente, $fecha, $hora_desde, $hora_hasta, $frecuencia_cantidad, $frecuencia_repeticion, $frecuencia_stop, $id_almacen, $aItems, $adjuntos, $cantAdjuntos){
+  public function agregarMantenimientoPreventivo($id_elemento_cliente, $asunto, $detalle, $prioridad, $id_contacto_cliente, $fecha, $hora_desde, $hora_hasta, $frecuencia_cantidad, $frecuencia_repeticion, $frecuencia_stop, $id_almacen, $aItems, $adjuntos, $cantAdjuntos){
     $activo = 1;
     $id_usuario_alta=$_SESSION["rowUsers"]["id_usuario"];
     $id_estado=1;
@@ -198,7 +213,7 @@ class MantenimientoPreventivo{
     $id_referencia_original=0;
     foreach($eventos as $repeticion){
       /*GUARDO EN TABLA EMPRESA*/
-      $queryInsert = "INSERT INTO calendario_mantenimiento (id_usuario_alta, fecha_alta, id_activo_cliente, asunto, detalle, id_contacto_cliente, fecha, hora_desde, hora_hasta, id_estado, id_referencia_original) VALUES ('$id_usuario_alta', NOW(), '$id_elemento_cliente', '$asunto', '$detalle', '$id_contacto_cliente', '$repeticion', '$hora_desde', '$hora_hasta', '$id_estado',$id_referencia_original)";
+      $queryInsert = "INSERT INTO calendario_mantenimiento (id_usuario_alta, fecha_alta, id_activo_cliente, asunto, detalle, id_prioridad, id_contacto_cliente, fecha, hora_desde, hora_hasta, id_estado, id_referencia_original) VALUES ('$id_usuario_alta', NOW(), '$id_elemento_cliente', '$asunto', '$detalle', '$prioridad', '$id_contacto_cliente', '$repeticion', '$hora_desde', '$hora_hasta', '$id_estado',$id_referencia_original)";
       //echo $queryInsert;
       $insertar= $this->conexion->consultaSimple($queryInsert);
       //var_dump($insertar);
@@ -323,7 +338,7 @@ class MantenimientoPreventivo{
 
   }
 
-  public function EliminarAdjuntos($id_adjunto, $nombre_adjunto){
+  public function eliminarAdjuntos($id_adjunto, $nombre_adjunto){
 
     $this->id_adj = $id_adjunto;
 
@@ -343,10 +358,10 @@ class MantenimientoPreventivo{
 
   }
 
-  public function updateMantenimientoPreventivo($id_mantenimiento_preventivo, $id_elemento_cliente, $asunto, $detalle, $id_contacto_cliente, $id_almacen, $aItems, $adjuntos, $cantAdjuntos){
+  public function updateMantenimientoPreventivo($id_mantenimiento_preventivo, $id_elemento_cliente, $asunto, $detalle, $prioridad, $id_contacto_cliente, $id_almacen, $aItems, $adjuntos, $cantAdjuntos){
 
     //Actualizo datos de la tarea de mantenimiento preventivo
-    $query = "UPDATE calendario_mantenimiento set id_activo_cliente = '$id_elemento_cliente', asunto = '$asunto', detalle = '$detalle', id_contacto_cliente = '$id_contacto_cliente' WHERE id_estado = 1 AND id_referencia_original = (SELECT id_referencia_original FROM calendario_mantenimiento b WHERE id = $id_mantenimiento_preventivo)";
+    $query = "UPDATE calendario_mantenimiento set id_activo_cliente = '$id_elemento_cliente', asunto = '$asunto', detalle = '$detalle', id_prioridad = '$prioridad', id_contacto_cliente = '$id_contacto_cliente' WHERE id_estado = 1 AND id_referencia_original = (SELECT id_referencia_original FROM calendario_mantenimiento b WHERE id = $id_mantenimiento_preventivo)";
     //echo $query;
     $update = $this->conexion->consultaSimple($query);
     
@@ -453,7 +468,7 @@ if (isset($_POST['accion'])) {
       }
       $aItems=json_decode($itemsJSON,true);
 
-      $mantenimiento_preventivo->agregarMantenimientoPreventivo($id_elemento_cliente, $asunto, $detalle, $id_contacto_cliente, $fecha, $hora_desde, $hora_hasta, $frecuencia_cantidad, $frecuencia_repeticion, $frecuencia_stop, $id_almacen, $aItems, $adjuntos, $cantAdjuntos);
+      $mantenimiento_preventivo->agregarMantenimientoPreventivo($id_elemento_cliente, $asunto, $detalle, $prioridad, $id_contacto_cliente, $fecha, $hora_desde, $hora_hasta, $frecuencia_cantidad, $frecuencia_repeticion, $frecuencia_stop, $id_almacen, $aItems, $adjuntos, $cantAdjuntos);
     break;
     case 'updateMantenimientoPreventivo':
 
@@ -464,14 +479,14 @@ if (isset($_POST['accion'])) {
       }
       $aItems=json_decode($itemsJSON,true);
 
-      $mantenimiento_preventivo->updateMantenimientoPreventivo($id_mantenimiento_preventivo, $id_elemento_cliente, $asunto, $detalle, $id_contacto_cliente, $id_almacen, $aItems, $adjuntos, $cantAdjuntos);
+      $mantenimiento_preventivo->updateMantenimientoPreventivo($id_mantenimiento_preventivo, $id_elemento_cliente, $asunto, $detalle, $prioridad, $id_contacto_cliente, $id_almacen, $aItems, $adjuntos, $cantAdjuntos);
     break;
     case 'traerDetalleMantenimientoPreventivo':
       //$id_mantenimiento_preventivo = $_POST['id_mantenimiento_preventivo'];
       echo $mantenimiento_preventivo->traerDetalleMantenimientoPreventivo($id_mantenimiento_preventivo);
     break;
     case 'borrarAdjunto':
-      $mantenimiento_preventivo->EliminarAdjuntos($id_adjunto, $nombre_adjunto);
+      $mantenimiento_preventivo->eliminarAdjuntos($id_adjunto, $nombre_adjunto);
     break;
     case 'eliminarMantenimientoPreventivoIndividual':
       //$id_mantenimiento_preventivo = $_POST['id_mantenimiento_preventivo'];

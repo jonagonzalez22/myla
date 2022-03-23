@@ -1,5 +1,8 @@
 <?php
-	session_start();
+  if(session_id() == '' || !isset($_SESSION) || session_status() === PHP_SESSION_NONE) {
+    // session isn't started
+    session_start();
+  }
 	require_once('../../conexion.php');
 	class Rubros{
 		private $id_rubro;
@@ -79,9 +82,18 @@
 			$insertRubro = $this->conexion->consultaSimple($sql);
 
 		}
-		public function traerRubros(){
 
-			$sqlTraerRubros = "SELECT id as id_rubro, rubro, comentarios FROM rubros";
+		public function traerRubros($filtros=[]){
+
+      $filtro_rubro="";
+      if($filtros!=[]){
+        //var_dump($filtros);
+        if(isset($filtros["id_rubro"]) and $filtros["id_rubro"]!=""){
+          $filtro_rubro=" AND id IN (".$filtros["id_rubro"].")";
+        }
+      }
+
+			$sqlTraerRubros = "SELECT id as id_rubro, rubro, comentarios FROM rubros WHERE 1 $filtro_rubro";
 			$traerRubros = $this->conexion->consultaRetorno($sqlTraerRubros);
 
 			$rubros = array(); //creamos un array
@@ -93,9 +105,10 @@
             $rubros[] = array('id_rubro'=> $id_rubro, 'rubro'=>$rubro, 'comentarios'=> $comentarios);
         }
 
-        echo json_encode($rubros);
+        return json_encode($rubros);
 
 		}
+
 		public function traerRubroUpdate($id_rubro){
 			$this->id_rubro = $id_rubro;
 
@@ -116,6 +129,7 @@
         echo json_encode($rubros);
 
 		}
+
 		public function updateRubro($id_rubro, $rubro, $comentarios){
 
 			$this->id_rubro = $id_rubro;
@@ -124,7 +138,6 @@
 								WHERE id=$this->id_rubro";
 			$updateRubro = $this->conexion->consultaSimple($sqlUpdateRubro);
 		}
-
 
 		public function deleteRubro($id_rubro){
 			$this->id_rubro = $id_rubro;
@@ -135,40 +148,41 @@
 		}
 		
 }	
+$filtros=[];
+if(isset($id_rubro)) $filtros["id_rubro"]=$id_rubro;
 
-	if (isset($_POST['accion'])) {
-		$rubros = new Rubros();
-		switch ($_POST['accion']) {
-			case 'traerAlmacenes':
-				$rubros->traerTodosClientes();
-				break;
-			case 'traerRubroUpdate':
-					$id_rubro = $_POST['id_rubro'];
-					$rubros->traerRubroUpdate($id_rubro);
-				break;
-			case 'updateRubro':
-					$id_rubro = $_POST['id_rubro'];
-					$rubro = $_POST['rubro'];
-					$comentarios = $_POST['comentarios'];
-					$rubros->updateRubro($id_rubro, $rubro, $comentarios);
-				break;
-			case 'addRubro':
-					$rubro = $_POST['rubro'];
-					$comentarios = $_POST['comentarios'];
-					$rubros->agregarRubros($rubro, $comentarios);
-				break;
-			case 'eliminarRubro':
-					$id_rubro = $_POST['id_rubro'];
-					$rubros->deleteRubro($id_rubro);
-				break;
-			case 'traerDatosIniciales':
-				$rubros->traerDatosIniciales();
-				break;
-		}
-	}else{
-		if (isset($_GET['accion'])) {
-			$rubros = new Rubros();
-			$rubros->traerRubros();
-		}
-	}
-?>
+if (isset($_POST['accion'])) {
+  $rubros = new Rubros();
+  switch ($_POST['accion']) {
+    case 'traerAlmacenes':
+      $rubros->traerTodosClientes();
+      break;
+    case 'traerRubroUpdate':
+        $id_rubro = $_POST['id_rubro'];
+        $rubros->traerRubroUpdate($id_rubro);
+      break;
+    case 'updateRubro':
+        $id_rubro = $_POST['id_rubro'];
+        $rubro = $_POST['rubro'];
+        $comentarios = $_POST['comentarios'];
+        $rubros->updateRubro($id_rubro, $rubro, $comentarios);
+      break;
+    case 'addRubro':
+        $rubro = $_POST['rubro'];
+        $comentarios = $_POST['comentarios'];
+        $rubros->agregarRubros($rubro, $comentarios);
+      break;
+    case 'eliminarRubro':
+        $id_rubro = $_POST['id_rubro'];
+        $rubros->deleteRubro($id_rubro);
+      break;
+    case 'traerDatosIniciales':
+      $rubros->traerDatosIniciales();
+      break;
+  }
+}else{
+  if (isset($_GET['accion']) and $_GET['accion']=="traerRubros") {
+    $rubros = new Rubros();
+    echo $rubros->traerRubros($filtros);
+  }
+}?>

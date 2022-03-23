@@ -128,7 +128,7 @@
                 <div class="col-xl-12">
                   <div class="card">
                     <div class="card-header">
-                      <h5>Tareas de mantenimiento</h5>
+                      <h5>Tareas de mantenimiento vehicular</h5>
                     </div>
                     <div class="card-body">
                       <div class="table-responsive" id="contTablaListas" >
@@ -214,7 +214,7 @@
     <script src="assets/js/datatable/datatable-extension/buttons.bootstrap4.min.js"></script>
     <script src="assets/js/datatable/datatable-extension/buttons.html5.min.js"></script>
     <script src="assets/js/datatable/datatable-extension/buttons.print.min.js"></script>
-    <script src="assets/js/datatable/datatable-extension/dataTables.bootstrap4.min.js"></script>
+    <!-- <script src="assets/js/datatable/datatable-extension/dataTables.bootstrap4.min.js"></script> -->
     <script src="assets/js/datatable/datatable-extension/dataTables.responsive.min.js"></script>
     <script src="assets/js/datatable/datatable-extension/dataTables.keyTable.min.js"></script>
     <script src="assets/js/datatable/datatable-extension/dataTables.colReorder.min.js"></script>
@@ -368,10 +368,10 @@
                   },
                 "columns":[
                   {"data": "fecha_mostrar"},
-                  {"data": "marca"},
-                  {"data": "modelo"},
-                  {"data": "patente"},
-                  {"data": "anio"},
+                  {"data": "vehiculo.marca"},
+                  {"data": "vehiculo.modelo"},
+                  {"data": "vehiculo.patente"},
+                  {"data": "vehiculo.anio"},
                   {"data": "detalle"},
                   {"data": "costo_estimado_mostrar"},
                   {"data": "realizado_mostrar"}

@@ -65,6 +65,14 @@
       .modal a .card-header h6{
         color: #f6f7fb;
       }
+
+      .modal-dialog{
+        overflow-y: initial !important
+      }
+      .modal-body{
+        max-height: 75vh;
+        overflow-y: auto;
+      }
     </style>
   </head>
   <body>
@@ -130,6 +138,7 @@
                           <thead class="text-center">
                             <tr>
                               <th class="text-center">#ID</th>
+                              <th>Cliente</th>
                               <th>Activo</th>
                               <th>Asunto</th>
                               <th>Detalle</th>
@@ -138,11 +147,24 @@
                               <th>Hs hasta</th>
                               <th>Estado</th>
                               <th>Contacto</th>
-                              <!-- <th>Vehiculo</th> -->
-                              <!-- <th>Costo estimado de movilidad</th> -->
                               <th>Acciones</th>
                             </tr>
                           </thead>
+                          <tfoot class="text-center">
+                            <tr>
+                              <th class="text-center">#ID</th>
+                              <th>Cliente</th>
+                              <th>Activo</th>
+                              <th>Asunto</th>
+                              <th>Detalle</th>
+                              <th>Fecha</th>
+                              <th>Hs desde</th>
+                              <th>Hs hasta</th>
+                              <th>Estado</th>
+                              <th>Contacto</th>
+                              <th>Acciones</th>
+                            </tr>
+                          </tfoot>
                           <tbody>
                           </tbody>
                         </table>
@@ -262,6 +284,16 @@
                           </div>
                         </div>
                       </div>
+                      <div class="row">
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="" class="col-form-label">*Prioridad:</label>
+                            <select class="form-control" id="prioridad">
+                              <option value="">Seleccione</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
                       <!-- <div class="row">
                         <div class="col-lg-12">
                           <div class="form-group">
@@ -364,7 +396,7 @@
                         <div class="col-lg-6">
                           <div class="form-group">
                             <label for="" class="col-form-label">*Almacenes:</label>
-                            <select class="form-control" id="id_almacen" required>
+                            <select class="form-control" id="id_almacen">
                               <option value="">Seleccione</option>
                             </select>
                           </div>
@@ -376,6 +408,7 @@
                             <tr>
                               <!-- <th>#ID</th> -->
                               <th>Item</th>
+                              <th>Imagen</th>
                               <th>UM</th>
                               <th>Proveedor</th>
                               <th>Tipo</th>
@@ -383,10 +416,11 @@
                               <th>Cantidad estimada</th>
                             </tr>
                           </thead>
-                          <tfoot>
+                          <tfoot class="text-center">
                             <tr>
                               <!-- <th>#ID</th> -->
                               <th>Item</th>
+                              <th>Imagen</th>
                               <th>UM</th>
                               <th>Proveedor</th>
                               <th>Tipo</th>
@@ -486,6 +520,13 @@
                       <div class="col-lg-6">
                         <div class="form-group">
                           <label for="" class="col-form-label">Detalle: <span id="lblDetalle"></span></label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <label for="" class="col-form-label">Prioridad: <span id="lblPrioridad"></span></label>
                         </div>
                       </div>
                     </div>
@@ -621,11 +662,31 @@
     <script src="assets/js/sidebar-menu.js"></script>
     <script src="assets/js/config.js"></script>
     <!-- Plugins JS start-->
-    <script src="assets/js/datatable/datatables/jquery.dataTables.min.js"></script>
+    <!-- <script src="assets/js/datatable/datatables/jquery.dataTables.min.js"></script> -->
     <script src="assets/js/chart/chartjs/chart.min.js"></script>
     <script src="assets/js/sweet-alert/sweetalert.min.js"></script>
     <script src="assets/js/chat-menu.js"></script>
     <script src="assets/js/tooltip-init.js"></script>
+
+    <script src="assets/js/datatable/datatables/jquery.dataTables.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.buttons.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/jszip.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/buttons.colVis.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/pdfmake.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/vfs_fonts.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.autoFill.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.select.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/buttons.bootstrap4.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/buttons.html5.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/buttons.print.min.js"></script>
+    <!-- <script src="assets/js/datatable/datatable-extension/dataTables.bootstrap4.min.js"></script> -->
+    <script src="assets/js/datatable/datatable-extension/dataTables.responsive.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.keyTable.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.colReorder.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.fixedHeader.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.rowReorder.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.scroller.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/custom.js"></script>
     <!-- Plugins JS Ends-->
     <!-- Theme js-->
     <script src="assets/js/script.js"></script>
@@ -743,6 +804,7 @@
           "stateSave": true,
           "columns":[
             {"data": "id_mantenimiento_preventivo"},
+            {"data": "cliente"},
             {"data": "descripcion_activo"},
             {"data": "asunto"},
             {"data": "detalle"},
@@ -753,7 +815,6 @@
             {"data": "contacto_cliente"},
             //{"data": "vehiculo"},
             // {"data": "costo_movilidad_estimado_mostrar"},
-            //{"defaultContent" : "<div class='text-center'><div class='btn-group'><button class='btn btn-success btnEditar'><i class='fa fa-edit'></i></button><button class='btn btn-warning btnVer'><i class='fa fa-eye'></i></button><button class='btn btn-danger btnBorrar'><i class='fa fa-trash-o'></i></button></div></div>"},//<button class='btn btn-primary btnAddMantenimiento' title='Añadir tarea de mantenimiento'><i class='fa fa-wrench'></i></button>
             {
               render: function(data, type, full, meta) {
                 return ()=>{
@@ -775,7 +836,65 @@
               }
             },
           ],
-          "language":  idiomaEsp
+          "language":  idiomaEsp,
+          dom: '<"mr-2 d-inline"l>Bfrtip',
+          buttons: [
+            {
+              extend:    'excelHtml5',
+              text:      '<i class="fa fa-file-excel-o"></i>',
+              titleAttr: 'Excel',
+              title:     "Tareas de mantenimiento preventivo",
+              className: 'btn-success',
+              exportOptions: {
+                columns: ':not(:last-child)',
+                /*format: {
+                  body: function ( data, row, column, node ) {
+                    // Strip $ from salary column to make it numeric
+                    return column === 7 ? data.replace( /[$.]/g, '' ).replace( /[,]/g, '.' ) : data;
+                  }
+                }*/
+              }
+            },
+            {
+              extend:    'pdfHtml5',
+              text:      '<i class="fa fa-file-pdf-o"></i>',
+              title:     "Tareas de mantenimiento preventivo",
+              titleAttr: 'PDF',
+              download: 'open',
+              className: 'btn-danger',
+              exportOptions: {
+                columns: ':not(:last-child)',
+              }
+            }
+          ],
+          initComplete: function(){
+            var b=1;
+            var c=0;
+            this.api().columns.adjust().draw();//Columns sin parentesis
+            this.api().columns().every(function(){//Columns() con parentesis
+              if(b!=1 && b!=11){
+                var column=this;
+                var name=$(column.footer()).text();
+                var select=$("<select id='filtro"+name+"' class='form-control form-control-sm filtrosTrato'><option value=''>Todos</option></select>")
+                  .appendTo($(column.footer()).empty())
+                  .on("change",function(){
+                    var val=$.fn.dataTable.util.escapeRegex(
+                      $(this).val()
+                    );
+                    column.search(val ? '^'+val+'$':'',true,false).draw();
+                  });
+                column.data().unique().sort().each(function(d,j){
+                  var val=$("<div/>").html(d).text();
+                  if(column.search()==='^'+val+'$'){
+                    select.append("<option value='"+val+"' selected='selected'>"+val+"</option>");
+                  }else{
+                    select.append("<option value='"+val+"'>"+val+"</option>");
+                  }
+                })
+              }
+              b++;
+            })
+          }
         });
 
         //var calendarEl = document.getElementById('cal-agenda-view');
@@ -876,16 +995,16 @@
                 $selectAlmacenes.appendChild($option);
             });
 
-            /*Identifico el select de vehiculos*/
-            /*$selectVehiculos= document.getElementById("id_vehiculo_asignado");
+            //Identifico el select de vehiculos
+            $selectPrioridades= document.getElementById("prioridad");
             //Genero los options del select de vehiculos
-            respuestaJson.vehiculos.forEach((vehiculo)=>{
+            respuestaJson.prioridades.forEach((prioridad)=>{
                 $option = document.createElement("option");
-                let optionText = document.createTextNode(vehiculo.vehiculo);
+                let optionText = document.createTextNode(prioridad.prioridad);
                 $option.appendChild(optionText);
-                $option.setAttribute("value", vehiculo.id_vehiculo);
-                $selectVehiculos.appendChild($option);
-            });*/
+                $option.setAttribute("value", prioridad.id_prioridad);
+                $selectPrioridades.appendChild($option);
+            });
 
             /*Identifico el select de clientes*/
             $selectClientes= document.getElementById("cliente");
@@ -921,6 +1040,17 @@
           "columns":[
             //{"data": "id_item"},
             {"data": "item"},
+            {
+              render: function(data, type, full, meta) {
+                return ()=>{
+                  let $img = " ";
+                  if (full.imagen !=""){
+                    $img=`<img src="./views/img_items/${full.imagen}" class="img-thumbnail">`;
+                  }
+                  return $img;
+                };
+              }
+            },
             {"data": "unidad_medida"},
             {"data": "proveedor"},
             {"data": "tipo"},
@@ -949,7 +1079,7 @@
             var c=0;
             this.api().columns.adjust().draw();//Columns sin parentesis
             this.api().columns().every(function(){//Columns() con parentesis
-              if(b!=6){
+              if(b!=7 && b!=2){
                 var column=this;
                 var name=$(column.header()).text();
                 var select=$("<select id='filtro"+name.replace(/ /g, "")+"' class='form-control form-control-sm filtrosTrato'><option value=''>Todos</option></select>")
@@ -1103,7 +1233,7 @@
           id_ubicacion=document.getElementById("ubicacion").value;
         }
         datosIniciales.append('id_ubicacion', id_ubicacion);
-        datosIniciales.append('accion', 'trerElementosCliente');
+        datosIniciales.append('accion', 'traerElementosCliente');
         $.ajax({
           data: datosIniciales,
           url: "./models/administrar_elementos.php",
@@ -1159,6 +1289,8 @@
         datosEnviar.append("fecha", $.trim($('#fecha').val()));
         datosEnviar.append("hora_desde", $.trim($('#hora_desde').val()));
         datosEnviar.append("hora_hasta", $.trim($('#hora_hasta').val()));
+
+        datosEnviar.append("prioridad", $.trim($('#prioridad').val()));
 
         datosEnviar.append("frecuencia_cantidad", $.trim($('#frecuencia_cantidad').val()));
         datosEnviar.append("frecuencia_repeticion", $.trim($('#frecuencia_repeticion').val()));
@@ -1290,6 +1422,7 @@
             $("#fecha").val(dmp.fecha);
             $("#hora_desde").val(dmp.hora_desde);
             $("#hora_hasta").val(dmp.hora_hasta);
+            $("#prioridad").val(dmp.id_prioridad)
 
             getUbicacionesCliente(dmp.id_cliente,dmp.id_direccion_cliente);
             getContactosUbicacion(dmp.id_cliente,dmp.id_contacto_cliente);
@@ -1356,6 +1489,7 @@
             $("#lblElemento").html(dmp.descripcion_activo);
             $("#lblAsunto").html(dmp.asunto);
             $("#lblDetalle").html(dmp.detalle);
+            $("#lblPrioridad").html(dmp.prioridad);
 
             $tabla = document.getElementById("tablaAdjuntosDetalle");
             $bodyTablaAdjuntos = $tabla.querySelector("tbody");
