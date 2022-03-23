@@ -162,13 +162,25 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
                               <th>Modelo</th>
                               <th>Año</th>
                               <th>Tecnico asignado</th>
-                              <!-- <th>KM adquirido</th> -->
                               <th>KM actuales</th>
                               <th>Estado</th>
-                              <!-- <th>Fecha de alta</th> -->
                               <th>Acciones</th>
                             </tr>
                           </thead>
+                          <tfoot class="text-center">
+                            <tr>
+                              <th class="text-center">#ID</th>
+                              <th>N° de movil</th>
+                              <th>Patente</th>
+                              <th>Marca</th>
+                              <th>Modelo</th>
+                              <th>Año</th>
+                              <th>Tecnico asignado</th>
+                              <th>KM actuales</th>
+                              <th>Estado</th>
+                              <th>Acciones</th>
+                            </tr>
+                          </tfoot>
                           <tbody>
                           </tbody>
                         </table>
@@ -197,114 +209,6 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
         </footer>
       </div>
     </div>
-
-    <!--Modal para CRUD-->
-    <!-- <div class="modal fade" id="modalCRUD2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel"></h5>
-            <span id="id_empresa" class="d-none"></span>
-            <span id="id_empresa" class="d-none"></span>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <form id="formVehiculos">
-            <div class="modal-body">
-              <div class="row">
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Patente:</label>
-                    <input type="text" class="form-control" id="patente" required>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Tecnico asignado</label>
-                    <select class="form-control" id="tecnico_asignado" required>
-                      <option value="">Seleccione</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-4">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Fecha de alta:</label>
-                    <input type="date" class="form-control" id="fecha_alta" required>
-                  </div>
-                </div>
-                <div class="col-lg-4">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Fecha adquirido:</label>
-                    <input type="date" class="form-control" id="fecha_adquirido" required>
-                  </div>
-                </div>
-                <div class="col-lg-4">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">Fecha de baja:</label>
-                    <input type="date" class="form-control" id="fecha_baja">
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*Fecha adquirido:</label>
-                    <input type="date" class="form-control" id="fecha_adquirido" required>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">Fecha de baja:</label>
-                    <input type="date" class="form-control" id="fecha_baja">
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-12">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">Comentarios:</label>
-                    <textarea id="comentarios" class="form-control"></textarea>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-5">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*KM adquirido:</label>
-                    <input class="form-control" type="number" id="km_adquirido" require>
-                  </div>
-                </div>
-                <div class="col-lg-5 offset-2">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">Proximo service general:</label>
-                    <input type="date" class="form-control" id="proximo_service_general">
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-5">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">*KM actuales:</label>
-                    <input class="form-control" type="number" id="km_actuales" require>
-                  </div>
-                </div>
-                <div class="col-lg-5 offset-2">
-                  <div class="form-group">
-                    <label for="" class="col-form-label">Proximo vencimiento VTV:</label>
-                    <input type="date" class="form-control" id="proximo_vencimiento_vtv">
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-light" data-dismiss="modal">Cancelar</button>
-              <button type="submit" id="btnGuardar" class="btn btn-dark">Guardar</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div> -->
-    <!-- FINAL MODAL CRUD-->
 
     <!--Modal para CRUD-->
     <div class="modal fade" id="modalCRUD" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -613,11 +517,31 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
     <script src="assets/js/sidebar-menu.js"></script>
     <script src="assets/js/config.js"></script>
     <!-- Plugins JS start-->
-    <script src="assets/js/datatable/datatables/jquery.dataTables.min.js"></script>
+    <!-- <script src="assets/js/datatable/datatables/jquery.dataTables.min.js"></script> -->
     <script src="assets/js/chart/chartjs/chart.min.js"></script>
     <script src="assets/js/sweet-alert/sweetalert.min.js"></script>
     <script src="assets/js/chat-menu.js"></script>
     <script src="assets/js/tooltip-init.js"></script>
+
+    <script src="assets/js/datatable/datatables/jquery.dataTables.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.buttons.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/jszip.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/buttons.colVis.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/pdfmake.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/vfs_fonts.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.autoFill.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.select.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/buttons.bootstrap4.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/buttons.html5.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/buttons.print.min.js"></script>
+    <!-- <script src="assets/js/datatable/datatable-extension/dataTables.bootstrap4.min.js"></script> -->
+    <script src="assets/js/datatable/datatable-extension/dataTables.responsive.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.keyTable.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.colReorder.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.fixedHeader.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.rowReorder.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.scroller.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/custom.js"></script>
     <!-- Plugins JS Ends-->
     <!-- Theme js-->
     <script src="assets/js/script.js"></script>
@@ -744,7 +668,67 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
             //{"data": "fecha_alta"},
             {"defaultContent" : "<div class='text-center'><div class='btn-group'><button class='btn btn-success btnEditar'><i class='fa fa-edit'></i></button><button class='btn btn-warning btnVer'><i class='fa fa-eye'></i></button><button class='btn btn-primary btnAddMantenimiento' title='Añadir tarea de mantenimiento'><i class='fa fa-wrench'></i></button><button class='btn btn-danger btnBorrar'><i class='fa fa-trash-o'></i></button></div></div>"},
           ],
-          "language":  idiomaEsp
+          "language":  idiomaEsp,
+          dom: '<"mr-2 d-inline"l>Bfrtip',
+          buttons: [
+            {
+              extend:    'excelHtml5',
+              text:      '<i class="fa fa-file-excel-o"></i>',
+              titleAttr: 'Excel',
+              title:     "Vehiculos",
+              className: 'btn-success',
+              exportOptions: {
+                columns: ':not(:last-child)',
+                format: {
+                  body: function ( data, row, column, node ) {
+                    // Eliminamos $ y reemplazamos , por . para que excel tome correctamente los decimales
+                    //return column === 7 ? data.replace( /[$.]/g, '' ).replace( /[,]/g, '.' ) : data;
+                    // Cambiamos el punto por una coma para que excel lo tomo como un separador de miles
+                    return column === 7 ? data.replace( /[.]/g, ',' ) : data;
+                  }
+                }
+              }
+            },
+            {
+              extend:    'pdfHtml5',
+              text:      '<i class="fa fa-file-pdf-o"></i>',
+              title:     "Vehiculos",
+              titleAttr: 'PDF',
+              download: 'open',
+              className: 'btn-danger',
+              exportOptions: {
+                columns: ':not(:last-child)',
+              }
+            }
+          ],
+          initComplete: function(){
+            var b=1;
+            var c=0;
+            this.api().columns.adjust().draw();//Columns sin parentesis
+            this.api().columns().every(function(){//Columns() con parentesis
+              if(b!=1 && b!=10){
+                var column=this;
+                var name=$(column.footer()).text();
+                var select=$("<select id='filtro"+name+"' class='form-control form-control-sm filtrosTrato'><option value=''>Todos</option></select>")
+                  .appendTo($(column.footer()).empty())
+                  .on("change",function(){
+                    var val=$.fn.dataTable.util.escapeRegex(
+                      $(this).val()
+                    );
+                    column.search(val ? '^'+val+'$':'',true,false).draw();
+                  });
+                column.data().unique().sort().each(function(d,j){
+                  var val=$("<div/>").html(d).text();
+                  if(column.search()==='^'+val+'$'){
+                    select.append("<option value='"+val+"' selected='selected'>"+val+"</option>");
+                  }else{
+                    select.append("<option value='"+val+"'>"+val+"</option>");
+                  }
+                })
+              }
+              b++;
+            })
+          }
         });
 
         //var calendarEl = document.getElementById('cal-agenda-view');

@@ -79,7 +79,7 @@
           }
       }
 
-			$queryGetStock = "SELECT st.id_item, item, razon_social as proveedor, prov.id AS id_proveedor, almacen, st.cantidad_disponible, st.cantidad_reservada, st.precio_unitario, it.punto_reposicion, it.hash, st.fecha_hora_ultima_actualizacion as fecha, um.unidad_medida, cat.categoria, tp.tipo
+			$queryGetStock = "SELECT st.id_item, item, razon_social as proveedor, prov.id AS id_proveedor, almacen, st.cantidad_disponible, st.cantidad_reservada, st.precio_unitario, it.punto_reposicion, it.hash, st.fecha_hora_ultima_actualizacion as fecha, um.unidad_medida, cat.categoria, tp.tipo, it.imagen
 			FROM stock st JOIN item as it ON(st.id_item = it.id)
 				JOIN proveedores prov ON(st.id_proveedor = prov.id)
 				JOIN almacenes alm ON(st.id_almacen = alm.id)
@@ -104,7 +104,8 @@
           'precio_unitario' =>"$".number_format($rowStock['precio_unitario'],2,',','.'),
           'punto_reposicion'=>$rowStock['punto_reposicion'],
           'hash'=>$rowStock['hash'],
-          'fecha'=>date("d/m/Y H:m:s", strtotime($rowStock['fecha']))
+          'fecha'=>date("d/m/Y H:m:s", strtotime($rowStock['fecha'])),
+          'imagen'=>$rowStock["imagen"]
         );
 			}
 

@@ -280,7 +280,8 @@
       $tareasMantenimientoVehiculos=$this->traerTareasMantenimientoVehiculos($filtros);
       $tareasMantenimientoVehiculos=json_decode($tareasMantenimientoVehiculos,true);
 
-			/*TRAIGO DATOS DE TAREAS DE MANTENIMINETO*/
+      /*
+			//TRAIGO DATOS DE TAREAS DE MANTENIMINETO
 			$queryGetVehiculoUpdate = "SELECT u.email AS usuario,fecha_hora,detalle,costo_estimado,IF(realizado=1,'Si','No') AS realizado, comentarios FROM mantenimientos_vehiculares mv INNER JOIN usuarios u ON mv.id_usuario=u.id
       WHERE id_vehiculo = $this->id_vehiculo ORDER BY fecha_hora DESC";
       //var_dump($queryGetVehiculoUpdate);
@@ -289,7 +290,7 @@
 			//$arrayDetalleVehiculos= array();
 			$arrayMantenimientoVehiculo = array();
 
-			/*CARGO ARRAY CON DATOS DE LAs TAREAS DE MANTENIMINETO*/
+			//CARGO ARRAY CON DATOS DE LAs TAREAS DE MANTENIMINETO
 			while ($rowVehiculo = $getVehiculoUpdate->fetch_assoc()) {
 				$usuario = $rowVehiculo['usuario'];
 				//$fecha_alta = $rowVehiculo['fecha_alta'];
@@ -300,7 +301,7 @@
 				$comentarios = $rowVehiculo['comentarios'];
 				
 				$arrayMantenimientoVehiculo[] = array('usuario'=>$usuario, 'fecha_hora'=>$fecha_hora, 'detalle'=>$detalle, 'costo_estimado'=>$costo_estimado, 'realizado'=>$realizado, 'comentarios'=>$comentarios);
-			}
+			}*/
 
       //var_dump($arrayDatosVehiculos);
 			$arrayDetalleVehiculos=[
@@ -640,27 +641,7 @@
 
 			switch ($_GET['accion']) {
 				case 'traerVehiculos':
-					$vehiculos=$vehiculo->traerVehiculos();
-          /*$vehiculos=json_decode($vehiculos,true);
-
-          $listarVehiculos=[];
-          foreach ($vehiculos as $vehiculo) {
-            $listarVehiculos[]=[
-              "id_vehiculo"   =>$vehiculo["id_vehiculo"],
-              "patente"       =>$vehiculo["patente"],
-              "marca"         =>$vehiculo["marca"],
-              "modelo"        =>$vehiculo["modelo"],
-              "anio"          =>$vehiculo["anio"],
-              "tecnico"       =>$vehiculo["tecnico"],
-              "km_adquirido"  =>$vehiculo["km_adquirido_mostrar"],
-              "km_actuales"   =>$vehiculo["km_actuales_mostrar"],
-              "estado"        =>$vehiculo["estado"],
-              "fecha_alta"    =>$vehiculo["fecha_alta"],
-            ];
-          }
-
-          echo json_encode($listarVehiculos);*/
-          echo $vehiculos;
+					echo $vehiculo->traerVehiculos();
 				break;
         case 'traerTareasMantenimientoVehiculos':
           $tareasMantenimientoVehiculos=$vehiculo->traerTareasMantenimientoVehiculos();

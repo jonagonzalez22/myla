@@ -557,68 +557,69 @@
     });
 
     $('#formEmpresas').submit(function(e){                         
-    e.preventDefault(); //evita el comportambiento normal del submit, es decir, recarga total de la página   
-     
-    
-    let datosEnviar = new FormData();
-    datosEnviar.append("nombre", $.trim($('#nombre').val()))
-    datosEnviar.append("cuit", $.trim($('#cuit').val()));
-    datosEnviar.append("domicilio", $.trim($('#domicilio').val()));
-    datosEnviar.append("localidad", $.trim($('#localidad').val()));
-    datosEnviar.append("provincia", $.trim($('#provincia').val()));
-    datosEnviar.append("pais", $.trim($('#pais').val()));
-    datosEnviar.append("telefono", $.trim($('#telefono').val()));
-    datosEnviar.append("email", $.trim($('#email').val()));
-    datosEnviar.append("id_empresa", $.trim($('#id_empresa').html()));
-    datosEnviar.append("accion", accion);
-    img = document.getElementById("imagen");
+        e.preventDefault(); //evita el comportambiento normal del submit, es decir, recarga total de la página   
+        
+        
+        let datosEnviar = new FormData();
+        datosEnviar.append("nombre", $.trim($('#nombre').val()))
+        datosEnviar.append("cuit", $.trim($('#cuit').val()));
+        datosEnviar.append("domicilio", $.trim($('#domicilio').val()));
+        datosEnviar.append("localidad", $.trim($('#localidad').val()));
+        datosEnviar.append("provincia", $.trim($('#provincia').val()));
+        datosEnviar.append("pais", $.trim($('#pais').val()));
+        datosEnviar.append("telefono", $.trim($('#telefono').val()));
+        datosEnviar.append("email", $.trim($('#email').val()));
+        datosEnviar.append("id_empresa", $.trim($('#id_empresa').html()));
+        datosEnviar.append("accion", accion);
+        img = document.getElementById("imagen");
 
-    if (img.files.length > 0) {
-      datosEnviar.append("file", img.files[0]);
-    }else{
-      datosEnviar.append("file", "");
-    }
+        if (img.files.length > 0) {
+          datosEnviar.append("file", img.files[0]);
+        }else{
+          datosEnviar.append("file", "");
+        }
 
-    if(typeof arrayFiles !== 'undefined'){
-      let cantArchivos = 0;
-      for(let i = 0; i < arrayFiles.length; i++) {
-                  datosEnviar.append('file'+i, arrayFiles[i]);
-                  cantArchivos++;
-              };
-          datosEnviar.append('cantAdjuntos', cantArchivos);
-    }else{
-      let arrayFiles = "";
-    }
-        $.ajax({
-          data: datosEnviar,
-          url: "models/administrar_empresas.php",
-          method: "post",
-          cache: false,
-          contentType: false,
-          processData: false,     
-          success: function(data) {
-            tablaEmpresas.ajax.reload(null, false);
-           }
-        });             
-    $('#modalCRUD').modal('hide'); 
-    swal({
-                  icon: 'success',
-                  title: 'Accion realizada correctamente'
-                });                               
-});
+        if(typeof arrayFiles !== 'undefined'){
+          let cantArchivos = 0;
+          for(let i = 0; i < arrayFiles.length; i++) {
+                      datosEnviar.append('file'+i, arrayFiles[i]);
+                      cantArchivos++;
+                  };
+              datosEnviar.append('cantAdjuntos', cantArchivos);
+        }else{
+          let arrayFiles = "";
+        }
+            $.ajax({
+              data: datosEnviar,
+              url: "models/administrar_empresas.php",
+              method: "post",
+              cache: false,
+              contentType: false,
+              processData: false,     
+              success: function(data) {
+                tablaEmpresas.ajax.reload(null, false);
+              }
+            });             
+        $('#modalCRUD').modal('hide'); 
+        swal({
+                      icon: 'success',
+                      title: 'Accion realizada correctamente'
+                    });                               
+    });
 
 
     $("#btnNuevo").click(function(){
       accion = "addEmpresa"
-    $("#formEmpresas").trigger("reset");
-    $(".modal-header").css( "background-color", "#17a2b8");
-    $(".modal-header").css( "color", "white" );
-    $(".modal-title").text("Nueva empresa");
-    $('#modalCRUD').modal('show');  
-    $('#imgUpdate').attr("src", "");
-    $('#imgUpdate').addClass("d-none");
-    $('.btnBorrarFoto').addClass("d-none");    
-});
+      $("#formEmpresas").trigger("reset");
+      $(".modal-header").css( "background-color", "#17a2b8");
+      $(".modal-header").css( "color", "white" );
+      $(".modal-title").text("Nueva empresa");
+      $('#modalCRUD').modal('show');
+      $('#adjuntos').html("");
+      $('#imgUpdate').attr("src", "");
+      $('#imgUpdate').addClass("d-none");
+      $('.btnBorrarFoto').addClass("d-none");    
+    });
 
 //Borrar
 $(document).on("click", ".btnBorrar", function(){

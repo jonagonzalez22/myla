@@ -51,6 +51,13 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
         margin: 0;
         }
       input[type=number] { -moz-appearance:textfield; }
+      .modal-dialog{
+        overflow-y: initial !important
+      }
+      .modal-body{
+        max-height: 75vh;
+        overflow-y: auto;
+      }
     </style>
   </head>
   <body>
@@ -102,8 +109,10 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
                         <thead class="text-center">
                           <tr>
                             <th class="text-center">#ID</th>
-                            <th>Descripcion</th>
+                            <th>Imagen</th>
+                            <th>Cliente</th>
                             <th>Direccion</th>
+                            <th>Descripcion</th>
                             <th>Ubicacion</th>
                             <th>Tecnico Ult. revision</th>
                             <th>Fecha y Hora Ult. revision</th>
@@ -111,6 +120,20 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
                             <th>Acciones</th>
                           </tr>
                         </thead>
+                        <tfoot class="text-center">
+                          <tr>
+                            <th class="text-center">#ID</th>
+                            <th>Imagen</th>
+                            <th>Cliente</th>
+                            <th>Direccion</th>
+                            <th>Descripcion</th>
+                            <th>Ubicacion</th>
+                            <th>Tecnico Ult. revision</th>
+                            <th>Fecha y Hora Ult. revision</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                          </tr>
+                        </tfoot>
                         <tbody>
                         </tbody>
                       </table>
@@ -184,6 +207,60 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
                   </div>
                 </div>
               </div>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="" class="col-form-label">*Rubro:</label>
+                    <select class="form-control" id="id_rubro" required>
+                      <option value="">Seleccione</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="" class="col-form-label">*Subrubro:</label>
+                    <select class="form-control" id="id_subrubro" required>
+                      <option value="">Sin resultados</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group" id="select_imagen">
+                    <label for="" class="col-form-label">*Imagen:</label>
+                    <input type="file" class="form-control" id="imagen" accept="image/*">
+                  </div>
+                  <div class="form-group d-none" id="show_imagen">
+                    <label for="" class="col-form-label">*Imagen:</label>
+                    <div class="row border p-2 ml-2 mr-2">
+                      <div class="col-lg-12 mb-2">
+                        <div class="text-center">
+                          <img src="" class="img-thumbnail w-50" id="imagen_img"></br>
+                          <span id="nombre_imagen"></span>
+                        </div>
+                      </div> 
+                      <div class="col-lg-12 text-center mt-1">
+                        <a class='btn btn-outline-danger text-danger' id="btnBorrarFoto"><i class='fa fa-trash-o'></i></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="" class="col-form-label">*Codigo:</label>
+                    <input type="text" class="form-control" id="codigo" required>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label for="" class="col-form-label">*Datos adicionales:</label>
+                    <textarea class="form-control" id="datos_adicionales"></textarea>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-light" data-dismiss="modal">Cancelar</button>
@@ -207,11 +284,31 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
     <script src="assets/js/sidebar-menu.js"></script>
     <script src="assets/js/config.js"></script>
     <!-- Plugins JS start-->
-    <script src="assets/js/datatable/datatables/jquery.dataTables.min.js"></script>
+    <!-- <script src="assets/js/datatable/datatables/jquery.dataTables.min.js"></script> -->
     <script src="assets/js/chart/chartjs/chart.min.js"></script>
     <script src="assets/js/sweet-alert/sweetalert.min.js"></script>
     <script src="assets/js/chat-menu.js"></script>
     <script src="assets/js/tooltip-init.js"></script>
+
+    <script src="assets/js/datatable/datatables/jquery.dataTables.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.buttons.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/jszip.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/buttons.colVis.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/pdfmake.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/vfs_fonts.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.autoFill.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.select.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/buttons.bootstrap4.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/buttons.html5.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/buttons.print.min.js"></script>
+    <!-- <script src="assets/js/datatable/datatable-extension/dataTables.bootstrap4.min.js"></script> -->
+    <script src="assets/js/datatable/datatable-extension/dataTables.responsive.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.keyTable.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.colReorder.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.fixedHeader.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.rowReorder.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/dataTables.scroller.min.js"></script>
+    <script src="assets/js/datatable/datatable-extension/custom.js"></script>
     <!-- Plugins JS Ends-->
     <!-- Theme js-->
     <script src="assets/js/script.js"></script>
@@ -324,8 +421,21 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
             },
           "columns":[
             {"data": "id_elemento"},
-            {"data": "descripcion"},
+            {
+              render: function(data, type, full, meta) {
+                return ()=>{
+                  let $img = "";
+                  if (full.imagen !=""){
+                    return `<img src="./views/elementos/${full.imagen}" class="img-thumbnail">`;
+                  }else{
+                    return ""
+                  }
+                };
+              }
+            },
+            {"data": "cliente"},
             {"data": "direccion"},
+            {"data": "descripcion"},
             {"data": "ubicacion"},
             {"data": "tecnico_ultima_revision"},
             {"data": "fecha_hora_ultima_revision"},
@@ -333,7 +443,67 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
             {"defaultContent" : "<div class='text-center'><div class='btn-group'><button class='btn btn-success btnEditar'><i class='fa fa-edit'></i></button><button class='btn btn-danger btnBorrar'><i class='fa fa-trash-o'></i></button></div></div>"},
             //<button class='btn btn-warning btnVer'><i class='fa fa-eye'></i></button><button class='btn btn-primary btnAddMantenimiento' title='Añadir tarea de mantenimiento'><i class='fa fa-wrench'></i></button>
           ],
-          "language":  idiomaEsp
+          "language":  idiomaEsp,
+          dom: '<"mr-2 d-inline"l>Bfrtip',
+          buttons: [
+            {
+              extend:    'excelHtml5',
+              text:      '<i class="fa fa-file-excel-o"></i>',
+              titleAttr: 'Excel',
+              title:     "Elementos",
+              className: 'btn-success',
+              exportOptions: {
+                columns: [ 0, 2, 2, 4, 5, 6, 7, 8 ],
+                //columns: ':not(:last-child)',
+                /*format: {
+                  body: function ( data, row, column, node ) {
+                    // Strip $ from salary column to make it numeric
+                    return column === 7 ? data.replace( /[$.]/g, '' ).replace( /[,]/g, '.' ) : data;
+                  }
+                }*/
+              }
+            },
+            {
+              extend:    'pdfHtml5',
+              text:      '<i class="fa fa-file-pdf-o"></i>',
+              title:     "Elementos",
+              titleAttr: 'PDF',
+              download: 'open',
+              className: 'btn-danger',
+              exportOptions: {
+                columns: [ 0, 2, 2, 4, 5, 6, 7, 8 ],
+                //columns: ':not(:last-child)',
+              }
+            }
+          ],
+          initComplete: function(){
+            var b=1;
+            var c=0;
+            this.api().columns.adjust().draw();//Columns sin parentesis
+            this.api().columns().every(function(){//Columns() con parentesis
+              if(b!=1 && b!=2 && b!=10){
+                var column=this;
+                var name=$(column.footer()).text();
+                var select=$("<select id='filtro"+name+"' class='form-control form-control-sm filtrosTrato'><option value=''>Todos</option></select>")
+                  .appendTo($(column.footer()).empty())
+                  .on("change",function(){
+                    var val=$.fn.dataTable.util.escapeRegex(
+                      $(this).val()
+                    );
+                    column.search(val ? '^'+val+'$':'',true,false).draw();
+                  });
+                column.data().unique().sort().each(function(d,j){
+                  var val=$("<div/>").html(d).text();
+                  if(column.search()==='^'+val+'$'){
+                    select.append("<option value='"+val+"' selected='selected'>"+val+"</option>");
+                  }else{
+                    select.append("<option value='"+val+"'>"+val+"</option>");
+                  }
+                })
+              }
+              b++;
+            })
+          }
         });
 
       });
@@ -358,6 +528,17 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
             console.log(respuestaJson);
 
             /*Identifico el select de clientes*/
+            $selectClientes= document.getElementById("id_rubro");
+            //Genero los options del select de clientes
+            respuestaJson.rubros.forEach((rubro)=>{
+                $option = document.createElement("option");
+                let optionText = document.createTextNode(rubro.rubro);
+                $option.appendChild(optionText);
+                $option.setAttribute("value", rubro.id_rubro);
+                $selectClientes.appendChild($option);
+            });
+
+            /*Identifico el select de clientes*/
             $selectClientes= document.getElementById("cliente");
             //Genero los options del select de clientes
             respuestaJson.clientes.forEach((cliente)=>{
@@ -367,6 +548,63 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
                 $option.setAttribute("value", cliente.id_cliente);
                 $selectClientes.appendChild($option);
             });
+          }
+        });
+      }
+
+      $(document).on("change", "#id_rubro", function(){
+        getSubrubros();
+      });
+
+      function getSubrubros(id_rubro,id_subrubro){
+        let datosIniciales = new FormData();
+        if(id_rubro==undefined){
+          id_rubro=document.getElementById("id_rubro").value;
+        }
+        console.log(id_rubro);
+        datosIniciales.append('id_rubro', id_rubro);
+        datosIniciales.append('accion', 'traerSubrubros');
+        $.ajax({
+          data: datosIniciales,
+          url: "./models/administrar_subrubros.php",
+          method: "post",
+          cache: false,
+          contentType: false,
+          processData: false,
+          success: function(respuesta){
+            console.log(respuesta);
+            /*Convierto en json la respuesta del servidor*/
+            respuestaJson = JSON.parse(respuesta);
+            console.log(respuestaJson);
+
+            /*Identifico el select de direcciones*/
+            $selectSubrubros= document.getElementById("id_subrubro");
+            $selectSubrubros.innerHTML = "";
+            /*Genero los options del select de direcciones*/
+            $option = document.createElement("option");
+            let texto="Sin resultados";
+            /*if(respuestaJson.length==0){
+              texto="El cliente no posee direcciones";
+            }*/
+            if(respuestaJson.length>0){
+              texto="Seleccione un subrubro";
+            }
+            let optionText = document.createTextNode(texto);
+            $option.appendChild(optionText);
+            //$option.setAttribute("value", "");
+            $selectSubrubros.appendChild($option);
+            
+            respuestaJson.forEach((subrubro)=>{
+                $option = document.createElement("option");
+                let optionText = document.createTextNode(subrubro.subrubro);
+                $option.appendChild(optionText);
+                $option.setAttribute("value", subrubro.id_subrubro);
+                if(id_subrubro==subrubro.id_subrubro){
+                  $option.setAttribute("selected", true);
+                }
+                $selectSubrubros.appendChild($option);
+            });
+
           }
         });
       }
@@ -436,11 +674,19 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
         datosEnviar.append("id_direccion_cliente", $.trim($('#id_direccion_cliente').val()));
         datosEnviar.append("descripcion", $.trim($('#descripcion').val()));
         datosEnviar.append("ubicacion", $.trim($('#ubicacion').val()));
+        datosEnviar.append("id_subrubro", $.trim($('#id_subrubro').val()));
+        datosEnviar.append("codigo", $.trim($('#codigo').val()));
+        datosEnviar.append("datos_adicionales", $.trim($('#datos_adicionales').val()));
         
         datosEnviar.append("id_elemento", $.trim($('#id_elemento').html()));
         datosEnviar.append("accion", accion);
-        console.log(accion);
-        console.log($('#id_direccion_cliente').val());
+
+        img = document.getElementById("imagen");
+        if (img.files.length > 0) {
+          datosEnviar.append("file", img.files[0]);
+        }else{
+          datosEnviar.append("file", "");
+        }
 
         $.ajax({
           data: datosEnviar,
@@ -532,16 +778,20 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
           $(".modal-header").css( "color", "white" );
           $(".modal-title").text("Nuevo elemento");
           $('#modalCRUD').modal('show');
+          $("#select_imagen").removeClass("d-none");
+          $("#show_imagen").addClass("d-none");
       });
 
       $(document).on("click", ".btnEditar", function(){
-        $(".modal-header").css( "background-color", "#22af47");
-        $(".modal-header").css( "color", "white" );
-        $(".modal-title").text("Editar Elemento");
-        $("#formElementos").trigger("reset");
-        $('#modalCRUD').modal('show');
         fila = $(this).closest("tr");
         let id_elemento = fila.find('td:eq(0)').text();
+        $('#id_elemento').html(id_elemento);
+
+        $(".modal-header").css( "background-color", "#22af47");
+        $(".modal-header").css( "color", "white" );
+        $(".modal-title").text("Editar Elemento ID "+id_elemento);
+        $("#formElementos").trigger("reset");
+        $('#modalCRUD').modal('show');
 
         let datosUpdate = new FormData();
         //datosUpdate.append('accion', 'traerElementoUpdate');
@@ -566,8 +816,24 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
             $("#id_direccion_cliente").val(datos.id_direccion_cliente);
             $("#descripcion").val(datos.descripcion);
             $("#ubicacion").val(datos.ubicacion);
-            
-            $('#id_elemento').html(id_elemento);
+
+            $('#id_rubro').val(datos.subrubro.rubro.id_rubro);
+
+            getSubrubros(datos.subrubro.rubro.id_rubro,datos.subrubro.id_subrubro);
+            //$('#id_subrubro').val(datos.id_subrubro);
+            $('#codigo').val(datos.codigo);
+            $('#datos_adicionales').val(datos.datos_adicionales);
+
+            if(datos.imagen==""){
+              $("#select_imagen").removeClass("d-none");
+              $("#show_imagen").addClass("d-none");
+            }else{
+              $("#select_imagen").addClass("d-none");
+              $("#show_imagen").removeClass("d-none");
+              $("#imagen_img").attr("src","./views/elementos/"+datos.imagen)
+              $("#nombre_imagen").html(datos.imagen);
+
+            }
             
             accion = "updateElemento";
           }
@@ -575,6 +841,38 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
 
         $('#modalCRUD').modal('show');
       });
+
+      $(document).on("click", "#btnBorrarFoto", function(){
+        //let id_item = parseInt($('#id_item').text());
+
+        let id_elemento=$('#id_elemento').html();
+
+        swal({
+          title: "Estas seguro?",
+          text: "Una vez eliminado esta imagen, no volveras a verla",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        })
+        .then((willDelete) => {
+          if (willDelete) {
+            /*$padre = this.parentElement.parentElement
+            $padre.classList.add("d-none");*/
+            $.ajax({
+              url: "models/administrar_elementos.php",
+              type: "POST",
+              datatype:"json",
+              data:  {accion:"eliminarImagen", id_elemento:id_elemento},
+              success: function() {
+                $("#select_imagen").removeClass("d-none");
+                $("#show_imagen").addClass("d-none");
+              }
+            });
+          } else {
+            swal("La imagen no se eliminó!");
+          }
+        });
+      })
 
       $(document).on("click", ".btnBorrar", function(){
         fila = $(this);           

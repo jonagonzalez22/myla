@@ -68,6 +68,7 @@
                     <ul class="sidebar-submenu">
                       <li><a href="unidades.php"><i class="fa fa-circle"></i> Unidades</a></li>
                       <li><a href="rubros.php"><i class="fa fa-circle"></i> Rubros</a></li>
+                      <li><a href="subrubros.php"><i class="fa fa-circle"></i> Subrubros</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Puestos</a></li>
                       <li><a href="categorias_items.php"><i class="fa fa-circle"></i> Categorias</a></li>
                       <li><a href="tipos_items.php"><i class="fa fa-circle"></i> Tipos de productos</a></li>
