@@ -197,9 +197,6 @@
       //var_dump($queryItems);
       $getItems = $this->conexion->consultaRetorno($queryItems);
       while ($row = $getItems->fetch_array()) {
-        $cargado_vehiculo=0;
-        $cantidad_utilizada=0;
-        $aprobado_cliente=0;
 
         $cantidad_reservada=$row["cantidad_estimada_total"];
 
@@ -214,16 +211,24 @@
           echo "<br><br>".$queryReservarStock;
         }
 
-        //INSERTO DATOS EN LA TABLA ADJUNTOS ORDEN_COMPRA
-        $queryInsertMateriales = "INSERT INTO materiales_orden_trabajo (id_orden_trabajo, id_item, id_proveedor, id_almacen, cantidad_reservada, cargado_vehiculo, cantidad_utilizada, aprobado_cliente) VALUES ($id_orden_trabajo, ".$row["id_item"].", ".$row["id_proveedor"].", ".$row["id_almacen"].", ".$cantidad_reservada.", $cargado_vehiculo, $cantidad_utilizada, $aprobado_cliente)";
-        //var_dump($queryItems);
-        $insertAdjuntos = $this->conexion->consultaSimple($queryInsertMateriales);
-        $mensajeError=$this->conexion->conectar->error;
-    
-        echo $mensajeError;
-        if($mensajeError!=""){
-          echo "<br><br>".$queryInsertMateriales;
-        }
+        $this->agregarMaterialesOrdenTrabajo($id_orden_trabajo, $row["id_item"], $row["id_proveedor"], $row["id_almacen"],$cantidad_reservada);
+      }
+    }
+
+    public function agregarMaterialesOrdenTrabajo($id_orden_trabajo, $id_item, $id_proveedor, $id_almacen, $cantidad_reservada){
+      $cargado_vehiculo=0;
+      $cantidad_utilizada=0;
+      $aprobado_cliente=0;
+
+      //INSERTO DATOS EN LA TABLA MATERIALES ORDEN_COMPRA
+      $queryInsertMateriales = "INSERT INTO materiales_orden_trabajo (id_orden_trabajo, id_item, id_proveedor, id_almacen, cantidad_reservada, cargado_vehiculo, cantidad_utilizada, aprobado_cliente) VALUES ($id_orden_trabajo, $id_item, $id_proveedor, $id_almacen, ".$cantidad_reservada.", $cargado_vehiculo, $cantidad_utilizada, $aprobado_cliente)";
+      //var_dump($queryItems);
+      $insertAdjuntos = $this->conexion->consultaSimple($queryInsertMateriales);
+      $mensajeError=$this->conexion->conectar->error;
+  
+      echo $mensajeError;
+      if($mensajeError!=""){
+        echo "<br><br>".$queryInsertMateriales;
       }
     }
 

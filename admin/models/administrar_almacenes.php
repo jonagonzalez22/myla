@@ -92,26 +92,24 @@
 		}
 		public function traerAlmacenes(){
 
-			$sqlTraerAlmacenes = "SELECT al.id as id_almacen, almacen, direccion, 						id_provincia,provincia, case
-											when activo = 1 then 'Activo'
-											else 'Inactivo'
-											end activa, fecha_alta
-								FROM almacenes al join provincias pvcias
-								ON(al.id_provincia = pvcias.id)";
+			$sqlTraerAlmacenes = "SELECT al.id as id_almacen, almacen, direccion, id_provincia, provincia, IF(activo=1,'Activo','Inactivo') as activa, fecha_alta
+      FROM almacenes al join provincias p ON(al.id_provincia = p.id)";
 			$traerAlmacenes = $this->conexion->consultaRetorno($sqlTraerAlmacenes);
 
 			$almacenes = array(); //creamos un array
 
 			while ($row = $traerAlmacenes->fetch_array()) {
-            $id_almacen = $row['id_almacen'];
-            $almacen = $row['almacen'];
-            $direccion = $row['direccion'];
-            $id_provincia = $row['id_provincia'];
-            $provincia = $row['provincia'];
-            $activa = $row['activa'];
-            $fechaAlataDate = new DateTime($row['fecha_alta']);
-            $fecha_alta = date_format($fechaAlataDate, "d/m/Y");
-            $almacenes[] = array('id_almacen'=> $id_almacen, 'almacen'=>$almacen, 'direccion'=> $direccion, 'id_provincia'=> $id_provincia, 'provincia'=> $provincia, 'activa'=>$activa, 'fecha_alta'=> $fecha_alta);
+            /*$fechaAlataDate = new DateTime($row['fecha_alta']);
+            $fecha_alta = date_format($fechaAlataDate, "d/m/Y");*/
+            $almacenes[] = array(
+              'id_almacen'=> $row['id_almacen'],
+              'almacen'=>$row['almacen'],
+              'direccion'=> $row['direccion'],
+              'id_provincia'=> $row['id_provincia'],
+              'provincia'=> $row['provincia'],
+              'activa'=>$row['activa'],
+              'fecha_alta'=> date("d/m/Y",strtotime($row['fecha_alta']))
+            );
         }
 
         return json_encode($almacenes);
@@ -168,7 +166,7 @@
 		$almacenes = new Almacenes();
 		switch ($_POST['accion']) {
 			case 'traerAlmacenes':
-				$almacenes->traerTodosClientes();
+        echo $almacenes->traerAlmacenes();
 				break;
 			case 'traerAlmacenUpdate':
 					$id_almacen = $_POST['id_almacen'];

@@ -1,7 +1,7 @@
 <?php 
     session_start();
     if (!isset($_SESSION['rowUsers']['id_usuario'])) {
-      header("location:./redireccionar.php");
+      header("location:./redireccionar_app.php");
   }
 ?>
 <!doctype html>
@@ -104,7 +104,7 @@
 
     <!-- App Bottom Menu -->
     <div class="appBottomMenu">
-        <a href="home.php" class="item">
+        <a href="models/redireccionar_app.php" class="item">
             <div class="col">
                 <ion-icon name="home-outline"></ion-icon>
             </div>
