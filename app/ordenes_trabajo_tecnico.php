@@ -1,7 +1,7 @@
 <?php 
 session_start();
 if (!isset($_SESSION['rowUsers']['id_usuario'])) {
-  header("location:./models/redireccionar.php");
+  header("location:./models/redireccionar_app.php");
 }
 ?>
 <!doctype html>
@@ -79,18 +79,18 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
 
     <div class="section mt-2">
     
-      <table class="table table-hover d-none" id="tablaDetalleOT">
-      <thead class="text-center">
-        <tr>
-          <th>Elemento</th>
-          <th>Desde</th>
-          <th>Hasta</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody class="tbodyDOC text-center">
-      </tbody>
-    </table>
+      <!-- <table class="table table-hover d-none" id="tablaDetalleOT">
+        <thead class="text-center">
+          <tr>
+            <th>Elemento</th>
+            <th>Desde</th>
+            <th>Hasta</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="tbodyDOC text-center">
+        </tbody>
+      </table> -->
       
       <!-- <div class="card text-center">
         <div class="card-header bg-success text-white">
@@ -123,7 +123,7 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
 
   <!-- App Bottom Menu -->
   <div class="appBottomMenu">
-    <a href="home_proveedores.php" class="item">
+    <a href="home_tecnicos.php" class="item">
       <div class="col">
         <ion-icon name="home-outline"></ion-icon>
       </div>
@@ -227,6 +227,9 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
           <a href="javascript:;" data-dismiss="modal">Cerrar</a>
         </div>
         <div class="modal-body">
+          <button class="btn btn-icon btn-primary mr-1 mb-1" id="btnAgregarMateriales">
+            <ion-icon name="add-outline"></ion-icon>
+          </button>
           <div id="almacenMateriales">Almacen: <span id="nombreAlmacenMateriales"></span></div>
           <table class="table table-hover" id="tablaMaterialesOT">
             <thead class="text-center">
@@ -248,6 +251,86 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
     </div>
   </div>
   <!-- * Modal materiales orden de trabajo -->
+
+  <!-- Modal seleccionar tarea para agregar materiales orden de trabajo -->
+  <!-- <div class="modal fade modalbox" id="modal_select_tarea" data-backdrop="static" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title">Seleccione la tarea</h5>
+                  <a href="javascript:;" data-dismiss="modal">Cerrar</a>
+                  <span class="d-none" id="id_tarea_agregar_materiales"></span>
+              </div>
+              <div class="modal-body p-0">
+                  <ul class="listview image-listview flush mb-2" id="lista_tareas"> </ul>
+              </div>
+          </div>
+      </div>
+  </div> -->
+  <!-- * Modal seleccionar tarea para agregar materiales orden de trabajo -->
+  
+  <!-- Modal seleccionar almacen para agregar materiales orden de trabajo -->
+  <div class="modal fade modalbox" id="modal_select_almacen" data-backdrop="static" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title">Seleccione un almacen</h5>
+                  <a href="javascript:;" data-dismiss="modal">Cerrar</a>
+                  <span class="d-none" id="id_almacen_agregar_materiales"></span>
+              </div>
+              <div class="modal-body p-0">
+                  <ul class="listview image-listview flush mb-2" id="lista_almacenes">
+                      <!-- <li>
+                          <div class="item">
+                              <img src="assets/img/sample/avatar/avatar1.jpg" alt="image" class="image">
+                              <div class="in">
+                                  <div>Frank Boehm</div>
+                              </div>
+                          </div>
+                      </li>
+                      <li>
+                          <div class="item">
+                              <img src="assets/img/sample/avatar/avatar2.jpg" alt="image" class="image">
+                              <div class="in">
+                                  <div>Sophie Asveld</div>
+                              </div>
+                          </div>
+                      </li> -->
+                  </ul>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- * Modal seleccionar almacen para agregar materiales orden de trabajo -->
+
+  <!-- Modal seleccionar materiales para agregar a la orden de trabajo -->
+  <div class="modal fade modalbox" id="modal_select_materiales" data-backdrop="static" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title">Materiales</h5>
+                  <a href="javascript:;" data-dismiss="modal">Cerrar</a>
+              </div>
+              <div class="modal-body p-0">
+                <table class="table table-hover" id="tablaAgregarMaterialesOT">
+                  <thead class="text-center">
+                    <tr>
+                      <th>Material</th>
+                      <th>Proveedor</th>
+                      <th>Cantidad</th>
+                    </tr>
+                  </thead>
+                  <tbody class="tbodyDOC text-center">
+                  </tbody>
+                </table>
+              </div>
+              <div class="text-center pb-2">
+                <button class="btn btn-primary" id="agregarMateriales">Agregar</button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- * Modal seleccionar materiales para agregar a la orden de trabajo -->
 
   <!-- Modal adjuntar archivos a orden de trabajo -->
   <div class="modal fade modalbox" id="subirArchivos" data-backdrop="static" tabindex="-1" role="dialog">
@@ -343,7 +426,7 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
 
           completarDOM(respuestaJson.ordenes_trabajo_tecnico);
 
-          let $fragmentCOD = document.createDocumentFragment();
+          /*let $fragmentCOD = document.createDocumentFragment();
           let $tablaDetalleOT = document.querySelector("#tablaDetalleOT tbody");
           //console.log($tablaDetalleOT);
           $tablaDetalleOT.innerHTML="";
@@ -360,7 +443,7 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
             $fragmentCOD.appendChild($tr);
           });
 
-          $tablaDetalleOT.appendChild($fragmentCOD);
+          $tablaDetalleOT.appendChild($fragmentCOD);*/
         }
       })
     }
@@ -631,7 +714,7 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
         success: function(response){
           console.log(response);
           traerDatosIniciales();
-          respuestaJson = JSON.parse(response);
+          //respuestaJson = JSON.parse(response);
         }
       });
     }
@@ -744,6 +827,7 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
 
       document.getElementById("almacenMateriales").classList.add("d-block");
       document.getElementById("actualizarOrden").classList.add("d-none");
+      document.getElementById("btnAgregarMateriales").classList.add("d-none");
 
       let accion = "traerDetalleOrdenTrabajo";
       let id_orden_update = id_orden_trabajo;
@@ -797,12 +881,14 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
       });
     }
 
-    function finalizarOrden(id_orden_trabajo){
-      $("#materiales_orden_de_trabajo").modal("show");
+    function finalizarOrden(id_orden_trabajo,materiales_agregar){
+      let materiales_orden_de_trabajo=$("#materiales_orden_de_trabajo");
+      materiales_orden_de_trabajo.modal("show");
       $("#id_orden_trabajo_materiales").html(id_orden_trabajo);
 
       document.getElementById("almacenMateriales").classList.add("d-none");
       document.getElementById("actualizarOrden").classList.remove("d-none");
+      document.getElementById("btnAgregarMateriales").classList.remove("d-none");
 
       let accion = "traerDetalleOrdenTrabajo";
       let id_orden_update = id_orden_trabajo;
@@ -823,7 +909,22 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
           let tieneMateriales=0;
           respuestaJson.materiales_orden_trabajo.forEach((material)=>{
             tieneMateriales=1;
-            console.log(material);
+
+            let cantidad="";
+            let readonly="";
+            if(materiales_agregar!=undefined){
+              materiales_agregar.forEach((material_agregado)=>{
+                
+                if(material_agregado.item==material.id_item && 
+                  material_agregado.proveedor==material.id_proveedor && 
+                  material_agregado.almacen==material.id_almacen
+                ){
+                  cantidad=material_agregado.cantidad;
+                  readonly="readonly";
+                }
+              });
+            }
+            //console.log(material);
             document.getElementById("nombreAlmacenMateriales").textContent=material.almacen;
             //agregar id_proveedor e id_almacen a los items
             let $tr = document.createElement("tr");
@@ -835,7 +936,9 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
                               <input type="number" class="form-control cantidadUtilizada"
                                 data-id-item="${material.id_item}"
                                 data-id-proveedor="${material.id_proveedor}"
-                                data-id-almacen="${material.id_almacen}">
+                                data-id-almacen="${material.id_almacen}"
+                                value="${cantidad}"
+                                ${readonly}>
                             </td>`;
             $fragmentCOD.appendChild($tr);
           });
@@ -848,6 +951,165 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
         }
       });
     }
+
+    //añadimos funcionlidad al boton para agregar nuevos items
+    /*$(document).on("click", "#btnAgregarMateriales", function(){
+      //$("#modal_select_tarea").modal("show");
+      $("#modal_select_tarea").modal("show");
+      //$("#id_orden_trabajo_agregar_materiales").html(id_orden_trabajo);
+      let id_orden_trabajo=$("#id_orden_trabajo_materiales").html();
+      let accion = "traerDetalleOrdenTrabajoApp";
+
+      $.ajax({
+        url: "./models/administrar_home_tecnicos_app.php",
+        type: "POST",
+        datatype: "json",
+        data: {accion: accion, id_orden_trabajo:id_orden_trabajo},
+        success: function(response){
+          respuestaJson = JSON.parse(response);
+          let tot=respuestaJson.tareas_orden_trabajo;
+          console.log(tot);
+          let tareas="";
+          tot.forEach((tarea)=>{
+            tareas+=`
+              <li>
+                <div class="item tarea_elegible" data-id-tarea="${tarea.id_mantenimiento_preventivo}">
+                  <div class="in d-block">
+                    <div><b>Asunto:</b> ${tarea.asunto}</div>
+                    <div><b>Elemento:</b> ${tarea.descripcion_activo}</div>
+                  </div>
+                  <ion-icon size="large" name="arrow-forward-circle-outline"></ion-icon>
+                </div>
+              </li>`;
+              //<img src="assets/img/sample/avatar/avatar1.jpg" alt="image" class="image">
+          });
+
+          document.getElementById("lista_tareas").innerHTML=tareas;
+        }
+      });
+    });*/
+
+    //añadimos funcionlidad al boton para agregar nuevos items
+    //$(document).on("click", ".tarea_elegible", function(){
+    $(document).on("click", "#btnAgregarMateriales", function(){
+      //$("#id_tarea_agregar_materiales").html(this.dataset.idTarea)
+      $("#modal_select_almacen").modal("show");
+      let accion = "traerAlmacenes";
+
+      $.ajax({
+        url: "../admin/models/administrar_almacenes.php",
+        type: "POST",
+        datatype: "json",
+        data: {accion: accion},
+        success: function(response){
+          //console.log(response)
+          respuestaJson = JSON.parse(response);
+          //console.log(respuestaJson);
+          let almacenes="";
+          respuestaJson.forEach((almacen)=>{
+            almacenes+=`
+              <li>
+                <div class="item almacen_elegible" data-id_almacen="${almacen.id_almacen}">
+                  <div class="in">
+                    <div>${almacen.almacen}</div>
+                  </div>
+                  <ion-icon size="large" name="arrow-forward-circle-outline"></ion-icon>
+                </div>
+              </li>`;
+              //<img src="assets/img/sample/avatar/avatar1.jpg" alt="image" class="image">
+          });
+
+          document.getElementById("lista_almacenes").innerHTML=almacenes;
+        }
+      });
+    });
+
+    $(document).on("click", ".almacen_elegible", function(){
+      $("#modal_select_materiales").modal("show");
+      let id_almacen = this.dataset.id_almacen;
+      $("#id_almacen_agregar_materiales").html(id_almacen);
+
+      $.ajax({
+        url: "../admin/models/administrar_stock.php?accion=traerItems&id_almacen="+id_almacen,
+        type: "GET",
+        datatype: "json",
+        success: function(response){
+          //console.log(response)
+          respuestaJson = JSON.parse(response);
+          //console.log(respuestaJson);
+          let materiales="";
+          respuestaJson.forEach((material)=>{
+            //console.log(material);
+            encontrado=0;
+            $(".cantidadUtilizada").each(function(){
+              if(this.dataset.idItem==material.id_item && this.dataset.idProveedor==material.id_proveedor && this.dataset.idAlmacen==material.id_almacen){
+                encontrado=1;
+              }
+            })
+            if(encontrado==0){
+              materiales+=`
+                <tr>
+                  <td>${material.item}</td>
+                  <td>${material.proveedor}</td>
+                  <td>
+                    <input type="number" class="form-control" name="cantidad_agregar" 
+                      data-id-item="${material.id_item}" 
+                      data-id-proveedor="${material.id_proveedor}" 
+                      data-id-almacen="${material.id_almacen}">
+                  </td>
+                </tr>`;
+            }
+          });
+
+          $("#tablaAgregarMaterialesOT tbody").html(materiales);
+        }
+      });
+
+    });
+
+    $(document).on("click", "#agregarMateriales", function(){
+      let id_orden_trabajo=$("#id_orden_trabajo_materiales").html();
+      //let id_tarea_agregar_materiales=$("#id_tarea_agregar_materiales").html();
+      let id_almacen_agregar_materiales=$("#id_almacen_agregar_materiales").html();
+      //$("#agregar_materiales_orden_de_trabajo").modal("show");
+
+      var materiales_agregar=[];
+      $("input[name='cantidad_agregar']").each(function(){
+        cantidad=this.value;
+        if(cantidad!="" || cantidad>0){
+
+          material={
+            item: this.dataset.idItem,
+            almacen: id_almacen_agregar_materiales,
+            cantidad: cantidad,
+            proveedor: this.dataset.idProveedor,
+          }
+          materiales_agregar.push(material);
+
+        }
+      })
+      //materiales_agregar=JSON.stringify(materiales_agregar);
+
+      $.ajax({
+        url: "./models/administrar_home_tecnicos_app.php",
+        type: "POST",
+        datatype: "json",
+        //data: {accion:"agregarMateriales", id_orden_trabajo: id_orden_trabajo, id_tarea_agregar_materiales: id_tarea_agregar_materiales, id_almacen_agregar_materiales: id_almacen_agregar_materiales, materiales_agregar: materiales_agregar},
+        data: {accion:"agregarMateriales", id_orden_trabajo: id_orden_trabajo, materiales_agregar: materiales_agregar},
+        success: function(response){
+          //console.log(response)
+          if(response==""){
+            $("#modal_select_tarea").modal("hide");
+            $("#modal_select_almacen").modal("hide");
+            $("#modal_select_materiales").modal("hide");
+            finalizarOrden(id_orden_trabajo,materiales_agregar);
+          }
+          //respuestaJson = JSON.parse(response);
+          //console.log(respuestaJson);
+
+        }
+      });
+    });
 
     $(document).on("click", "#actualizarOrden", function(){
       let id_tecnico = parseInt(document.getElementById("id_tecnico").textContent);
@@ -916,15 +1178,11 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
       let orden = id_orden_trabajo;
 
       btnAgregarAdjunto = document.getElementById("btnAgregarAdjunto");
-
-      btnEnviarAdj = document.getElementById("btnEnviarAdj");
-
       btnAgregarAdjunto.addEventListener("click", function(){
         $contenedorInputFile = document.getElementById("inputFile");
         $contenedorInputFile.style.display = "block";
       })
-
-      btnEnviarAdj.addEventListener("click", enviarAdjunto);
+      document.getElementById("btnEnviarAdj").addEventListener("click", enviarAdjunto);
 
       $("#subirArchivos").modal("show");
 
