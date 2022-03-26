@@ -70,6 +70,13 @@
         -webkit-box-shadow: none;
         box-shadow: none;
       }
+      .modal-dialog{
+        overflow-y: initial !important
+      }
+      .modal-body{
+        max-height: 75vh;
+        overflow-y: auto;
+      }
     </style>
   </head>
   <body>
@@ -211,19 +218,29 @@
                   <div id="collapseOne1" class="collapse show" role="tabpanel" aria-labelledby="headingOne1" data-parent="#accordionEx">
                     <div class="card-body border-secondary">
                       <div class="row">
-                        <div class="col-lg-4">
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="" class="col-form-label">*Centro de costos:</label>
+                            <select class="form-control" id="id_centro_costos" required>
+                              <option value="">Seleccione</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-lg-6">
                           <div class="form-group">
                             <label for="" class="col-form-label">*Fecha:</label>
                             <input type="date" class="form-control" id="fecha" required value="<?=date("Y-m-d",strtotime("+1 days"))?>">
                           </div>
                         </div>
-                        <div class="col-lg-4">
+                      </div>
+                      <div class="row">
+                        <div class="col-lg-6">
                           <div class="form-group">
                             <label for="" class="col-form-label">*Desde:</label>
                             <input type="time" class="form-control" id="hora_desde" required value="<?=$desde=date("H:i")?>">
                           </div>
                         </div>
-                        <div class="col-lg-4">
+                        <div class="col-lg-6">
                           <div class="form-group">
                             <label for="" class="col-form-label">*Hasta:</label>
                             <input type="time" class="form-control" id="hora_hasta" required value="<?=date("H:i",strtotime($desde."+8 hours"))?>">
@@ -344,7 +361,7 @@
     <!-- FINAL MODAL CRUD-->
 
     <!-- MODAL ver detalle empresa y linea de tiempo -->
-    <div class="modal fade mt-5 modalAccordionDark" id="verDetalleOrdenTrabajo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade modalAccordionDark" id="verDetalleOrdenTrabajo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
@@ -366,24 +383,31 @@
                   <div id="collapseOne1Detalle" class="collapse show" role="tabpanel" aria-labelledby="headingOne1" data-parent="#accordionExDetalle">
                     <div class="card-body border-secondary">
                       <div class="row">
-                        <div class="col-lg-3">
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="" class="col-form-label">Centro de costo: <span id="lblCentroCosto"></span></label>
+                          </div>
+                        </div>
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="" class="col-form-label">Estado: <span id="lblEstado"></span></label>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-lg-4">
                           <div class="form-group">
                             <label for="" class="col-form-label">Fecha: <span id="lblFecha"></span></label>
                           </div>
                         </div>
-                        <div class="col-lg-3">
+                        <div class="col-lg-4">
                           <div class="form-group">
                             <label for="" class="col-form-label">Desde: <span id="lblHoraDesde"></span></label>
                           </div>
                         </div>
-                        <div class="col-lg-3">
+                        <div class="col-lg-4">
                           <div class="form-group">
                             <label for="" class="col-form-label">Hasta: <span id="lblHoraHasta"></span></label>
-                          </div>
-                        </div>
-                        <div class="col-lg-3">
-                          <div class="form-group">
-                            <label for="" class="col-form-label">Estado: <span id="lblEstado"></span></label>
                           </div>
                         </div>
                       </div>
@@ -899,6 +923,17 @@
             respuestaJson = JSON.parse(respuesta);
             //console.log(respuestaJson);
 
+            /*Identifico el select de centro de costos*/
+            $selectCentroCostos= document.getElementById("id_centro_costos");
+            //Genero los options del select de centro de costos
+            respuestaJson.centro_costos.forEach((centro_costo)=>{
+                $option = document.createElement("option");
+                let optionText = document.createTextNode(centro_costo.nombre);
+                $option.appendChild(optionText);
+                $option.setAttribute("value", centro_costo.id_centro_costo);
+                $selectCentroCostos.appendChild($option);
+            });
+
             /*Identifico el select de clientes*/
             $selectClientes= document.getElementById("id_cliente");
             //Genero los options del select de clientes
@@ -1129,6 +1164,7 @@
         datosEnviar.append("tareas", tareasJson);
         datosEnviar.append("tecnicos", tecnicosJson);
 
+        datosEnviar.append("id_centro_costos", $.trim($('#id_centro_costos').val()));
         datosEnviar.append("fecha", $.trim($('#fecha').val()));
         datosEnviar.append("hora_desde", $.trim($('#hora_desde').val()));
         datosEnviar.append("hora_hasta", $.trim($('#hora_hasta').val()));
@@ -1201,6 +1237,7 @@
 
             /*let $divAdjuntos = document.getElementById('adjuntos');
             $divAdjuntos.innerHTML="";*/
+            $("#lblCentroCosto").html(dot.nombre_centro_costo);
             $("#lblFecha").html(dot.fecha_mostrar);
             $("#lblHoraDesde").html(dot.hora_desde_mostrar);
             $("#lblHoraHasta").html(dot.hora_hasta_mostrar);
@@ -1356,6 +1393,7 @@
             let dot=datosInput.detalle_orden_trabajo;
             //console.log(dot);
 
+            $("#id_centro_costos").val(dot.id_centro_costos);
             $("#fecha").val(dot.fecha);
             $("#hora_desde").val(dot.hora_desde);
             $("#hora_hasta").val(dot.hora_hasta);
@@ -1377,12 +1415,14 @@
             
             tablaTecnicos.find("tbody tr").each(function(){
               let fila=$(this);
+              deselectRow(fila);
               let tecnicoFila=fila.find('td:eq(1)').text();
 
               datosInput.tecnicos_orden_trabajo.forEach((tecnicos)=>{
                 if(tecnicos.id_tecnico==tecnicoFila){
-                  fila.addClass("selected");
-                  fila.find("input[type='checkbox']").attr("checked","checked");
+                  /*fila.addClass("selected");
+                  fila.find("input[type='checkbox']").attr("checked","checked");*/
+                  selectRow(fila);
                   fila.find(".select_vehiculos").val(tecnicos.id_vehiculo)
                 }
               })

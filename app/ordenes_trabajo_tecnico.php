@@ -48,7 +48,7 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
 
   <!-- App Capsule -->
   <div id="appCapsule">
-    <!--<div class="section">
+    <div class="section">
       <button type="button" class="btn btn-icon btn-primary mr-1 mb-1" id="verFiltros">
         <ion-icon name="funnel-outline" role="img" class="md hydrated" aria-label="document text outline"></ion-icon>
       </button>
@@ -66,12 +66,12 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
           <div class="form-group boxed">
             <input type="date" id="fdesde" class="form-control" required>
             <input type="date" id="fhasta" class="form-control mt-1" required>
-            <button class="btn btn-primary form-control mt-1" id="btnEnviar">Buscar</button>
-            <button class="btn btn-secondary form-control mt-1" id="btnCancelar">Cancelar</button>
+            <button type="button" class="btn btn-primary form-control mt-1" id="btnEnviar">Buscar</button>
+            <button type="button" class="btn btn-secondary form-control mt-1" id="btnCancelar">Cancelar</button>
           </div>
         </form>
       </div>
-    </div> -->
+    </div>
 
     <div id="contenedorCards">
             
@@ -409,17 +409,26 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
   <script type="text/javascript">
 
     function iniciarDashboard(){
-      traerDatosIniciales();
+      let $btnVerFiltros = document.getElementById("verFiltros");
+      $btnVerFiltros.addEventListener("click", verFiltros);
+
+      let $btnCancelar = document.getElementById("btnCancelar");
+      $btnCancelar.addEventListener("click", hideFiltros);
+
+      let $btnEnviar = document.getElementById("btnEnviar");
+      $btnEnviar.addEventListener("click", filtrar);
+
+      traerOrdenesTrabajo();
     }
 
-    function traerDatosIniciales(){
+    function traerOrdenesTrabajo(fDesde, fHasta){
       let accion = "traerDatosOrdenesTrabajoTecnico";
       let id_tecnico = parseInt(document.getElementById("id_tecnico").textContent);
       $.ajax({
         url: "models/administrar_home_tecnicos_app.php",
         type: "POST",
         datatype: "json",
-        data: {accion: accion, id_tecnico: id_tecnico},
+        data: {accion: accion, id_tecnico: id_tecnico, fDesde: fDesde, fHasta: fHasta},
         success: function(response){
           //console.log(response);
           let respuestaJson = JSON.parse(response);
@@ -713,7 +722,7 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
         data: {accion: accion, id_orden_trabajo: id_orden_trabajo, id_tecnico: id_tecnico},
         success: function(response){
           console.log(response);
-          traerDatosIniciales();
+          traerOrdenesTrabajo();
           //respuestaJson = JSON.parse(response);
         }
       });
@@ -915,7 +924,8 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
             if(materiales_agregar!=undefined){
               materiales_agregar.forEach((material_agregado)=>{
                 
-                if(material_agregado.item==material.id_item && 
+                if(
+                  material_agregado.item==material.id_item && 
                   material_agregado.proveedor==material.id_proveedor && 
                   material_agregado.almacen==material.id_almacen
                 ){
@@ -1147,7 +1157,7 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
           //let respuestaJson = JSON.parse(response);
           //boton.disabled=true;
           $("#materiales_orden_de_trabajo").modal("hide");
-          traerDatosIniciales();
+          traerOrdenesTrabajo();
         }
       })
     });
@@ -1271,7 +1281,7 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
 
     function traerDatosPorFiltro(fDesde, fHasta){
       let accion = "traerPorFiltro";
-      let id_proveedor = parseInt(document.getElementById("id_proveedor").textContent);
+      //let id_proveedor = parseInt(document.getElementById("id_proveedor").textContent);
 
       let $contFiltros = document.getElementById("contFiltros");
       $contFiltros.classList.toggle("d-none");
@@ -1289,8 +1299,8 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
       let $limpiarFiltro = document.getElementById("limpiarFiltro");
       $limpiarFiltro.addEventListener("click", limpiarFiltro)
 
-
-      $.ajax({
+      traerOrdenesTrabajo(fDesde, fHasta);
+      /*$.ajax({
         url: "models/administrar_home_proveedores_app.php",
         type: "POST",
         datatype: "json",
@@ -1298,7 +1308,7 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
         success: function(response){
           let respuestaJson = JSON.parse(response);
           
-          /*CANTIDADES ORDENES DE COMPRA*/
+          //CANTIDADES ORDENES DE COMPRA
           $cantOC=document.getElementById("cantOC");
           $cantOC.textContent=respuestaJson.cdad_oc;
 
@@ -1318,13 +1328,13 @@ if (!isset($_SESSION['rowUsers']['id_usuario'])) {
 
           $tablaDetalleCOC.appendChild($fragmentCOD);
         }
-      })
+      })*/
     }
 
     function limpiarFiltro(){
       document.getElementById("leyendaFiltro").textContent="";
       document.getElementById("quitFiltro").classList.toggle("d-none");
-      traerDatosIniciales();
+      traerOrdenesTrabajo();
     }
 
     window.addEventListener("DOMContentLoaded", iniciarDashboard);

@@ -317,7 +317,7 @@
                   <!-- Card header -->
                   <a class="collapsed" data-toggle="collapse" data-parent="#accordionEx" href="#collapseThree4" aria-expanded="false" aria-controls="collapseThree4">
                     <div class="card-header" role="tab" id="headingThree4">
-                      <h6 class="mb-0">Fechas y hora de ejecucion <i class="fa fa-angle-down rotate-icon float-right"></i></h6>
+                      <h6 class="mb-0">Fecha y hora de ejecucion <i class="fa fa-angle-down rotate-icon float-right"></i></h6>
                     </div>
                   </a>
                   <!-- Card body -->
@@ -554,7 +554,7 @@
                 <!-- Card header -->
                 <a class="collapsed" data-toggle="collapse" data-parent="#accordionEx" href="#collapseThree4Detalle" aria-expanded="false" aria-controls="collapseThree4Detalle">
                   <div class="card-header" role="tab" id="headingThree4Detalle">
-                    <h6 class="mb-0">Fechas y hora de ejecucion <i class="fa fa-angle-down rotate-icon float-right"></i></h6>
+                    <h6 class="mb-0">Fecha y hora de ejecucion<i class="fa fa-angle-down rotate-icon float-right"></i></h6>
                   </div>
                 </a>
                 <!-- Card body -->

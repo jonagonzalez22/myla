@@ -28,7 +28,21 @@
       $listaClientes=$cliente->traerClientes($this->id_empresa);
       $listaClientes=json_decode($listaClientes,true);
 
+
+      /*CENTRO DE COSTOS*/
+      $listaCentroCostos=[];
+			$query = "SELECT id, nombre FROM centro_costos WHERE id_empresa = $this->id_empresa";
+			$get = $this->conexion->consultaRetorno($query);
+      /*CARGO ARRAY CON CENTRO DE COSTOS*/
+			while ($row = $get->fetch_assoc()) {
+				$listaCentroCostos[]=array(
+          'id_centro_costo' =>$row['id'],
+          'nombre'          =>$row['nombre']
+        );
+			}
+
       $datosIniciales["clientes"] = $listaClientes;
+      $datosIniciales["centro_costos"] = $listaCentroCostos;
 
 			echo json_encode($datosIniciales);
 		}
@@ -39,6 +53,7 @@
       if($id_orden_trabajo!=0){
         $filtro_orden_trabajo=" AND cm.id = $id_orden_trabajo";
       }*/
+      
       $filtro_orden_trabajo="";
       $selectTecnicos="";
       $joinTecnicos="";
@@ -56,10 +71,10 @@
               $filtro_tecnico=" AND ttm.id_tecnico = ".$filtros["id_tecnico"];
           }
           if(isset($filtros["fecha_desde"]) and $filtros["fecha_desde"]!=""){
-              $filtro_desde=" AND ot.id = ".$filtros["fecha_desde"];
+              $filtro_desde=" AND ot.fecha >= '".$filtros["fecha_desde"]."'";
           }
           if(isset($filtros["fecha_hasta"]) and $filtros["fecha_hasta"]!=""){
-              $filtro_hasta=" AND ot.id = ".$filtros["fecha_hasta"];
+              $filtro_hasta=" AND ot.fecha <= '".$filtros["fecha_hasta"]."'";
           }
       }
 
@@ -81,17 +96,18 @@
         INNER JOIN estados_ordenes_trabajo eot ON ot.id_estado_orden=eot.id
         $joinTecnicos
       WHERE 1 $filtro_empresa $filtro_orden_trabajo $filtro_tecnico";*/
-      $queryGet = "SELECT ot.id AS id_orden_trabajo,ac.id AS id_activo_cliente,ac.descripcion AS descripcion_activo,ac.ubicacion,dc.id AS id_direccion_cliente,dc.direccion,c.id AS id_cliente,c.razon_social AS cliente,ot.fecha,ot.hora_desde,ot.hora_hasta,ot.fecha_hora_alta,cc.id AS id_contacto_cliente,cc.nombre_completo AS contacto_cliente,eot.id AS id_estado,eot.estado $selectTecnicos
+      $queryGet = "SELECT ot.id AS id_orden_trabajo,ac.id AS id_activo_cliente,ac.descripcion AS descripcion_activo,ac.ubicacion,dc.id AS id_direccion_cliente,dc.direccion,c.id AS id_cliente,c.razon_social AS cliente,ot.fecha,ot.hora_desde,ot.hora_hasta,ot.fecha_hora_alta,cocl.id AS id_contacto_cliente,cocl.nombre_completo AS contacto_cliente,eot.id AS id_estado,eot.estado,id_centro_costos,ceco.nombre AS nombre_centro_costo $selectTecnicos
       FROM ordenes_trabajo ot 
         INNER JOIN tareas_ordenes_trabajo tot ON tot.id_orden_trabajo=ot.id
         INNER JOIN calendario_mantenimiento cm ON tot.id_calendario_mantenimiento=cm.id 
         INNER JOIN activos_cliente ac ON cm.id_activo_cliente=ac.id 
         INNER JOIN direcciones_clientes dc ON ac.id_direccion_cliente=dc.id 
         INNER JOIN clientes c ON dc.id_cliente=c.id 
-        INNER JOIN contactos_clientes cc ON cm.id_contacto_cliente=cc.id 
+        INNER JOIN contactos_clientes cocl ON cm.id_contacto_cliente=cocl.id 
         INNER JOIN estados_ordenes_trabajo eot ON ot.id_estado_orden=eot.id
+        INNER JOIN centro_costos ceco ON ot.id_centro_costos=ceco.id
         $joinTecnicos
-      WHERE 1 $filtro_empresa $filtro_orden_trabajo $filtro_tecnico
+      WHERE 1 $filtro_empresa $filtro_orden_trabajo $filtro_tecnico $filtro_desde $filtro_hasta
       GROUP BY ot.id";
       //var_dump($queryGet);
       //echo $queryGet;
@@ -125,6 +141,8 @@
           "direccion"                   =>$row["direccion"],
           //"asunto"                      =>$row["asunto"],
           //"detalle"                     =>$row["detalle"],
+          "id_centro_costos"             =>$row["id_centro_costos"],
+          "nombre_centro_costo"         =>$row["nombre_centro_costo"],
           "fecha"                       =>($fecha == 0) ? "" : $fecha,
           "fecha_mostrar"               =>($fecha == 0) ? "" : date("d/m/Y",strtotime($fecha)),
           "hora_desde"                  =>($hora_desde == NULL) ? "" : $hora_desde,
@@ -147,7 +165,7 @@
       return json_encode($arrayOrdenTrabajo);
 		}
 
-		public function agregarOrdenTrabajo($fecha, $nro_orden_trabajo, $hora_desde, $hora_hasta, $aTareas, $aTecnicos){
+		public function agregarOrdenTrabajo($id_centro_costos, $fecha, $nro_orden_trabajo, $hora_desde, $hora_hasta, $aTareas, $aTecnicos){
       $id_calendario_mantenimiento=$aTareas[0]["id_mantenimiento_preventivo"];
       $id_estado_orden=1;
 
@@ -155,7 +173,7 @@
       $fecha_hora_hasta=date("Y-m-d H:i",strtotime($fecha_hora_hasta));*/
 
       //$queryInsert = "INSERT INTO ordenes_trabajo (id_calendario_mantenimiento, nro_orden_trabajo, fecha_hora_alta, fecha, hora_desde, hora_hasta, id_estado_orden) VALUES ('$id_calendario_mantenimiento', '$nro_orden_trabajo', NOW(), '$fecha', '$hora_desde', '$hora_hasta', '$id_estado_orden')";
-      $queryInsert = "INSERT INTO ordenes_trabajo (nro_orden_trabajo, fecha_hora_alta, fecha, hora_desde, hora_hasta, id_estado_orden) VALUES ('$nro_orden_trabajo', NOW(), '$fecha', '$hora_desde', '$hora_hasta', '$id_estado_orden')";
+      $queryInsert = "INSERT INTO ordenes_trabajo (nro_orden_trabajo, fecha_hora_alta, id_centro_costos, fecha, hora_desde, hora_hasta, id_estado_orden) VALUES ('$nro_orden_trabajo', NOW(), '$id_centro_costos', '$fecha', '$hora_desde', '$hora_hasta', '$id_estado_orden')";
       //echo $queryInsert;
       $insertar= $this->conexion->consultaSimple($queryInsert);
       $mensajeError=$this->conexion->conectar->error;
@@ -298,10 +316,10 @@
 			return json_encode($arrayDatosIniciales);
 		}
 
-    public function updateOrdenTrabajo($id_orden_trabajo, $fecha, $nro_orden_trabajo, $hora_desde, $hora_hasta, $id_estado_orden, $aTareas, $aTecnicos){
+    public function updateOrdenTrabajo($id_orden_trabajo, $id_centro_costos, $fecha, $nro_orden_trabajo, $hora_desde, $hora_hasta, $id_estado_orden, $aTareas, $aTecnicos){
 			//$this->id_orden_trabajo=$id_orden_trabajo;
 
-      $queryInsert = "UPDATE ordenes_trabajo SET nro_orden_trabajo='$nro_orden_trabajo', fecha='$fecha', hora_desde='$hora_desde', hora_hasta='$hora_hasta', id_estado_orden='$id_estado_orden' WHERE id = $id_orden_trabajo";
+      $queryInsert = "UPDATE ordenes_trabajo SET nro_orden_trabajo='$nro_orden_trabajo', id_centro_costos = '$id_centro_costos', fecha='$fecha', hora_desde='$hora_desde', hora_hasta='$hora_hasta', id_estado_orden='$id_estado_orden' WHERE id = $id_orden_trabajo";
       //echo $queryInsert;
       $insertar= $this->conexion->consultaSimple($queryInsert);
       $filasAfectadas=$this->conexion->conectar->affected_rows;
@@ -661,7 +679,7 @@
         foreach (json_decode($tecnicos,true) as $key => $value) { $aTecnicos[]=$value["data"]; }
         //var_dump($aTecnicos);
 
-        $orden_trabajo->agregarOrdenTrabajo($fecha, $nro_orden_trabajo, $hora_desde, $hora_hasta, $aTareas, $aTecnicos);
+        $orden_trabajo->agregarOrdenTrabajo($id_centro_costos, $fecha, $nro_orden_trabajo, $hora_desde, $hora_hasta, $aTareas, $aTecnicos);
 			break;
       case 'updateOrdenTrabajo':
         $nro_orden_trabajo="";
@@ -673,7 +691,7 @@
         foreach (json_decode($tecnicos,true) as $key => $value) { $aTecnicos[]=$value["data"]; }
         //var_dump($aTecnicos);
 
-        $orden_trabajo->updateOrdenTrabajo($id_orden_trabajo, $fecha, $nro_orden_trabajo, $hora_desde, $hora_hasta, $id_estado_orden, $aTareas, $aTecnicos);
+        $orden_trabajo->updateOrdenTrabajo($id_orden_trabajo, $id_centro_costos, $fecha, $nro_orden_trabajo, $hora_desde, $hora_hasta, $id_estado_orden, $aTareas, $aTecnicos);
       break;
       case 'traerDetalleOrdenTrabajo':
         //$id_orden_trabajo = $_POST['id_orden_trabajo'];
