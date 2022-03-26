@@ -12,6 +12,7 @@
 
 		public function __construct(){
 			$this->conexion = new Conexion();
+      $this->id_empresa = $_SESSION["rowUsers"]["id_empresa"];
 			date_default_timezone_set("America/Buenos_Aires");
 		}
 
@@ -22,7 +23,7 @@
 			//$totalizadores = array();
 
       /*TECNICOS*/
-			$queryTecnicos = "SELECT id as id_tecnico, nombre_completo FROM tecnicos WHERE activo = 1";
+			$queryTecnicos = "SELECT id as id_tecnico, nombre_completo FROM tecnicos WHERE activo = 1 and id_empresa = $this->id_empresa";
 			$getTecnicos = $this->conexion->consultaRetorno($queryTecnicos);
       /*CARGO ARRAY TECNICOS*/
 			while ($rowTecnico= $getTecnicos->fetch_array()) {
@@ -79,7 +80,7 @@
       LEFT JOIN marcas_vehiculos mv ON v.id_marca=mv.id
       INNER JOIN tecnicos t ON v.id_tecnico_asignado=t.id
       INNER JOIN usuarios u ON v.id_usuario_ultima_actualizacion=u.id
-      WHERE 1 $filtro_vehiculo";
+      WHERE v.id_empresa = $this->id_empresa $filtro_vehiculo";
 			$getVehiculos = $this->conexion->consultaRetorno($queryGetVehiculos);
 
 			while ($row = $getVehiculos->fetch_array()) {
@@ -176,7 +177,7 @@
       $id_usuario_ultima_actualizacion=$_SESSION["rowUsers"]["id_usuario"];
 
 			/*GUARDO EN TABLA EMPRESA*/
-			$queryInsertVehiculo = "INSERT INTO vehiculos (patente, id_marca, modelo, anio, codigo_motor, codigo_chasis, nro_cedula_verde, fecha_alta, activo, fecha_adquirido, fecha_baja, id_tecnico_asignado, comentarios, proximo_service_general, km_adquirido, proximo_vencimiento_vtv, km_actuales, fecha_ultima_actualizacion, id_usuario_ultima_actualizacion, numero_movil, vencimiento_cedula_verde, vencimiento_seguro, vencimiento_gnc) VALUES('$patente', '$marca', '$modelo', '$anio', '$codigo_motor', '$codigo_chasis', '$nro_cedula_verde', '$fecha_alta', '$activo', '$fecha_adquirido', '$fecha_baja', '$tecnico', '$comentarios','$proximo_service_general','$km_adquirido','$proximo_vencimiento_vtv','$km_actuales',NOW(),'$id_usuario_ultima_actualizacion','$numero_movil','$vencimiento_cedula_verde','$vencimiento_seguro','$vencimiento_gnc')";
+			$queryInsertVehiculo = "INSERT INTO vehiculos (id_empresa, patente, id_marca, modelo, anio, codigo_motor, codigo_chasis, nro_cedula_verde, fecha_alta, activo, fecha_adquirido, fecha_baja, id_tecnico_asignado, comentarios, proximo_service_general, km_adquirido, proximo_vencimiento_vtv, km_actuales, fecha_ultima_actualizacion, id_usuario_ultima_actualizacion, numero_movil, vencimiento_cedula_verde, vencimiento_seguro, vencimiento_gnc) VALUES('$this->id_empresa', '$patente', '$marca', '$modelo', '$anio', '$codigo_motor', '$codigo_chasis', '$nro_cedula_verde', '$fecha_alta', '$activo', '$fecha_adquirido', '$fecha_baja', '$tecnico', '$comentarios','$proximo_service_general','$km_adquirido','$proximo_vencimiento_vtv','$km_actuales',NOW(),'$id_usuario_ultima_actualizacion','$numero_movil','$vencimiento_cedula_verde','$vencimiento_seguro','$vencimiento_gnc')";
       //echo $queryInsertVehiculo;
 			$insertarVehiculo= $this->conexion->consultaSimple($queryInsertVehiculo);
       $id_vehiculo=$this->conexion->conectar->insert_id;

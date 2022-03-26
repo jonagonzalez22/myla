@@ -185,4 +185,9 @@ CREATE TABLE `myla`.`subrubros` ( `id` INT NOT NULL AUTO_INCREMENT , `id_rubro` 
 
 ALTER TABLE `activos_cliente` ADD `id_subrubro` INT NOT NULL AFTER `hash`, ADD `imagen` VARCHAR(199) NOT NULL AFTER `id_subrubro`, ADD `datos_adicionales` VARCHAR(299) NOT NULL AFTER `imagen`, ADD INDEX (`id_subrubro`);
 
+ALTER TABLE `vehiculos` ADD `id_empresa` INT NOT NULL AFTER `id`, ADD INDEX (`id_empresa`);
+UPDATE vehiculos SET id_empresa=30;
+
+ALTER TABLE `ordenes_trabajo` ADD `id_centro_costos` INT NOT NULL AFTER `nro_orden_trabajo`, ADD INDEX (`id_centro_costos`);
+
 

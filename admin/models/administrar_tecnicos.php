@@ -12,6 +12,7 @@
 
 		public function __construct(){
 			$this->conexion = new Conexion();
+      $this->id_empresa = isset($_SESSION["rowUsers"]["id_empresa"]) ? $_SESSION["rowUsers"]["id_empresa"] : "";
 			date_default_timezone_set("America/Buenos_Aires");
 		}
 
@@ -49,7 +50,7 @@
 			$queryGet = "SELECT t.id AS id_tecnico, nombre_completo, v.id AS id_vehiculo 
       FROM tecnicos t 
       LEFT JOIN vehiculos v ON t.id=v.id_tecnico_asignado
-      WHERE t.activo = 1 $filtro_tecnico";
+      WHERE t.activo = 1 AND t.id_empresa = $this->id_empresa $filtro_tecnico";
 			$get = $this->conexion->consultaRetorno($queryGet);
       //var_dump($queryGet);
 			while ($row = $get->fetch_array()) {

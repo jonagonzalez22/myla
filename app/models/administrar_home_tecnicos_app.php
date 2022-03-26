@@ -17,22 +17,7 @@ class DashboardTecnicos{
     date_default_timezone_set("America/Buenos_Aires");
   }
 
-  public function traerDatosIniciales($id_tecnico,$filtros){
-
-    $this->id_tecnico = $id_tecnico;
-
-    $filtro_desde="";
-    $filtro_hasta="";
-    if($filtros!=0){
-        if(isset($filtros["fecha_desde"]) and $filtros["fecha_desde"]!=""){
-          $filtro_desde=" AND ot.id = ".$filtros["fecha_desde"];
-        }
-        if(isset($filtros["fecha_hasta"]) and $filtros["fecha_hasta"]!=""){
-          $filtro_hasta=" AND ot.id = ".$filtros["fecha_hasta"];
-      }
-    }
-
-    $filtros["id_tecnico"]=$id_tecnico;
+  public function traerDatosIniciales($filtros){
 
     $orden_trabajo = new OrdenTrabajo();
     $aOrdenesTrabajoTecnico=$orden_trabajo->traerOrdenTrabajo($filtros);
@@ -58,9 +43,10 @@ if (isset($_POST['accion'])) {
     case 'traerDatosOrdenesTrabajoTecnico':
       //$id_tecnico = $_POST['id_tecnico'];
       $filtros=[];
-      if(isset($fdesde)) $filtros["fecha_desde"]=$fdesde;
-      if(isset($fhasta)) $filtros["fecha_hasta"]=$fhasta;
-      echo $dashboardTecnicos->traerDatosIniciales($id_tecnico,$filtros);
+      if(isset($id_tecnico)) $filtros["id_tecnico"]=$id_tecnico;
+      if(isset($fDesde)) $filtros["fecha_desde"]=$fDesde;
+      if(isset($fHasta)) $filtros["fecha_hasta"]=$fHasta;
+      echo $dashboardTecnicos->traerDatosIniciales($filtros);
     break;
     case 'traerDetalleOrdenTrabajoApp':
       echo $orden_trabajo->traerDetalleOrdenTrabajo($id_orden_trabajo);
