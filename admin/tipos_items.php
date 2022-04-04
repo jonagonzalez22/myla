@@ -192,7 +192,7 @@
       $(document).ready(function(){
        tablaTItems= $('#tablaTItems').DataTable({
             "ajax": {
-                "url" : "./models/administrar_tipo_items.php?accion=traerUnidades",
+                "url" : "./models/administrar_tipo_items.php?accion=traerTipoItems",
                 "dataSrc": "",
               },
             "columns":[

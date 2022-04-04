@@ -1068,7 +1068,7 @@
                   }
                   return `
                   <input type='hidden' id='proveedor-item-`+full.id_item+`' value=`+full.id_proveedor+`>
-                  <input type='number' class='items' id='item-`+full.id_item+`' value='${cantidad_estimada}' placeholder='Cantidad estimada'>`;//
+                  <input type='number' class='form-control items' id='item-`+full.id_item+`' value='${cantidad_estimada}' placeholder='Cantidad estimada'>`;//
                 };
               }
             },
