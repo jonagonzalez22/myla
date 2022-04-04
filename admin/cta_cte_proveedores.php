@@ -91,16 +91,15 @@
                 <div class="card">
                   <div class="card-header">
                     <h5>Administrar cta cte prov.</h5>
-                     <div class="row mt-2">
-                          <div class="col-lg-6">
-                            <div class="form-group">
-                              <select class="form-control" id="proveedor" required>
-                                <option value="0">Seleccione proveedor...</option>
-                              </select>
-                            </div>
-                          </div>
+                    <div class="row mt-2">
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <select class="form-control" id="proveedor" required>
+                            <option value="0">Seleccione proveedor...</option>
+                          </select>
+                        </div>
                       </div>
-
+                    </div>
                   </div>
                   <div class="card-body">
                     <div class="table-responsive d-none" id="contTablaCtaCte">
@@ -120,7 +119,7 @@
                 </div>
               </div>
               <!-- Ajax Generated content for a column end-->
-        </div>
+            </div>
           </div>
           <!-- Container-fluid Ends-->
         </div>

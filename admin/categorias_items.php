@@ -192,7 +192,7 @@
       $(document).ready(function(){
        tablaCategorias= $('#tablaCategorias').DataTable({
             "ajax": {
-                "url" : "./models/administrar_categoria_items.php?accion=traerRubros",
+                "url" : "./models/administrar_categoria_items.php?accion=traerCategorias",
                 "dataSrc": "",
               },
             "columns":[

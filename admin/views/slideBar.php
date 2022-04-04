@@ -140,7 +140,7 @@
                 <ul class="sidebar-submenu">
                   <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Dashboard</span><i class="fa fa-angle-right pull-right"></i></a>
                     <ul class="sidebar-submenu">
-                      <li><a href="#"><i class="fa fa-circle"></i> Generar Tkt AMB</a></li>
+                      <li><a href="pedidos.php"><i class="fa fa-circle"></i> Generar Tkt AMB</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Informes</a></li>
                     </ul>
                   </li>
@@ -192,7 +192,7 @@
               </li>
             <?php }
 
-              if($accesos['id_menu_web'] == 4 && $accesos['acceso'] ==1){ ?>
+            if($accesos['id_menu_web'] == 4 && $accesos['acceso'] ==1){ ?>
               <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Gestor Mant. Correct.</span><i class="fa fa-angle-right pull-right"></i></a>
                 <ul class="sidebar-submenu">
                   <li><a class="sidebar-header" href="#"><i data-feather="plus"></i><span>Presupuestos</span><i class="fa fa-angle-right pull-right"></i></a>
@@ -202,7 +202,7 @@
                       <li><a href="#"><i class="fa fa-circle"></i> Planificación</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Archivado</a></li>
                       <li><a href="#"><i class="fa fa-circle"></i> Informes</a></li>
-                      <li><a href="#"><i class="fa fa-circle"></i> Dashboard</a></li>
+                      <li><a href="presupuestos.php"><i class="fa fa-circle"></i> Dashboard</a></li>
                     </ul>
                   </li>
                 </ul>

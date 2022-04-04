@@ -103,6 +103,7 @@
           'cantDisp'=>$rowStock['cantidad_disponible'],
           'cantReserv'=>$rowStock['cantidad_reservada'],
           'precio_unitario' =>"$".number_format($rowStock['precio_unitario'],2,',','.'),
+          'precio_unitario_sin_formato' =>$rowStock['precio_unitario'],
           'punto_reposicion'=>$rowStock['punto_reposicion'],
           'hash'=>$rowStock['hash'],
           'fecha'=>date("d/m/Y H:m:s", strtotime($rowStock['fecha'])),
